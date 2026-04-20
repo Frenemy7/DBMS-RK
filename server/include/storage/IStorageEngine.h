@@ -22,6 +22,9 @@ namespace Storage {
         // 删除文件夹 (用于 DROP DATABASE 时连同里面的文件一并清空)
         virtual bool deleteDirectory(const std::string& dirPath) = 0;
 
+        // 清空一个文件的内容，但不删除文件本身 (用于 TRUNCATE TABLE)
+        virtual bool clearFile(const std::string& filePath) = 0;
+
         // 获取当前文件的总字节数
         // 知道文件的末尾在哪里，从而决定全表扫描什么时候结束。
         virtual long getFileSize(const std::string& filePath) = 0;
