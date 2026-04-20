@@ -1,7 +1,7 @@
 #ifndef RUANKO_TABLE_META_H
 #define RUANKO_TABLE_META_H
 
-#include "../common/Constants.h"1
+#include "../common/Constants.h"
 
 #include <windows.h>
 

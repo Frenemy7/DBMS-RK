@@ -36,7 +36,7 @@ namespace Common {
         ERR_NULL_CONSTRAINT_VIOLATION = 2002,  // 违反非空约束
         ERR_CHECK_CONSTRAINT_VIOLATION = 2003, // 违反 Check 约束
         ERR_UNIQUE_CONSTRAINT_VIOLATION = 2004,// 违反唯一约束
-        ERR_TYPE_MISMATCH = 3002               // 插入数据类型与定义不符 (如把字符串插进 INTEGER 字段)
+        ERR_TYPE_MISMATCH = 3002,               // 插入数据类型与定义不符 (如把字符串插进 INTEGER 字段)
         ERR_SYNTAX_ERROR = 3001    // 语法错误
     };
 
