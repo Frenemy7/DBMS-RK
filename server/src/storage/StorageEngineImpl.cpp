@@ -168,9 +168,10 @@ namespace Storage {
 
         fsStream.seekp(0, std::ios::end);
         long fileSize = static_cast<long>(fsStream.tellp());
-        if (offset > fileSize) {
+        if (offset + size > fileSize) {
             std::cerr << "错误：写入偏移超出文件范围。fileSize=" << fileSize
-                      << ", offset=" << offset << std::endl;
+                      << ", offset=" << offset
+                      << ", size=" << size << std::endl;
             return false;
         }
 

@@ -11,6 +11,9 @@ namespace Catalog {
     public:
         virtual ~ICatalogManager() = default;
 
+        // 系统初始化
+        virtual bool initSystem() = 0;
+
         // 验证表是否存在 (从 ruanko.db 或 .tb 中查询)
         virtual bool hasTable(const std::string& tableName) = 0;
 
@@ -77,12 +80,6 @@ namespace Catalog {
 
         // 删除一个约束 (对应 ALTER TABLE DROP CONSTRAINT)
         virtual bool dropIntegrity(const std::string& tableName, const std::string& integrityName) = 0;
-
-        // 切换当前使用的数据库 (对应 USE database_name)
-        virtual bool useDatabase(const std::string& dbName) = 0;
-
-        // 获取当前正在使用的数据库名称，供 Executor 拼接文件路径用
-        virtual std::string getCurrentDatabase() = 0;
     };
 
 } // namespace Catalog

@@ -13,8 +13,8 @@ namespace Meta {
     // 数据库基本信息块 (对应 ruanko.db 文件结构) 3.12.3
     struct DatabaseBlock {
         char name[Common::MAX_NAME_LEN];
-        bool type;
-        char filename[Common::MAX_PATH_LEN];
+        int type;   // 对应 Common::DatabaseType
+        char filename[Common::MAX_PATH_LEN]; // 数据库目录名或数据库标识
         SYSTEMTIME crtime;
     };
 
@@ -23,12 +23,13 @@ namespace Meta {
         char name[Common::MAX_NAME_LEN];
         int record_num;
         int field_num;
+        // 这里只存文件名，不存完整路径；完整路径由 CatalogManager 根据 currentDB 拼接
         char tdf[Common::MAX_PATH_LEN];
         char tic[Common::MAX_PATH_LEN];
         char trd[Common::MAX_PATH_LEN];
         char tid[Common::MAX_PATH_LEN];
         SYSTEMTIME crtime;
-        int mtime;
+        SYSTEMTIME mtime;
     };
 
     // 字段定义块 (对应 .tdf 文件结构) 3.12.6
