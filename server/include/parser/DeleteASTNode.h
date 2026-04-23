@@ -9,7 +9,7 @@ namespace Parser {
 
     class DeleteASTNode : public ASTNode {
     public:
-        SQLType getType() const override { return SQLType::DELETE; }
+        SQLType getType() const override { return SQLType::DELETE_; }
 
         std::string tableName;
         std::unique_ptr<ASTNode> whereExpressionTree; // where 语句
