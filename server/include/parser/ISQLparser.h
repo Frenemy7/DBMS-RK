@@ -2,6 +2,7 @@
 #define ISQL_PARSER_H
 
 #include "ASTNode.h"
+#include <memory>
 #include <string>
 
 namespace Parser {
@@ -10,12 +11,13 @@ namespace Parser {
     public:
         virtual ~ISQLParser() = default;
 
-        // 核心接口：接收纯文本 SQL，返回结构化的 AST 节点指针。
-        // 如果语法错误（比如少敲了括号），直接返回 nullptr。
-        virtual ASTNode* parse(const std::string& sql) = 0;
+        /**
+         * @brief 将 SQL 文本解析为 AST
+         * @param sql 用户输入的原生 SQL 字符串
+         * @return 成功返回指向 AST 根节点的 unique_ptr，语法错误返回 nullptr
+         */
+        virtual std::unique_ptr<ASTNode> parse(const std::string& sql) = 0;
     };
 
-} // namespace Parser
-
-
+} 
 #endif // ISQL_PARSER_H
