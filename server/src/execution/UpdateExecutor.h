@@ -15,7 +15,7 @@ namespace Execution {
         Storage::IStorageEngine* storage;
 
     public:
-        UpdateExecutor(Parser::ASTNode* ast, 
+        UpdateExecutor(Parser::ASTNode* astNode, 
                        Catalog::ICatalogManager* catalog, 
                        Storage::IStorageEngine* storage);
         

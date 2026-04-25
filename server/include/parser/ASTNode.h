@@ -15,6 +15,8 @@ namespace Parser {
         SELECT,
         UPDATE,
         DELETE_,
+        CREATE_DATABASE,
+        USE_DATABASE,
         UNKNOWN
     };
 
@@ -34,7 +36,7 @@ namespace Parser {
     // 抽象语法树节点基类 这是具体节点的总的基类。其他具体节点继承该基类并进行延展
     class ASTNode {
     public:
-        virtual SQLType getType() const = 0; //获取语句类型。虚函数，由对应的具体节点分别实现，返回对应的具体节点类型
+        virtual SQLType getType() const = 0; // 获取语句类型。虚函数，由对应的具体节点分别实现，返回对应的具体节点类型
 
         virtual ~ASTNode() = default;
     };
@@ -97,6 +99,26 @@ namespace Parser {
         std::string alias;     // 别名 (可选)
     };
 
+    // 用于 建立数据库;
+    class CreateDatabaseASTNode : public ASTNode {
+    public:
+        SQLType getType() const override { return SQLType::CREATE_DATABASE; }
+        std::string dbName; // 数据库名称
+    };
+
+    // 用于 切换数据库;
+    class UseDatabaseASTNode : public ASTNode {
+    public:
+        SQLType getType() const override { return SQLType::USE_DATABASE; }
+        std::string dbName; // 要切换到的数据库名称
+    };
+
+    class DeleteASTNode : public ASTNode {
+    public:
+        SQLType getType() const override { return SQLType::DELETE_; }
+        std::string tableName;
+        std::unique_ptr<ASTNode> whereExpressionTree; // WHERE 后的条件树
+    };
 } // namespace Parser
 
 #endif // AST_NODE_H

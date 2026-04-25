@@ -13,29 +13,30 @@ namespace Parser {
         std::vector<Token> tokens; // 由 Lexer 生成的词元数组
         int currentTokenIndex; // 核心游标：当前正在处理的 Token 下标
 
-        // === 底层游标控制机制 ===
+        // 游标控制机制
         bool isAtEnd() const; // 探查是否到达 Token 数组末尾 (EOF)
         const Token& peek() const; // 探查当前游标指向的 Token（不移动游标）
         const Token& previous() const; // 获取游标刚刚跨过的上一个 Token
         const Token& consume(); // 吞噬当前 Token，并将游标后移一步
         
-        // 核心校验函数：强制断言当前 Token 必须是 expected 类型，否则直接抛出语法异常
+        // 校验函数：匹配当前单词是否是期望的单词，否则直接抛出语法异常
         const Token& match(TokenType expected); 
         bool check(TokenType type) const; // 仅检查当前 Token 类型，不抛异常也不移动游标
 
-        // === 具体的语法分支解析函数 ===
+        // 具体的语法分支解析函数
         // 将不同类型 SQL 的解析逻辑拆分，严格遵循单一职责原则
-        std::unique_ptr<ASTNode> parseCreateDatabaseStatement(); // 3.2.1
-        std::unique_ptr<ASTNode> parseDropDatabaseStatement();   // 3.2.2
-        std::unique_ptr<ASTNode> parseUseDatabaseStatement();    // 3.12.3 切换库
-        
-        std::unique_ptr<ASTNode> parseCreateTableStatement();    // 3.3.1
-        std::unique_ptr<ASTNode> parseDropTableStatement();     // 3.3.3
-        
-        std::unique_ptr<ASTNode> parseInsertStatement();        // 3.5.1
-        std::unique_ptr<ASTNode> parseUpdateStatement();        // 3.5.2
-        std::unique_ptr<ASTNode> parseSelectStatement();        // 3.5.3
-        std::unique_ptr<ASTNode> parseDeleteStatement();        // 3.5.4
+        // 数据库操纵
+        std::unique_ptr<ASTNode> parseCreateDatabaseStatement(); // 3.2.1 建立数据库
+        std::unique_ptr<ASTNode> parseDropDatabaseStatement(); // 3.2.2 删除数据库
+        std::unique_ptr<ASTNode> parseUseDatabaseStatement(); // 3.12.3 切换库
+        // 建表删表
+        std::unique_ptr<ASTNode> parseCreateTableStatement(); // 3.3.1 建表
+        std::unique_ptr<ASTNode> parseDropTableStatement(); // 3.3.3 删表
+        // 增删改查
+        std::unique_ptr<ASTNode> parseInsertStatement(); // 3.5.1 插入
+        std::unique_ptr<ASTNode> parseUpdateStatement(); // 3.5.2 更新
+        std::unique_ptr<ASTNode> parseSelectStatement(); // 3.5.3 筛选
+        std::unique_ptr<ASTNode> parseDeleteStatement(); // 3.5.4 删除
 
         // === 核心：表达式与条件解析 (用于 WHERE 子句) ===
         // 采用递归下降法处理运算符优先级

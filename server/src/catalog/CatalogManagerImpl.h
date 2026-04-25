@@ -26,6 +26,8 @@ namespace Catalog {
         bool initSystem() override;
         bool useDatabase(const std::string& dbName) override;
         std::string getCurrentDatabase() override;
+        void setCurrentDatabase(const std::string& dbName) override;
+
 
         // --- 数据库管理 (操作 ruanko.db) ---
         bool hasDatabase(const std::string& dbName) override;

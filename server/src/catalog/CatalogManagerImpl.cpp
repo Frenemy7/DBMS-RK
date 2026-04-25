@@ -516,4 +516,9 @@ namespace Catalog {
         return true;
     }
 
+    void CatalogManagerImpl::setCurrentDatabase(const std::string& dbName) {
+        currentDB = dbName;
+    }
+
+
 } // namespace Catalog
