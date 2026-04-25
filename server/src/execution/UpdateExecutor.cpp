@@ -1,4 +1,6 @@
 #include "UpdateExecutor.h"
+#include "../integrity/IntegrityManagerImpl.h"
+#include "../../include/parser/UpdateASTNode.h"
 #include <iostream>
 
 namespace Execution {
@@ -13,7 +15,17 @@ namespace Execution {
     bool UpdateExecutor::execute() {
         if (!astNode || !catalog || !storage) return false;
 
-        // TODO: 
+        auto updateNode = dynamic_cast<Parser::UpdateASTNode*>(astNode);
+        if (!updateNode) return false;
+
+        Integrity::IntegrityManagerImpl integrityManager(catalog, storage);
+        for (const auto& setValue : updateNode->setValues) {
+            if (!integrityManager.checkUpdate(updateNode->tableName, setValue.field, setValue.newValue)) {
+                return false;
+            }
+        }
+
+        // TODO:
         
         return false;
     }
