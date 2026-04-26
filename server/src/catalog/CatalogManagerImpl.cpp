@@ -14,17 +14,43 @@ namespace Catalog {
     bool CatalogManagerImpl::initSystem() {
         if (storageEngine == nullptr) return false;
 
-        // data 目录存在也算成功
+        // 确保物理根目录 data/ 存在
         if (!storageEngine->createDirectory("data")) {
             return false;
         }
 
-        // ruanko.db 不存在才创建
+        // 确保数据库大总管文件 ruanko.db 存在
         if (storageEngine->getFileSize("data/ruanko.db") < 0) {
             if (!storageEngine->createFile("data/ruanko.db")) {
                 return false;
             }
         }
+
+        // 检查并自动创建不可删除的系统库 "Ruanko"
+        if (!hasDatabase("Ruanko")) {
+            // 在内存中捏出系统库的元数据 (DatabaseBlock)
+            Meta::DatabaseBlock sysDb;
+            std::memset(&sysDb, 0, sizeof(Meta::DatabaseBlock));
+            
+            // 设置库名和路径 3.12.4.3 
+            std::strncpy(sysDb.name, "Ruanko", sizeof(sysDb.name) - 1);
+            sysDb.type = 0; // 0 代表系统数据库 (System Database)
+            std::strncpy(sysDb.filename, "data/Ruanko", sizeof(sysDb.filename) - 1);
+            // sysDb.crtime (创建时间) 被 memset 填 0，MVP 阶段安全可行
+
+            // 把系统库注册到 ruanko.db 里
+            if (storageEngine->appendRaw("data/ruanko.db", sizeof(Meta::DatabaseBlock), reinterpret_cast<const char*>(&sysDb)) < 0) {
+                return false;
+            }
+
+            // 在硬盘上砸出真实的物理文件夹和文件 (严格对齐 PDF 3.12.3 第2条)
+            storageEngine->createDirectory("data/Ruanko");
+            storageEngine->createFile("data/Ruanko/Ruanko.tb");  // 表描述文件
+            storageEngine->createFile("data/Ruanko/Ruanko.log"); // 日志文件
+        }
+
+        // 将系统启动后的默认“工作空间”指向系统库 Ruanko
+        currentDB = "Ruanko";
 
         return true;
     }
@@ -117,6 +143,11 @@ namespace Catalog {
 
     bool CatalogManagerImpl::dropDatabase(const std::string& dbName) {
         if (storageEngine == nullptr) return false;
+
+        if (dbName == "Ruanko") {
+            std::cerr << "Error: 'Ruanko' 是系统数据库，权限拒绝，不可被删除！" << std::endl;
+            return false;
+        }
 
         auto dbs = getAllDatabases();
         std::vector<Meta::DatabaseBlock> newDbs;
@@ -515,5 +546,10 @@ namespace Catalog {
 
         return true;
     }
+
+    void CatalogManagerImpl::setCurrentDatabase(const std::string& dbName) {
+        currentDB = dbName;
+    }
+
 
 } // namespace Catalog

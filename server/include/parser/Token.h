@@ -18,6 +18,7 @@ namespace Parser {
         KW_INT, KW_CHAR, KW_VARCHAR, KW_DOUBLE, KW_BOOLEAN, KW_DATETIME,
         KW_PRIMARY, KW_KEY, KW_UNIQUE, KW_NOT, KW_NULL,
         KW_AND, KW_OR, KW_JOIN, KW_ON, KW_DISTINCT, KW_ORDER, KW_BY, KW_GROUP, KW_HAVING,
+        KW_DATABASE, KW_USE,
         
         // --- 标识符 (Identifiers) ---
         IDENTIFIER,    // 表名、列名等自己取的名字

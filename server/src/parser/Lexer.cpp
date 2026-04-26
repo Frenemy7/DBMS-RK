@@ -9,8 +9,6 @@ namespace Parser {
         tokenize(); 
     }
 
-    Lexer::~Lexer() {}
-
     // 初始化静态关键字映射表
     const std::unordered_map<std::string, TokenType> Lexer::keywordMap = {
         {"SELECT", TokenType::KW_SELECT}, {"FROM", TokenType::KW_FROM},

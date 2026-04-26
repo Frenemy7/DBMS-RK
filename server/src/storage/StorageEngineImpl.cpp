@@ -95,7 +95,10 @@ namespace Storage {
     }
 
     long StorageEngineImpl::getFileSize(const std::string& filePath) {
-        // TODO: 获取整个文件长度
+        if (!fs::exists(filePath)) {
+            return -1;
+        }
+
         std::ifstream ifs(filePath, std::ios::binary | std::ios::ate);
         if (!ifs.is_open()) {
             std::cerr << "错误：无法打开文件获取大小: " << filePath << std::endl;
@@ -112,7 +115,6 @@ namespace Storage {
     }
 
     bool StorageEngineImpl::readRaw(const std::string& filePath, long offset, int size, char* buffer) {
-        // TODO: 使用 std::ifstream 以 std::ios::binary 模式打开文件。一定要用这个std::ios::binary，防止四字节独写问题
         if (offset < 0 || size < 0 || buffer == nullptr) {
             std::cerr << "错误：readRaw 参数非法。" << std::endl;
             return false;
@@ -166,15 +168,6 @@ namespace Storage {
             return false;
         }
 
-        fsStream.seekp(0, std::ios::end);
-        long fileSize = static_cast<long>(fsStream.tellp());
-        if (offset + size > fileSize) {
-            std::cerr << "错误：写入偏移超出文件范围。fileSize=" << fileSize
-                      << ", offset=" << offset
-                      << ", size=" << size << std::endl;
-            return false;
-        }
-
         fsStream.seekp(offset, std::ios::beg);
         if (!fsStream.good()) {
             std::cerr << "错误：seekp 失败。" << std::endl;
@@ -189,7 +182,6 @@ namespace Storage {
 
         fsStream.flush();
         return true;
-        // TODO: 大模型建议是使用 std::fstream 以 std::ios::in | std::ios::out | std::ios::binary 模式打开，跳转到对应的偏移量处进行覆盖读写
         
     }
 
@@ -224,9 +216,7 @@ namespace Storage {
 
         ofs.flush();
         return offset;
-        // TODO: 大模型建议使用 std::ofstream 以 std::ios::app | std::ios::binary 模式打开。
-        // 在写入之前，先获取当前的末尾偏移量offset，随后写入数据
-        // 写入完成后，将这个偏移量 return 给上层执行器。这个offset将传入bpt用于构建B+树。注意：offset是写入前的偏移量！
+        
         
     }
 

@@ -27,10 +27,35 @@ namespace Parser {
         switch (firstToken.type) {
             case TokenType::KW_DROP: // DROP
                 return parseDropTableStatement();
+                
             case TokenType::KW_CREATE: // CREATE
+                // 核心分流：偷看下一个词元，决定是建表还是建库
+                if (currentTokenIndex + 1 < tokens.size()) {
+                    std::string nextVal = tokens[currentTokenIndex + 1].value;
+                    if (tokens[currentTokenIndex + 1].type == TokenType::KW_DATABASE || nextVal == "DATABASE" || nextVal == "database") {
+                        return parseCreateDatabaseStatement();
+                    }
+                }
+                // 默认走建表逻辑
                 return parseCreateTableStatement();
-            // 后续在此处扩展 INSERT, SELECT, UPDATE, DELETE 的路由分支
+                
+            case TokenType::KW_USE: // USE
+                return parseUseDatabaseStatement();
+                
+            case TokenType::KW_INSERT: // INSERT
+                return parseInsertStatement();
+
+            case TokenType::KW_SELECT: // SELECT
+                return parseSelectStatement();
+
+            //case TokenType::KW_DELETE: // DELETE
+                //return parseDeleteStatement();
             default:
+                // 防御性兜底：如果 Lexer 把 USE 当成了普通标识符
+                if (firstToken.type == TokenType::IDENTIFIER && (firstToken.value == "USE" || firstToken.value == "use")) {
+                    return parseUseDatabaseStatement();
+                }
+                
                 throw std::runtime_error("Syntax Error: Unsupported SQL statement starting with '" + 
                                          firstToken.value + "' at position " + std::to_string(firstToken.column));
         }
@@ -113,7 +138,17 @@ namespace Parser {
                 if (typeToken.type == TokenType::KW_INT || 
                     typeToken.type == TokenType::KW_CHAR || 
                     typeToken.type == TokenType::KW_VARCHAR) {
+                    
                     col.type = typeToken.value; // 保存类型名称
+                    
+                    // 探查并吞噬数据类型后面的参数，比如 VARCHAR(20)
+                    if (check(TokenType::SYM_LPAREN)) {
+                        match(TokenType::SYM_LPAREN); // 吞掉 '('
+                        const Token& paramToken = match(TokenType::NUMBER_LITERAL); // 拿到数字 '20'
+                        col.param = std::stoi(paramToken.value); // 强转成整数存入结构体
+                        match(TokenType::SYM_RPAREN); // 吞掉 ')'
+                    }
+                    
                 } else {
                     throw std::runtime_error("Syntax Error: Invalid or missing data type for column '" + 
                                              col.name + "' at position " + std::to_string(typeToken.column));
@@ -280,5 +315,76 @@ namespace Parser {
 
         throw std::runtime_error("Syntax Error: Unexpected token in expression: " + token.value);
     }
+
+    std::unique_ptr<ASTNode> SQLParserImpl::parseCreateDatabaseStatement() {
+        match(TokenType::KW_CREATE); // 吞掉 CREATE
+        
+        // 兼容 Lexer 的识别结果
+        if (check(TokenType::KW_DATABASE)) {
+            consume();
+        } else {
+            match(TokenType::IDENTIFIER); // 兜底：吞掉 "DATABASE" 字符串
+        }
+
+        const Token& dbNameToken = match(TokenType::IDENTIFIER);
+        
+        // 可选的分号收尾
+        if (check(TokenType::SYM_SEMICOLON)) {
+            consume();
+        }
+
+        auto node = std::make_unique<CreateDatabaseASTNode>();
+        node->dbName = dbNameToken.value;
+        return node;
+    }
+
+    std::unique_ptr<ASTNode> SQLParserImpl::parseUseDatabaseStatement() {
+        // 兼容 Lexer
+        if (check(TokenType::KW_USE)) {
+            consume();
+        } else {
+            match(TokenType::IDENTIFIER); // 兜底：吞掉 "USE"
+        }
+
+        // 兼容用户写 "USE DATABASE test;" 或者直接写 "USE test;"
+        if (check(TokenType::KW_DATABASE)) {
+            consume();
+        } else if (check(TokenType::IDENTIFIER) && (peek().value == "DATABASE" || peek().value == "database")) {
+            consume();
+        }
+
+        const Token& dbNameToken = match(TokenType::IDENTIFIER);
+        
+        if (check(TokenType::SYM_SEMICOLON)) {
+            consume();
+        }
+
+        auto node = std::make_unique<UseDatabaseASTNode>();
+        node->dbName = dbNameToken.value;
+        return node;
+    }
+
+    /* std::unique_ptr<ASTNode> SQLParserImpl::parseDeleteStatement() {
+        match(TokenType::KW_DELETE); // 吞掉 DELETE
+        match(TokenType::KW_FROM);   // 吞掉 FROM
+        
+        auto node = std::make_unique<DeleteASTNode>();
+        
+        // 提取表名
+        node->tableName = match(TokenType::IDENTIFIER).value;
+
+        // 提取可选的 WHERE 子句
+        if (check(TokenType::KW_WHERE)) {
+            match(TokenType::KW_WHERE);
+            node->whereExpressionTree = parseExpression();
+        }
+
+        // 匹配末尾分号
+        if (check(TokenType::SYM_SEMICOLON)) {
+            match(TokenType::SYM_SEMICOLON);
+        }
+
+        return node;
+    }*/ // 删库还在测试中
 
 } // namespace Parser
