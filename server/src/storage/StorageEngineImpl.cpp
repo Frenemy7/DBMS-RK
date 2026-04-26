@@ -95,7 +95,10 @@ namespace Storage {
     }
 
     long StorageEngineImpl::getFileSize(const std::string& filePath) {
-        // TODO: 获取整个文件长度
+        if (!fs::exists(filePath)) {
+            return -1;
+        }
+
         std::ifstream ifs(filePath, std::ios::binary | std::ios::ate);
         if (!ifs.is_open()) {
             std::cerr << "错误：无法打开文件获取大小: " << filePath << std::endl;
@@ -165,15 +168,6 @@ namespace Storage {
             return false;
         }
 
-        fsStream.seekp(0, std::ios::end);
-        long fileSize = static_cast<long>(fsStream.tellp());
-        if (offset + size > fileSize) {
-            std::cerr << "错误：写入偏移超出文件范围。fileSize=" << fileSize
-                      << ", offset=" << offset
-                      << ", size=" << size << std::endl;
-            return false;
-        }
-
         fsStream.seekp(offset, std::ios::beg);
         if (!fsStream.good()) {
             std::cerr << "错误：seekp 失败。" << std::endl;
@@ -188,7 +182,6 @@ namespace Storage {
 
         fsStream.flush();
         return true;
-        // TODO: 大模型建议是使用 std::fstream 以 std::ios::in | std::ios::out | std::ios::binary 模式打开，跳转到对应的偏移量处进行覆盖读写
         
     }
 
