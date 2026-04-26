@@ -6,6 +6,7 @@
 #include "../../include/storage/IStorageEngine.h"
 #include "../../include/integrity/IIntegrityManager.h"
 #include "../../include/parser/ASTNode.h"
+#include "../../include/parser/DeleteASTNode.h"
 #include <memory>
 #include <string>
 

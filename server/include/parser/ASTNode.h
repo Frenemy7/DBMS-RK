@@ -113,12 +113,6 @@ namespace Parser {
         std::string dbName; // 要切换到的数据库名称
     };
 
-    class DeleteASTNode : public ASTNode {
-    public:
-        SQLType getType() const override { return SQLType::DELETE_; }
-        std::string tableName;
-        std::unique_ptr<ASTNode> whereExpressionTree; // WHERE 后的条件树
-    };
 } // namespace Parser
 
 #endif // AST_NODE_H

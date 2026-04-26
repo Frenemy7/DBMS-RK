@@ -10,6 +10,7 @@
 using namespace std;
 
 int main() {
+    SetConsoleOutputCP(CP_UTF8);
     cout << "=========================================" << endl;
     cout << "        RuankoDBMS 命令行 MVP 版启动       " << endl;
     cout << "=========================================" << endl;

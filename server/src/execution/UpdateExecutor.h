@@ -4,20 +4,25 @@
 #include "../../include/execution/IExecutor.h"
 #include "../../include/catalog/ICatalogManager.h"
 #include "../../include/storage/IStorageEngine.h"
+#include "../../include/integrity/IIntegrityManager.h"
 #include "../../include/parser/ASTNode.h"
+#include "../../include/parser/UpdateASTNode.h"
+#include <memory>
 
 namespace Execution {
 
     class UpdateExecutor : public IExecutor {
     private:
-        Parser::ASTNode* astNode;
+        std::unique_ptr<Parser::UpdateASTNode> astNode;
         Catalog::ICatalogManager* catalog;
         Storage::IStorageEngine* storage;
+        Integrity::IIntegrityManager* integrity;
 
     public:
-        UpdateExecutor(Parser::ASTNode* astNode, 
+        UpdateExecutor(std::unique_ptr<Parser::UpdateASTNode> astNode, 
                        Catalog::ICatalogManager* catalog, 
-                       Storage::IStorageEngine* storage);
+                       Storage::IStorageEngine* storage,
+                       Integrity::IIntegrityManager* integrity);
         
         ~UpdateExecutor() override;
         bool execute() override;
