@@ -736,9 +736,22 @@ namespace Parser {
         consume();
         auto node = std::make_unique<GrantRevokeASTNode>();
         node->mode = mode;
-        // 角色名: ADMIN 或 USER
-        node->role = match(TokenType::IDENTIFIER).value;
-        node->username = match(TokenType::IDENTIFIER).value;
+
+        if (mode == "GRANT") {
+            // GRANT <role> <user>;
+            node->role = match(TokenType::IDENTIFIER).value;
+            node->username = match(TokenType::IDENTIFIER).value;
+        } else {
+            // REVOKE [role FROM] <user>;  或 REVOKE <user>;
+            if (currentTokenIndex + 1 < (int)tokens.size() &&
+                tokens[currentTokenIndex + 1].type == TokenType::KW_FROM) {
+                node->role = match(TokenType::IDENTIFIER).value;
+                match(TokenType::KW_FROM);
+            } else {
+                node->role = "";
+            }
+            node->username = match(TokenType::IDENTIFIER).value;
+        }
         if (check(TokenType::SYM_SEMICOLON)) consume();
         return node;
     }
