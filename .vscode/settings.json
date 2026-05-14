@@ -1,8 +1,0 @@
-{
-    "cmake.configureSettings": {
-        "CMAKE_PREFIX_PATH": "C:/Qt/6.8.2/mingw_64",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
-    },
-    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json",
-    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
-}
