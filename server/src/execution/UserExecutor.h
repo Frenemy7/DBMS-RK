@@ -2,8 +2,9 @@
 #define USER_EXECUTOR_H
 
 #include "../../include/execution/IExecutor.h"
-#include "../../include/security/ISecurityManager.h"
 #include <string>
+
+namespace Security { class ISecurityManager; }
 
 namespace Execution {
 

@@ -1,5 +1,6 @@
 #include "SelectExecutor.h"
 #include "QueryBuilder.h"
+#include "../index/IndexManagerImpl.h"
 #include "operators/SeqScanOperator.h"
 #include "operators/FilterOperator.h"
 #include "operators/ProjectOperator.h"
@@ -31,8 +32,17 @@ namespace Execution {
 
 SelectExecutor::SelectExecutor(std::unique_ptr<Parser::SelectASTNode> ast,
                                Catalog::ICatalogManager* catalog,
-                               Storage::IStorageEngine* storage)
-    : astNode(std::move(ast)), catalogManager(catalog), storageEngine(storage) {}
+                               Storage::IStorageEngine* storage,
+                               Index::IIndexManager* index)
+    : astNode(std::move(ast)), catalogManager(catalog), storageEngine(storage), indexManager_(index) {}
+
+Index::IIndexManager* SelectExecutor::indexManager() {
+    if (indexManager_) return indexManager_;
+    if (!ownedIndexManager_) {
+        ownedIndexManager_ = std::make_unique<Index::IndexManagerImpl>(storageEngine);
+    }
+    return ownedIndexManager_.get();
+}
 
 bool SelectExecutor::execute() {
     if (!astNode || !catalogManager || !storageEngine) {
@@ -41,7 +51,14 @@ bool SelectExecutor::execute() {
     }
 
     // 1. 从 FROM/JOIN 构建底层算子
-    std::unique_ptr<IOperator> rootOp = buildTableSource(astNode->fromSource.get(), catalogManager, storageEngine);
+    Index::IIndexManager* manager = indexManager();
+
+    std::unique_ptr<IOperator> rootOp = buildTableSource(
+        astNode->fromSource.get(),
+        catalogManager,
+        storageEngine,
+        manager,
+        astNode->whereExpressionTree.get());
     if (!rootOp) {
         std::cerr << "Error: 无法解析 FROM 子句。" << std::endl;
         return false;
@@ -87,7 +104,7 @@ bool SelectExecutor::execute() {
         if (!rootOp->init()) return false;
         auto inSchema = rootOp->getOutputSchema();
 
-        rootOp = buildTableSource(astNode->fromSource.get(), catalogManager, storageEngine);
+        rootOp = buildTableSource(astNode->fromSource.get(), catalogManager, storageEngine, manager, astNode->whereExpressionTree.get());
         if (astNode->whereExpressionTree) {
             auto f = std::make_unique<FilterOperator>(std::move(rootOp), astNode->whereExpressionTree.get());
             f->setSubqueryContext(catalogManager, storageEngine);
@@ -124,7 +141,7 @@ bool SelectExecutor::execute() {
         if (!rootOp->init()) return false;
         auto inSchema = rootOp->getOutputSchema();
 
-        rootOp = buildTableSource(astNode->fromSource.get(), catalogManager, storageEngine);
+        rootOp = buildTableSource(astNode->fromSource.get(), catalogManager, storageEngine, manager, astNode->whereExpressionTree.get());
         if (astNode->whereExpressionTree) {
             auto f = std::make_unique<FilterOperator>(std::move(rootOp), astNode->whereExpressionTree.get());
             f->setSubqueryContext(catalogManager, storageEngine);

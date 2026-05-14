@@ -5,6 +5,7 @@
 #include "../../include/catalog/ICatalogManager.h"
 #include "../../include/storage/IStorageEngine.h"
 #include "../../include/integrity/IIntegrityManager.h"
+#include "../../include/index/IIndexManager.h"
 #include "../../include/parser/InsertASTNode.h" 
 #include <memory>
 #include <vector>
@@ -18,6 +19,10 @@ namespace Execution {
         Catalog::ICatalogManager* catalogManager;
         Storage::IStorageEngine* storageEngine;
         Integrity::IIntegrityManager* integrityManager;
+        Index::IIndexManager* indexManager_;
+        std::unique_ptr<Index::IIndexManager> ownedIndexManager_;
+
+        Index::IIndexManager* indexManager();
 
         // 单行插入（INSERT VALUES 和 INSERT SELECT 共用）
         bool insertSingleRow(const std::string& tableName,
@@ -28,7 +33,8 @@ namespace Execution {
         InsertExecutor(std::unique_ptr<Parser::InsertASTNode> ast,
                        Catalog::ICatalogManager* catalog,
                        Storage::IStorageEngine* storage,
-                       Integrity::IIntegrityManager* integrity);
+                       Integrity::IIntegrityManager* integrity,
+                       Index::IIndexManager* index = nullptr);
 
         ~InsertExecutor() override = default;
 

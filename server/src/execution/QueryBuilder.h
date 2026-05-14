@@ -9,13 +9,16 @@
 
 namespace Catalog { class ICatalogManager; }
 namespace Storage { class IStorageEngine; }
+namespace Index { class IIndexManager; }
 namespace Meta { struct FieldBlock; }
 
 namespace Execution {
 
 std::unique_ptr<IOperator> buildTableSource(Parser::ASTNode* source,
                                              Catalog::ICatalogManager* catalog,
-                                             Storage::IStorageEngine* storage);
+                                             Storage::IStorageEngine* storage,
+                                             Index::IIndexManager* index = nullptr,
+                                             Parser::ASTNode* where = nullptr);
 
 // outerRow/outerSchema/outerAlias: 关联子查询的外部上下文（可为 nullptr）
 std::vector<std::vector<std::string>> runSubquery(Parser::ASTNode* subqueryRoot,

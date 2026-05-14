@@ -1,5 +1,7 @@
 #include "InsertExecutor.h"
 #include "QueryBuilder.h"
+#include "IndexMaintenance.h"
+#include "../index/IndexManagerImpl.h"
 #include "../../include/parser/ASTNode.h"
 #include "../../include/parser/SelectASTNode.h"
 #include <iostream>
@@ -14,9 +16,18 @@ namespace Execution {
     InsertExecutor::InsertExecutor(std::unique_ptr<Parser::InsertASTNode> ast,
                                    Catalog::ICatalogManager* catalog,
                                    Storage::IStorageEngine* storage,
-                                   Integrity::IIntegrityManager* integrity)
+                                   Integrity::IIntegrityManager* integrity,
+                                   Index::IIndexManager* index)
         : astNode(std::move(ast)), catalogManager(catalog), 
-          storageEngine(storage), integrityManager(integrity) {}
+          storageEngine(storage), integrityManager(integrity), indexManager_(index) {}
+
+    Index::IIndexManager* InsertExecutor::indexManager() {
+        if (indexManager_) return indexManager_;
+        if (!ownedIndexManager_) {
+            ownedIndexManager_ = std::make_unique<Index::IndexManagerImpl>(storageEngine);
+        }
+        return ownedIndexManager_.get();
+    }
 
     bool InsertExecutor::execute() {
         if (!astNode || !catalogManager || !storageEngine || !integrityManager) {
@@ -185,6 +196,7 @@ namespace Execution {
         // 开辟连续的二进制缓冲区
         char* buffer = new char[totalRecordSize];
         std::memset(buffer, 0, totalRecordSize); 
+        std::vector<std::string> rowValues(fields.size());
 
         // 将字符串强制转换为二进制并写入 Buffer
         int currentOffset = 0;
@@ -202,6 +214,7 @@ namespace Execution {
                     if (enrichedCols[j] == field.name) { rawValue = enrichedValues[j]; hasValue = true; break; }
                 }
             }
+            rowValues[i] = hasValue ? rawValue : "";
             
             if (field.type == static_cast<int>(Common::DataType::INTEGER)) {
                 if (hasValue && !rawValue.empty()) {
@@ -259,8 +272,20 @@ namespace Execution {
         }
 
         // Storage 追加写入 .trd 文件
+        rowValues = IndexMaintenance::decodeRecord(
+            buffer,
+            fields,
+            IndexMaintenance::calcFieldOffsets(fields));
+
         Meta::TableBlock tableMeta = catalogManager->getTableMeta(tableName);
         std::string trdPath = "data/" + catalogManager->getCurrentDatabase() + "/" + std::string(tableMeta.trd);
+
+        Index::IIndexManager* manager = indexManager();
+        if (manager && !IndexMaintenance::validateUniqueIndexes(tableName, catalogManager, manager, rowValues)) {
+            delete[] buffer;
+            std::cerr << "Error: insert violates unique index." << std::endl;
+            return false;
+        }
         
         long writeResult = storageEngine->appendRaw(trdPath, totalRecordSize, buffer);
         
@@ -273,6 +298,12 @@ namespace Execution {
 
         tableMeta.record_num += 1;
         catalogManager->updateTableMeta(tableName, tableMeta);
+
+        if (manager && !IndexMaintenance::insertRowIndexes(tableName, catalogManager, manager, rowValues, writeResult)) {
+            std::cerr << "Error: index maintenance failed after insert." << std::endl;
+            IndexMaintenance::rebuildTableIndexes(tableName, catalogManager, storageEngine, manager);
+            return false;
+        }
 
         std::cout << "Query OK. 1 row affected." << std::endl;
         return true;

@@ -1,6 +1,8 @@
 #include "UpdateExecutor.h"
 #include "operators/SeqScanOperator.h"
 #include "operators/FilterOperator.h"
+#include "IndexMaintenance.h"
+#include "../index/IndexManagerImpl.h"
 #include "../../include/common/Constants.h"
 #include <iostream>
 #include <fstream>
@@ -15,10 +17,19 @@ namespace Execution {
     UpdateExecutor::UpdateExecutor(std::unique_ptr<Parser::UpdateASTNode> ast,
                                    Catalog::ICatalogManager* cat,
                                    Storage::IStorageEngine* stor,
-                                   Integrity::IIntegrityManager* integ)
-        : astNode(std::move(ast)), catalog(cat), storage(stor), integrity(integ) {}
+                                   Integrity::IIntegrityManager* integ,
+                                   Index::IIndexManager* index)
+        : astNode(std::move(ast)), catalog(cat), storage(stor), integrity(integ), indexManager_(index) {}
 
     UpdateExecutor::~UpdateExecutor() {}
+
+    Index::IIndexManager* UpdateExecutor::indexManager() {
+        if (indexManager_) return indexManager_;
+        if (!ownedIndexManager_) {
+            ownedIndexManager_ = std::make_unique<Index::IndexManagerImpl>(storage);
+        }
+        return ownedIndexManager_.get();
+    }
 
     int UpdateExecutor::findCol(const std::string& name,
                                  const std::vector<Meta::FieldBlock>& schema) {
@@ -127,6 +138,8 @@ namespace Execution {
 
         int rowCount = fileSize / rowSize;
         int affected = 0;
+        std::vector<std::vector<std::string>> finalRows;
+        finalRows.reserve(rowCount);
 
         // 对每行：解码 → 判断 WHERE → 计算 SET → 编码回写
         for (int r = 0; r < rowCount; ++r) {
@@ -201,9 +214,48 @@ namespace Execution {
         }
 
         if (affected > 0) {
+            finalRows.clear();
+            finalRows.reserve(rowCount);
+            for (int r = 0; r < rowCount; ++r) {
+                char* recordPtr = buffer.data() + r * rowSize;
+                std::vector<std::string> row(fields.size());
+                for (size_t i = 0; i < fields.size(); ++i) {
+                    const char* src = recordPtr + offsets[i];
+                    int sz = calcFieldSize(fields[i]);
+                    if (fields[i].type == static_cast<int>(Common::DataType::INTEGER)) {
+                        int v; std::memcpy(&v, src, sizeof(int)); row[i] = std::to_string(v);
+                    } else if (fields[i].type == static_cast<int>(Common::DataType::DOUBLE)) {
+                        double v; std::memcpy(&v, src, sizeof(double)); row[i] = std::to_string(v);
+                    } else if (fields[i].type == static_cast<int>(Common::DataType::VARCHAR)) {
+                        row[i] = std::string(src, strnlen(src, sz));
+                    } else if (fields[i].type == static_cast<int>(Common::DataType::BOOL)) {
+                        int v; std::memcpy(&v, src, sizeof(int)); row[i] = v ? "TRUE" : "FALSE";
+                    } else if (fields[i].type == static_cast<int>(Common::DataType::DATETIME)) {
+                        SYSTEMTIME st; std::memcpy(&st, src, sizeof(st));
+                        char buf[64]; std::sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d",
+                                                   st.wYear, st.wMonth, st.wDay,
+                                                   st.wHour, st.wMinute, st.wSecond);
+                        row[i] = buf;
+                    }
+                }
+                finalRows.push_back(row);
+            }
+
+            Index::IIndexManager* manager = indexManager();
+            if (manager && !IndexMaintenance::canRebuildTableIndexesFromRows(
+                    tableName, catalog, storage, manager, finalRows)) {
+                std::cerr << "Error: update violates unique index." << std::endl;
+                return false;
+            }
+
             std::ofstream out(trdPath, std::ios::binary | std::ios::trunc);
             out.write(buffer.data(), fileSize);
             out.close();
+
+            if (manager && !IndexMaintenance::rebuildTableIndexes(tableName, catalog, storage, manager)) {
+                std::cerr << "Error: index rebuild failed after update." << std::endl;
+                return false;
+            }
         }
 
         std::cout << "Query OK. " << affected << " rows affected." << std::endl;

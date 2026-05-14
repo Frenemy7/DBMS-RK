@@ -1,6 +1,8 @@
 #include "DeleteExecutor.h"
 #include "operators/SeqScanOperator.h"
 #include "operators/FilterOperator.h"
+#include "IndexMaintenance.h"
+#include "../index/IndexManagerImpl.h"
 #include "../../include/common/Constants.h"
 #include <iostream>
 #include <set>
@@ -13,9 +15,18 @@ namespace Execution {
     DeleteExecutor::DeleteExecutor(std::unique_ptr<Parser::DeleteASTNode> ast,
                                    Catalog::ICatalogManager* catalog,
                                    Storage::IStorageEngine* storage,
-                                   Integrity::IIntegrityManager* integrity)
+                                   Integrity::IIntegrityManager* integrity,
+                                   Index::IIndexManager* index)
         : astNode_(std::move(ast)), catalogManager_(catalog), 
-          storageEngine_(storage), integrityManager_(integrity) {}
+          storageEngine_(storage), integrityManager_(integrity), indexManager_(index) {}
+
+    Index::IIndexManager* DeleteExecutor::indexManager() {
+        if (indexManager_) return indexManager_;
+        if (!ownedIndexManager_) {
+            ownedIndexManager_ = std::make_unique<Index::IndexManagerImpl>(storageEngine_);
+        }
+        return ownedIndexManager_.get();
+    }
 
     bool DeleteExecutor::execute() {
         if (!astNode_) return false;
@@ -157,6 +168,12 @@ namespace Execution {
 
         delete[] oldBuffer;
         delete[] newBuffer;
+
+        Index::IIndexManager* manager = indexManager();
+        if (manager && !IndexMaintenance::rebuildTableIndexes(tableName, catalogManager_, storageEngine_, manager)) {
+            std::cerr << "Error: index rebuild failed after delete." << std::endl;
+            return false;
+        }
 
         std::cout << "Query OK. " << deletedCount << " rows affected." << std::endl;
         return true;

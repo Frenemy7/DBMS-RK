@@ -2,9 +2,10 @@
 #define BACKUP_RESTORE_EXECUTOR_H
 
 #include "../../include/execution/IExecutor.h"
-#include "../../include/maintenance/IDatabaseMaintenance.h"
 #include "../../include/catalog/ICatalogManager.h"
 #include <string>
+
+namespace Maintenance { class IDatabaseMaintenance; }
 
 namespace Execution {
 

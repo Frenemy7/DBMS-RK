@@ -11,11 +11,13 @@
 #include "CreateDatabaseExecutor.h"
 #include "DropDatabaseExecutor.h"
 #include "UseDatabaseExecutor.h"
+#include "IndexExecutor.h"
 #include "../../include/parser/CreateTableASTNode.h"
 #include "../../include/parser/InsertASTNode.h"
 #include "../../include/parser/SelectASTNode.h"
 #include "../../include/parser/DeleteASTNode.h"
 #include "../../include/parser/UpdateASTNode.h"
+#include "../../include/parser/IndexASTNode.h"
 
 #include <stdexcept>
 
@@ -27,7 +29,8 @@ namespace Execution {
         Storage::IStorageEngine* storage,
         Integrity::IIntegrityManager* integrity,
         Maintenance::IDatabaseMaintenance* maintenance,
-        Security::ISecurityManager* security)
+        Security::ISecurityManager* security,
+        Index::IIndexManager* index)
     {
         if (!ast) {
             return nullptr;
@@ -64,7 +67,8 @@ namespace Execution {
                     std::unique_ptr<Parser::InsertASTNode>(static_cast<Parser::InsertASTNode*>(ast.release())), 
                     catalog, 
                     storage,
-                    integrity
+                    integrity,
+                    index
                 );
 
             // DQL: 查询数据 (采用流水线/火山模型架构)
@@ -72,7 +76,24 @@ namespace Execution {
                 return std::make_unique<SelectExecutor>(
                     std::unique_ptr<Parser::SelectASTNode>(static_cast<Parser::SelectASTNode*>(ast.release())), 
                     catalog, 
-                    storage
+                    storage,
+                    index
+                );
+
+            case Parser::SQLType::CREATE_INDEX:
+                return std::make_unique<CreateIndexExecutor>(
+                    std::unique_ptr<Parser::CreateIndexASTNode>(static_cast<Parser::CreateIndexASTNode*>(ast.release())),
+                    catalog,
+                    storage,
+                    index
+                );
+
+            case Parser::SQLType::DROP_INDEX:
+                return std::make_unique<DropIndexExecutor>(
+                    std::unique_ptr<Parser::DropIndexASTNode>(static_cast<Parser::DropIndexASTNode*>(ast.release())),
+                    catalog,
+                    storage,
+                    index
                 );
 
             // 数据库管理：建库
@@ -137,7 +158,8 @@ namespace Execution {
                     std::unique_ptr<Parser::DeleteASTNode>(static_cast<Parser::DeleteASTNode*>(ast.release())), 
                     catalog,
                     storage,
-                    integrity
+                    integrity,
+                    index
                 );
 
             case Parser::SQLType::UPDATE:
@@ -145,7 +167,8 @@ namespace Execution {
                     std::unique_ptr<Parser::UpdateASTNode>(static_cast<Parser::UpdateASTNode*>(ast.release())), 
                     catalog,
                     storage,
-                    integrity
+                    integrity,
+                    index
                 );
 
             default:
