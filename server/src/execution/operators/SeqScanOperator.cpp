@@ -19,9 +19,13 @@ namespace Execution {
     bool SeqScanOperator::init() {
         if (!catalog->hasTable(tableName)) return false;
 
+        // 重置状态，防止重复 init 时累积
+        recordSize = 0;
+        if (buffer) { delete[] buffer; buffer = nullptr; }
+
         Meta::TableBlock tableMeta = catalog->getTableMeta(tableName);
         fields = catalog->getFields(tableName);
-        
+
         std::sort(fields.begin(), fields.end(), [](const Meta::FieldBlock& a, const Meta::FieldBlock& b) {
             return a.order < b.order;
         });
@@ -33,18 +37,22 @@ namespace Execution {
             } else if (field.type == static_cast<int>(Common::DataType::VARCHAR)) {
                 int size = (field.param > 0) ? field.param : Common::MAX_PATH_LEN;
                 recordSize += ((size + 3) / 4) * 4;
+            } else if (field.type == static_cast<int>(Common::DataType::DOUBLE)) {
+                recordSize += 8;
+            } else if (field.type == static_cast<int>(Common::DataType::DATETIME)) {
+                recordSize += ((sizeof(SYSTEMTIME) + 3) / 4) * 4;
             }
         }
 
         // 把整个 .trd 文件读进内存
         std::string trdPath = "data/" + catalog->getCurrentDatabase() + "/" + std::string(tableMeta.trd);
         fileSize = storage->getFileSize(trdPath);
-        
+
         if (fileSize > 0) {
             buffer = new char[fileSize];
             storage->readRaw(trdPath, 0, fileSize, buffer);
         }
-        
+
         currentOffset = 0;
         return true;
     }
@@ -69,7 +77,10 @@ namespace Execution {
             } else if (field.type == static_cast<int>(Common::DataType::VARCHAR)) {
                 int size = (field.param > 0) ? field.param : Common::MAX_PATH_LEN;
                 int alignedSize = ((size + 3) / 4) * 4;
-                row.push_back(std::string(currentPtr)); 
+                // 用 strnlen 安全截断，不依赖 \0 位置
+                size_t strLen = 0;
+                while (strLen < (size_t)size && currentPtr[strLen] != '\0') ++strLen;
+                row.push_back(std::string(currentPtr, strLen));
                 fieldOffset += alignedSize;
             } else if (field.type == static_cast<int>(Common::DataType::DOUBLE)) {
                 double val;

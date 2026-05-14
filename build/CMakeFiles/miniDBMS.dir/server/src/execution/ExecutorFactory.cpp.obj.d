@@ -409,17 +409,28 @@ CMakeFiles/miniDBMS.dir/server/src/execution/ExecutorFactory.cpp.obj: \
  E:/Environment/mingw64/x86_64-w64-mingw32/include/imm.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/storage/IStorageEngine.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/integrity/IIntegrityManager.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/maintenance/IDatabaseMaintenance.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/security/ISecurityManager.h \
+ E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\AlterTableExecutor.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/meta/TableMeta.h \
+ E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\BackupRestoreExecutor.h \
+ E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\UserExecutor.h \
  E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\CreateExecutor.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/parser/CreateTableASTNode.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/parser/ASTNode.h \
  E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\InsertExecutor.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/parser/InsertASTNode.h \
  E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\SelectExecutor.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/execution/IOperator.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/meta/TableMeta.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/parser/SelectASTNode.h \
  E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\DeleteExecutor.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/parser/DeleteASTNode.h \
+ E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\DropTableExecutor.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/parser/DropTableASTNode.h \
  E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\UpdateExecutor.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/parser/UpdateASTNode.h \
  E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\CreateDatabaseExecutor.h \
+ E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\DropDatabaseExecutor.h \
  E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\UseDatabaseExecutor.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/stdexcept

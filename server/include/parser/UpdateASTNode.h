@@ -7,10 +7,10 @@
 
 namespace Parser {
 
-    // 封装 SET 子句中的 字段=值 键值对
+    // 封装 SET 子句中的 字段=表达式 键值对
     struct SetClause {
-        std::string field;
-        std::string newValue;
+        std::string field;           // 字段名
+        std::unique_ptr<ASTNode> valueExpr;      // 值表达式（支持字面量/列引用/算术/子查询）
     };
 
     class UpdateASTNode : public ASTNode {

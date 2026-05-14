@@ -13,6 +13,18 @@
 },
 {
   "directory": "E:/C++/Code_cpp/Database/miniDBMS/build",
+  "command": "E:\\Environment\\mingw64\\bin\\g++.exe  @CMakeFiles/miniDBMS.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\miniDBMS.dir\\server\\src\\execution\\AlterTableExecutor.cpp.obj -c E:\\C++\\Code_cpp\\Database\\miniDBMS\\server\\src\\execution\\AlterTableExecutor.cpp",
+  "file": "E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/AlterTableExecutor.cpp",
+  "output": "CMakeFiles/miniDBMS.dir/server/src/execution/AlterTableExecutor.cpp.obj"
+},
+{
+  "directory": "E:/C++/Code_cpp/Database/miniDBMS/build",
+  "command": "E:\\Environment\\mingw64\\bin\\g++.exe  @CMakeFiles/miniDBMS.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\miniDBMS.dir\\server\\src\\execution\\BackupRestoreExecutor.cpp.obj -c E:\\C++\\Code_cpp\\Database\\miniDBMS\\server\\src\\execution\\BackupRestoreExecutor.cpp",
+  "file": "E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/BackupRestoreExecutor.cpp",
+  "output": "CMakeFiles/miniDBMS.dir/server/src/execution/BackupRestoreExecutor.cpp.obj"
+},
+{
+  "directory": "E:/C++/Code_cpp/Database/miniDBMS/build",
   "command": "E:\\Environment\\mingw64\\bin\\g++.exe  @CMakeFiles/miniDBMS.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\miniDBMS.dir\\server\\src\\execution\\CreateDatabaseExecutor.cpp.obj -c E:\\C++\\Code_cpp\\Database\\miniDBMS\\server\\src\\execution\\CreateDatabaseExecutor.cpp",
   "file": "E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/CreateDatabaseExecutor.cpp",
   "output": "CMakeFiles/miniDBMS.dir/server/src/execution/CreateDatabaseExecutor.cpp.obj"
@@ -31,6 +43,18 @@
 },
 {
   "directory": "E:/C++/Code_cpp/Database/miniDBMS/build",
+  "command": "E:\\Environment\\mingw64\\bin\\g++.exe  @CMakeFiles/miniDBMS.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\miniDBMS.dir\\server\\src\\execution\\DropDatabaseExecutor.cpp.obj -c E:\\C++\\Code_cpp\\Database\\miniDBMS\\server\\src\\execution\\DropDatabaseExecutor.cpp",
+  "file": "E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/DropDatabaseExecutor.cpp",
+  "output": "CMakeFiles/miniDBMS.dir/server/src/execution/DropDatabaseExecutor.cpp.obj"
+},
+{
+  "directory": "E:/C++/Code_cpp/Database/miniDBMS/build",
+  "command": "E:\\Environment\\mingw64\\bin\\g++.exe  @CMakeFiles/miniDBMS.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\miniDBMS.dir\\server\\src\\execution\\DropTableExecutor.cpp.obj -c E:\\C++\\Code_cpp\\Database\\miniDBMS\\server\\src\\execution\\DropTableExecutor.cpp",
+  "file": "E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/DropTableExecutor.cpp",
+  "output": "CMakeFiles/miniDBMS.dir/server/src/execution/DropTableExecutor.cpp.obj"
+},
+{
+  "directory": "E:/C++/Code_cpp/Database/miniDBMS/build",
   "command": "E:\\Environment\\mingw64\\bin\\g++.exe  @CMakeFiles/miniDBMS.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\miniDBMS.dir\\server\\src\\execution\\ExecutorFactory.cpp.obj -c E:\\C++\\Code_cpp\\Database\\miniDBMS\\server\\src\\execution\\ExecutorFactory.cpp",
   "file": "E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/ExecutorFactory.cpp",
   "output": "CMakeFiles/miniDBMS.dir/server/src/execution/ExecutorFactory.cpp.obj"
@@ -40,6 +64,12 @@
   "command": "E:\\Environment\\mingw64\\bin\\g++.exe  @CMakeFiles/miniDBMS.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\miniDBMS.dir\\server\\src\\execution\\InsertExecutor.cpp.obj -c E:\\C++\\Code_cpp\\Database\\miniDBMS\\server\\src\\execution\\InsertExecutor.cpp",
   "file": "E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/InsertExecutor.cpp",
   "output": "CMakeFiles/miniDBMS.dir/server/src/execution/InsertExecutor.cpp.obj"
+},
+{
+  "directory": "E:/C++/Code_cpp/Database/miniDBMS/build",
+  "command": "E:\\Environment\\mingw64\\bin\\g++.exe  @CMakeFiles/miniDBMS.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\miniDBMS.dir\\server\\src\\execution\\QueryBuilder.cpp.obj -c E:\\C++\\Code_cpp\\Database\\miniDBMS\\server\\src\\execution\\QueryBuilder.cpp",
+  "file": "E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/QueryBuilder.cpp",
+  "output": "CMakeFiles/miniDBMS.dir/server/src/execution/QueryBuilder.cpp.obj"
 },
 {
   "directory": "E:/C++/Code_cpp/Database/miniDBMS/build",
@@ -61,9 +91,27 @@
 },
 {
   "directory": "E:/C++/Code_cpp/Database/miniDBMS/build",
+  "command": "E:\\Environment\\mingw64\\bin\\g++.exe  @CMakeFiles/miniDBMS.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\miniDBMS.dir\\server\\src\\execution\\UserExecutor.cpp.obj -c E:\\C++\\Code_cpp\\Database\\miniDBMS\\server\\src\\execution\\UserExecutor.cpp",
+  "file": "E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/UserExecutor.cpp",
+  "output": "CMakeFiles/miniDBMS.dir/server/src/execution/UserExecutor.cpp.obj"
+},
+{
+  "directory": "E:/C++/Code_cpp/Database/miniDBMS/build",
+  "command": "E:\\Environment\\mingw64\\bin\\g++.exe  @CMakeFiles/miniDBMS.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\miniDBMS.dir\\server\\src\\execution\\operators\\AggregateOperator.cpp.obj -c E:\\C++\\Code_cpp\\Database\\miniDBMS\\server\\src\\execution\\operators\\AggregateOperator.cpp",
+  "file": "E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/operators/AggregateOperator.cpp",
+  "output": "CMakeFiles/miniDBMS.dir/server/src/execution/operators/AggregateOperator.cpp.obj"
+},
+{
+  "directory": "E:/C++/Code_cpp/Database/miniDBMS/build",
   "command": "E:\\Environment\\mingw64\\bin\\g++.exe  @CMakeFiles/miniDBMS.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\miniDBMS.dir\\server\\src\\execution\\operators\\FilterOperator.cpp.obj -c E:\\C++\\Code_cpp\\Database\\miniDBMS\\server\\src\\execution\\operators\\FilterOperator.cpp",
   "file": "E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/operators/FilterOperator.cpp",
   "output": "CMakeFiles/miniDBMS.dir/server/src/execution/operators/FilterOperator.cpp.obj"
+},
+{
+  "directory": "E:/C++/Code_cpp/Database/miniDBMS/build",
+  "command": "E:\\Environment\\mingw64\\bin\\g++.exe  @CMakeFiles/miniDBMS.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\miniDBMS.dir\\server\\src\\execution\\operators\\JoinOperator.cpp.obj -c E:\\C++\\Code_cpp\\Database\\miniDBMS\\server\\src\\execution\\operators\\JoinOperator.cpp",
+  "file": "E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/operators/JoinOperator.cpp",
+  "output": "CMakeFiles/miniDBMS.dir/server/src/execution/operators/JoinOperator.cpp.obj"
 },
 {
   "directory": "E:/C++/Code_cpp/Database/miniDBMS/build",
@@ -79,9 +127,21 @@
 },
 {
   "directory": "E:/C++/Code_cpp/Database/miniDBMS/build",
+  "command": "E:\\Environment\\mingw64\\bin\\g++.exe  @CMakeFiles/miniDBMS.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\miniDBMS.dir\\server\\src\\execution\\operators\\SortOperator.cpp.obj -c E:\\C++\\Code_cpp\\Database\\miniDBMS\\server\\src\\execution\\operators\\SortOperator.cpp",
+  "file": "E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/operators/SortOperator.cpp",
+  "output": "CMakeFiles/miniDBMS.dir/server/src/execution/operators/SortOperator.cpp.obj"
+},
+{
+  "directory": "E:/C++/Code_cpp/Database/miniDBMS/build",
   "command": "E:\\Environment\\mingw64\\bin\\g++.exe  @CMakeFiles/miniDBMS.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\miniDBMS.dir\\server\\src\\integrity\\IntegrityManagerImpl.cpp.obj -c E:\\C++\\Code_cpp\\Database\\miniDBMS\\server\\src\\integrity\\IntegrityManagerImpl.cpp",
   "file": "E:/C++/Code_cpp/Database/miniDBMS/server/src/integrity/IntegrityManagerImpl.cpp",
   "output": "CMakeFiles/miniDBMS.dir/server/src/integrity/IntegrityManagerImpl.cpp.obj"
+},
+{
+  "directory": "E:/C++/Code_cpp/Database/miniDBMS/build",
+  "command": "E:\\Environment\\mingw64\\bin\\g++.exe  @CMakeFiles/miniDBMS.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\miniDBMS.dir\\server\\src\\maintenance\\DatabaseMaintenanceImpl.cpp.obj -c E:\\C++\\Code_cpp\\Database\\miniDBMS\\server\\src\\maintenance\\DatabaseMaintenanceImpl.cpp",
+  "file": "E:/C++/Code_cpp/Database/miniDBMS/server/src/maintenance/DatabaseMaintenanceImpl.cpp",
+  "output": "CMakeFiles/miniDBMS.dir/server/src/maintenance/DatabaseMaintenanceImpl.cpp.obj"
 },
 {
   "directory": "E:/C++/Code_cpp/Database/miniDBMS/build",
@@ -94,6 +154,12 @@
   "command": "E:\\Environment\\mingw64\\bin\\g++.exe  @CMakeFiles/miniDBMS.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\miniDBMS.dir\\server\\src\\parser\\SQLParserImpl.cpp.obj -c E:\\C++\\Code_cpp\\Database\\miniDBMS\\server\\src\\parser\\SQLParserImpl.cpp",
   "file": "E:/C++/Code_cpp/Database/miniDBMS/server/src/parser/SQLParserImpl.cpp",
   "output": "CMakeFiles/miniDBMS.dir/server/src/parser/SQLParserImpl.cpp.obj"
+},
+{
+  "directory": "E:/C++/Code_cpp/Database/miniDBMS/build",
+  "command": "E:\\Environment\\mingw64\\bin\\g++.exe  @CMakeFiles/miniDBMS.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\miniDBMS.dir\\server\\src\\security\\SecurityManagerImpl.cpp.obj -c E:\\C++\\Code_cpp\\Database\\miniDBMS\\server\\src\\security\\SecurityManagerImpl.cpp",
+  "file": "E:/C++/Code_cpp/Database/miniDBMS/server/src/security/SecurityManagerImpl.cpp",
+  "output": "CMakeFiles/miniDBMS.dir/server/src/security/SecurityManagerImpl.cpp.obj"
 },
 {
   "directory": "E:/C++/Code_cpp/Database/miniDBMS/build",

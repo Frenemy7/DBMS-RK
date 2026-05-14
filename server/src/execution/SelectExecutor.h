@@ -2,6 +2,7 @@
 #define SELECT_EXECUTOR_H
 
 #include "../../include/execution/IExecutor.h"
+#include "../../include/execution/IOperator.h"
 #include "../../include/catalog/ICatalogManager.h"
 #include "../../include/storage/IStorageEngine.h"
 #include "../../include/parser/SelectASTNode.h"
@@ -28,5 +29,4 @@ namespace Execution {
     };
 
 }
-
 #endif // SELECT_EXECUTOR_H

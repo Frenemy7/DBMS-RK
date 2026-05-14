@@ -2,6 +2,7 @@
 #define SQL_PARSER_IMPL_H
 
 #include "../../include/parser/ISQLParser.h"
+#include "../../include/parser/SelectASTNode.h"
 #include "Lexer.h"
 #include <vector>
 #include <memory>
@@ -10,51 +11,58 @@ namespace Parser {
 
     class SQLParserImpl : public ISQLParser {
     private:
-        std::vector<Token> tokens; // 由 Lexer 生成的词元数组
-        int currentTokenIndex; // 核心游标：当前正在处理的 Token 下标
+        std::vector<Token> tokens;
+        int currentTokenIndex;
 
-        // 游标控制机制
-        bool isAtEnd() const; // 探查是否到达 Token 数组末尾 (EOF)
-        const Token& peek() const; // 探查当前游标指向的 Token（不移动游标）
-        const Token& previous() const; // 获取游标刚刚跨过的上一个 Token
-        const Token& consume(); // 吞噬当前 Token，并将游标后移一步
-        
-        // 校验函数：匹配当前单词是否是期望的单词，否则直接抛出语法异常
-        const Token& match(TokenType expected); 
-        bool check(TokenType type) const; // 仅检查当前 Token 类型，不抛异常也不移动游标
+        bool isAtEnd() const;
+        const Token& peek() const;
+        const Token& previous() const;
+        const Token& consume();
+        const Token& match(TokenType expected);
+        bool check(TokenType type) const;
 
-        // 具体的语法分支解析函数
-        // 将不同类型 SQL 的解析逻辑拆分，严格遵循单一职责原则
-        // 数据库操纵
-        std::unique_ptr<ASTNode> parseCreateDatabaseStatement(); // 3.2.1 建立数据库
-        std::unique_ptr<ASTNode> parseDropDatabaseStatement(); // 3.2.2 删除数据库
-        std::unique_ptr<ASTNode> parseUseDatabaseStatement(); // 3.12.3 切换库
-        // 建表删表
-        std::unique_ptr<ASTNode> parseCreateTableStatement(); // 3.3.1 建表
-        std::unique_ptr<ASTNode> parseDropTableStatement(); // 3.3.3 删表
-        // 增删改查
-        std::unique_ptr<ASTNode> parseInsertStatement(); // 3.5.1 插入
-        std::unique_ptr<ASTNode> parseUpdateStatement(); // 3.5.2 更新
-        std::unique_ptr<ASTNode> parseSelectStatement(); // 3.5.3 筛选
-        std::unique_ptr<ASTNode> parseDeleteStatement(); // 3.5.4 删除
+        // DDL
+        std::unique_ptr<ASTNode> parseCreateDatabaseStatement();
+        std::unique_ptr<ASTNode> parseDropDatabaseStatement();
+        std::unique_ptr<ASTNode> parseBackupDatabaseStatement();
+        std::unique_ptr<ASTNode> parseRestoreDatabaseStatement();
+        std::unique_ptr<ASTNode> parseCreateUserStatement();
+        std::unique_ptr<ASTNode> parseDropUserStatement();
+        std::unique_ptr<ASTNode> parseGrantRevokeStatement();
+        std::unique_ptr<ASTNode> parseUseDatabaseStatement();
+        std::unique_ptr<ASTNode> parseCreateTableStatement();
+        std::unique_ptr<ASTNode> parseDropTableStatement();
+        std::unique_ptr<ASTNode> parseAlterTableStatement();
 
-        // === 核心：表达式与条件解析 (用于 WHERE 子句) ===
-        // 采用递归下降法处理运算符优先级
+        // DML
+        std::unique_ptr<ASTNode> parseInsertStatement();
+        std::unique_ptr<ASTNode> parseUpdateStatement();
+        std::unique_ptr<ASTNode> parseSelectStatement();
+        std::unique_ptr<ASTNode> parseDeleteStatement();
+
+        // SELECT helpers
+        std::unique_ptr<ASTNode> parseSelectItem();
+        std::unique_ptr<ASTNode> parseTableSource();
+        std::unique_ptr<ASTNode> parseTableRef();
+        OrderByItem parseOrderByItem();
+
+        // Expression parsers (precedence climbing)
         std::unique_ptr<ASTNode> parseExpression();
-        std::unique_ptr<ASTNode> parseEquality();   // 处理 = , !=
-        std::unique_ptr<ASTNode> parseComparison(); // 处理 > , < , >= , <=
-        std::unique_ptr<ASTNode> parsePrimary();    // 处理最小单元：列名、数字、字符串
-
+        std::unique_ptr<ASTNode> parseOr();
+        std::unique_ptr<ASTNode> parseAnd();
+        std::unique_ptr<ASTNode> parseNot();
+        std::unique_ptr<ASTNode> parseAddSub();
+        std::unique_ptr<ASTNode> parseMulDiv();
+        std::unique_ptr<ASTNode> parseComparison();
+        std::unique_ptr<ASTNode> parsePrimary();
+        std::unique_ptr<ASTNode> parseFunctionCall();
 
     public:
         SQLParserImpl();
         ~SQLParserImpl() override = default;
-
-        // 顶层入口：接收纯文本 SQL，返回所有权独占的 AST 根节点智能指针
         std::unique_ptr<ASTNode> parse(const std::string& sql) override;
     };
 
 } // namespace Parser
 
 #endif // SQL_PARSER_IMPL_H
-

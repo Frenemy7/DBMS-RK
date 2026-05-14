@@ -5,6 +5,8 @@
 #include "src/parser/SQLParserImpl.h"
 #include "src/execution/ExecutorFactory.h"
 #include "src/integrity/IntegrityManagerImpl.h"
+#include "src/maintenance/DatabaseMaintenanceImpl.h"
+#include "src/security/SecurityManagerImpl.h"
 
 
 using namespace std;
@@ -19,6 +21,8 @@ int main() {
     Storage::StorageEngineImpl storageEngine;
     Catalog::CatalogManagerImpl catalogManager(&storageEngine);
     Integrity::IntegrityManagerImpl integrityManager(&catalogManager, &storageEngine);
+    Maintenance::DatabaseMaintenanceImpl maintenance;
+    Security::SecurityManagerImpl security;
 
     // 系统初始化：自动在硬盘创建 data 文件夹和 ruanko.db
     if (!catalogManager.initSystem()) {
@@ -51,24 +55,32 @@ int main() {
         }
         if (sqlInput.empty()) continue;
 
-        try {
-            // 第一关：大脑翻译（文本 -> AST 树）
-            auto astTree = parser.parse(sqlInput);
-            if (!astTree) continue;
+        // 支持一行多语句，按分号分割
+        std::string remaining = sqlInput;
+        while (!remaining.empty()) {
+            // 跳过前导空格
+            size_t start = 0;
+            while (start < remaining.size() && isspace(remaining[start])) start++;
+            if (start >= remaining.size()) break;
+            remaining = remaining.substr(start);
 
-            // 第二关：中枢分配（AST 树 -> 执行器）
-            auto executor = Execution::ExecutorFactory::createExecutor(
-                std::move(astTree), &catalogManager, &storageEngine, &integrityManager
-            );
+            // 查找分号位置
+            size_t semi = remaining.find(';');
+            if (semi == std::string::npos) break;
+            std::string singleSql = remaining.substr(0, semi + 1);
 
-            // 第三关：手脚落盘（执行底层的读写逻辑）
-            if (executor) {
-                executor->execute();
+            try {
+                auto astTree = parser.parse(singleSql);
+                if (astTree) {
+                    auto executor = Execution::ExecutorFactory::createExecutor(
+                        std::move(astTree), &catalogManager, &storageEngine, &integrityManager, &maintenance, &security
+                    );
+                    if (executor) executor->execute();
+                }
+            } catch (const std::exception& e) {
+                cerr << "[错误] " << e.what() << endl;
             }
-
-        } catch (const std::exception& e) {
-            // 捕获 Parser 的语法错误或 Executor 的运行时错误，并友善地打印给用户
-            cerr << "[错误] " << e.what() << endl;
+            remaining = remaining.substr(semi + 1);
         }
     }
 

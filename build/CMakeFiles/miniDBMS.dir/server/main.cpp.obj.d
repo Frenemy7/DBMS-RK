@@ -446,6 +446,7 @@ CMakeFiles/miniDBMS.dir/server/main.cpp.obj: \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/backward/auto_ptr.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/pstl/glue_memory_defs.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/pstl/execution_defs.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/parser/SelectASTNode.h \
  E:\C++\Code_cpp\Database\miniDBMS\server\src/parser/Lexer.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/parser/Token.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/unordered_map \
@@ -459,8 +460,14 @@ CMakeFiles/miniDBMS.dir/server/main.cpp.obj: \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/catalog/ICatalogManager.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/storage/IStorageEngine.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/integrity/IIntegrityManager.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/maintenance/IDatabaseMaintenance.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/security/ISecurityManager.h \
  E:\C++\Code_cpp\Database\miniDBMS\server\src/integrity/IntegrityManagerImpl.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/integrity/IIntegrityManager.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/catalog/ICatalogManager.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/meta/TableMeta.h \
- E:/C++/Code_cpp/Database/miniDBMS/server/include/storage/IStorageEngine.h
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/storage/IStorageEngine.h \
+ E:\C++\Code_cpp\Database\miniDBMS\server\src/maintenance/DatabaseMaintenanceImpl.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/maintenance/IDatabaseMaintenance.h \
+ E:\C++\Code_cpp\Database\miniDBMS\server\src/security/SecurityManagerImpl.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/security/ISecurityManager.h

@@ -19,6 +19,11 @@ namespace Execution {
         Storage::IStorageEngine* storageEngine;
         Integrity::IIntegrityManager* integrityManager;
 
+        // 单行插入（INSERT VALUES 和 INSERT SELECT 共用）
+        bool insertSingleRow(const std::string& tableName,
+                             const std::vector<std::string>& insertValues,
+                             const std::vector<std::string>& insertCols);
+
     public:
         InsertExecutor(std::unique_ptr<Parser::InsertASTNode> ast,
                        Catalog::ICatalogManager* catalog,

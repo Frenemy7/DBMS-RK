@@ -1,0 +1,116 @@
+=== Table 1 ===
+字段名 | 字段类型 | 约束条件 | 字段含义说明
+sno | Varchar2（8） | Primary key | 学号
+sname | Varchar2(8) | Not null | 姓名
+ssex | Varchar2(2) | ‘男’或’女’ | 性别
+sbirthday | date |  | 出生日期
+classno | Varchar2(6) | Foreign key | 班级号
+Totalcredit | Smallint | 初值为0 | 已选修的总学分
+
+=== Table 2 ===
+字段名 | 字段类型 | 约束条件 | 字段含义说明
+classno | Varchar2(6) | Primary key | 班级号
+classname | Varchar(20) | Not null | 班级名称
+classmajor | Varchar2(20) |  | 所属专业
+classdept | Varchar2(20) |  | 所属系别
+studentnumber | smallint | [20..40] | 学生数
+
+=== Table 3 ===
+字段名 | 字段类型 | 约束条件 | 字段含义说明
+cno | Varchar2 (6) | Primary key | 课程号
+cname | Varchar(30) | Not null | 课程名称
+ccredit | smallint | [1..4] | 学分
+
+=== Table 4 ===
+字段名 | 字段类型 | 约束条件 | 字段含义说明
+sno | varchar (8) | Foreign key | 学号
+cno | varchar (6) | Foreign key | 课程号
+grade | integer | [0..100] | 成绩
+
+=== Table 5 ===
+字段名 | 字段类型 | 约束条件 | 字段含义说明
+tno | Number(6) | Primary key | 教师号
+tname | Varchar2(8) | Not null | 教师姓名
+tsex | Varchar2(2) | ‘男’或’女’ | 性别
+tbirthday | date |  | 出生日期
+ttitle | Varchar2(20) |  | 职称
+
+=== Table 6 ===
+字段名 | 字段类型 | 约束条件 | 字段含义说明
+tno | Number(6) | Foreign key | 教师号
+cno | Varchar (6) | Foreign key | 课程号
+language | Varchar2 (10) | Chinese, Bilingual, English | 授课语言
+
+=== Table 7 ===
+sno | sname | ssex | sbirthday | classno
+08300010 | 李在 | 男 | 1991-10-1 | Rj0801
+08300012 | 葛畅 | 男 | 1990-8-8 | Rj0801
+08300015 | 刘晶 | 女 | 1990-5-22 | Rj0801
+08300020 | 杨敏 | 女 | 1989-1-8 | Rj0801
+08300030 | 胡贤斌 | 男 | 1990-10-8 | Rj0801
+08300048 | 赵鸿泽 | 男 | 1989-6-6 | Rj0802
+08300050 | 王威 | 男 | 1990-6-10 | Rj0802
+08300067 | 赵玮 | 女 | 1990-8-21 | Rj0803
+08300075 | 王娜娜 | 女 | 1991-9-23 | Rj0803
+08300088 | 秦键 | 男 | 1989-3-1 | Rj0803
+08300100 | 田邦仪 | 女 | 1990-2-26 | Rj0804
+08300148 | 赵心砚 | 男 | 1991-4-25 | Rj0805
+08300150 | 杨青 | 女 | 1989-11-15 | Rj0805
+08300160 | 杨玲玲 | 女 | 1990-12-12 | Rj0806
+
+=== Table 8 ===
+classno | classname | Classs-major | classdept | studentnumber
+Rj0801 | 软件0801 | 软件工程 | 软件开发 | 24
+Rj0802 | 软件0802 | 软件工程 | 软件开发 | 26
+Rj0803 | 软件0803 | 软件工程 | 数字媒体 | 25
+Rj0804 | 软件0804 | 软件工程 | 软件开发 | 25
+Rj0805 | 软件0805 | 软件工程 | 数字媒体 | 24
+Rj0806 | 软件0806 | 软件工程 | 软件开发 | 24
+
+=== Table 9 ===
+Cno | cname | credit
+800001 | 计算机基础 | 4
+800002 | 程序设计语言 | 4
+800003 | 数据结构 | 4
+810011 | 数据库系统 | 4
+810013 | 计算机网络 | 3
+810015 | 微机原理与应用 | 4
+
+=== Table 10 ===
+Sno | cno | grade
+08300012 | 800003 | 88
+08300015 | 800003 | 
+08300020 | 800003 | 91
+08300030 | 800003 | 78
+08300048 | 800003 | 95
+08300100 | 810011 | 67
+08300148 | 810011 | 58
+08300150 | 810011 | 89
+08300160 | 810011 | 71
+
+=== Table 11 ===
+Tno | tname | tsex | tbirthday | ttitle
+000001 | 李英 | 女 | 1975-11-3 | 讲师
+000002 | 王大山 | 男 | 1969-3-2 | 副教授
+000003 | 张朋 | 男 | 1970-2-13 | 讲师
+000004 | 陈为军 | 男 | 1985-8-14 | 助教
+000005 | 宋浩然 | 男 | 1976-4-23 | 讲师
+000006 | 许红霞 | 女 | 1966-2-12 | 副教授
+000007 | 徐永军 | 男 | 1962-1-24 | 教授
+000008 | 李桂菁 | 女 | 1960-12-15 | 教授
+000009 | 王一凡 | 女 | 1974-12-8 | 讲师
+000010 | 田峰 | 男 | 1988-1-18 | 助教
+
+=== Table 12 ===
+Cno | tno | Language
+800001 | 000001 | English
+800002 | 000002 | Chinese
+800003 | 000002 | Bilingual
+810011 | 000003 | Chinese
+810013 | 000004 | English
+800001 | 000005 | Chinese
+800002 | 000006 | Chinese
+800003 | 000007 | English
+810011 | 000007 | English
+810013 | 000008 | Bilingual
+

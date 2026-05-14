@@ -17,15 +17,38 @@ namespace Parser {
         {"INTO", TokenType::KW_INTO}, {"VALUES", TokenType::KW_VALUES},
         {"UPDATE", TokenType::KW_UPDATE}, {"SET", TokenType::KW_SET},
         {"DELETE", TokenType::KW_DELETE}, {"DROP", TokenType::KW_DROP},
+        {"ALTER", TokenType::KW_ALTER}, {"ADD", TokenType::KW_ADD},
+        {"MODIFY", TokenType::KW_MODIFY}, {"COLUMN", TokenType::KW_COLUMN},
+        {"USER", TokenType::KW_USER}, {"IDENTIFIED", TokenType::KW_IDENTIFIED},
+        {"GRANT", TokenType::KW_GRANT}, {"REVOKE", TokenType::KW_REVOKE},
+        {"BACKUP", TokenType::KW_BACKUP}, {"RESTORE", TokenType::KW_RESTORE},
+        {"TO", TokenType::KW_TO},
         {"JOIN", TokenType::KW_JOIN}, {"ON", TokenType::KW_ON},
         {"INT", TokenType::KW_INT}, {"CHAR", TokenType::KW_CHAR},
         {"VARCHAR", TokenType::KW_VARCHAR}, {"PRIMARY", TokenType::KW_PRIMARY},
         {"KEY", TokenType::KW_KEY}, {"NOT", TokenType::KW_NOT},
         {"NULL", TokenType::KW_NULL}, {"UNIQUE", TokenType::KW_UNIQUE},
+        {"DEFAULT", TokenType::KW_DEFAULT},
+        {"CHECK", TokenType::KW_CHECK}, {"IDENTITY", TokenType::KW_IDENTITY},
         {"AND", TokenType::KW_AND}, {"OR", TokenType::KW_OR},
         {"DISTINCT", TokenType::KW_DISTINCT}, {"ORDER", TokenType::KW_ORDER},
         {"BY", TokenType::KW_BY}, {"GROUP", TokenType::KW_GROUP},
-        {"HAVING", TokenType::KW_HAVING}
+        {"HAVING", TokenType::KW_HAVING},
+        {"DATETIME", TokenType::KW_DATETIME},
+        {"DOUBLE", TokenType::KW_DOUBLE},
+        {"DATABASE", TokenType::KW_DATABASE},
+        {"USE", TokenType::KW_USE},
+        {"LEFT", TokenType::KW_LEFT}, {"RIGHT", TokenType::KW_RIGHT},
+        {"INNER", TokenType::KW_INNER}, {"FULL", TokenType::KW_FULL},
+        {"CROSS", TokenType::KW_CROSS}, {"AS", TokenType::KW_AS},
+        {"ASC", TokenType::KW_ASC}, {"DESC", TokenType::KW_DESC},
+        {"IN", TokenType::KW_IN}, {"EXISTS", TokenType::KW_EXISTS},
+        {"ANY", TokenType::KW_ANY}, {"ALL", TokenType::KW_ALL},
+        {"LIKE", TokenType::KW_LIKE}, {"IS", TokenType::KW_IS},
+        {"BETWEEN", TokenType::KW_BETWEEN},
+        {"COUNT", TokenType::KW_COUNT}, {"SUM", TokenType::KW_SUM},
+        {"AVG", TokenType::KW_AVG}, {"MAX", TokenType::KW_MAX},
+        {"MIN", TokenType::KW_MIN}
     };
 
     const std::vector<Token>& Lexer::getTokens() {
@@ -101,7 +124,7 @@ namespace Parser {
         std::string word = "";
 
         // 读取数字字节
-        while (currentPos < sql.length() && isdigit(sql[currentPos])) {
+        while (currentPos < sql.length() && (isdigit(sql[currentPos]) || sql[currentPos] == '.')) {
             word += sql[currentPos++];
         }
         return {TokenType::NUMBER_LITERAL, word, start};
@@ -157,6 +180,10 @@ namespace Parser {
             case '(': return {TokenType::SYM_LPAREN, "(", start};
             case ')': return {TokenType::SYM_RPAREN, ")", start};
             case '*': return {TokenType::SYM_STAR, "*", start};
+            case '.': return {TokenType::SYM_DOT, ".", start};
+            case '+': return {TokenType::SYM_PLUS, "+", start};
+            case '-': return {TokenType::SYM_MINUS, "-", start};
+            case '/': return {TokenType::SYM_SLASH, "/", start};
             case '=': return {TokenType::SYM_EQ, "=", start};
             case '>': return {TokenType::SYM_GT, ">", start};
             case '<': return {TokenType::SYM_LT, "<", start};

@@ -2,7 +2,9 @@
 #include "../../include/parser/DropTableASTNode.h"
 #include "../../include/parser/CreateTableASTNode.h"
 #include "../../include/parser/InsertASTNode.h"
+#include "../../include/parser/UpdateASTNode.h"
 #include "../../include/parser/SelectASTNode.h"
+#include <iostream>
 #include <stdexcept>
 
 namespace Parser {
@@ -11,380 +13,645 @@ namespace Parser {
     SQLParserImpl::SQLParserImpl() : currentTokenIndex(0) {}
 
     std::unique_ptr<ASTNode> SQLParserImpl::parse(const std::string& sql) {
-        // 实例化 Lexer 并进行物理词法切分
         Lexer lexer(sql);
-        
-        // 将切分好的词元流拷贝至 Parser 的核心状态中，游标归零
         tokens = lexer.getTokens();
         currentTokenIndex = 0;
-
-        // 防御性拦截：空语句
         if (isAtEnd()) return nullptr;
-
-        // 探查首个 Token，进行顶层语法分支路由
         const Token& firstToken = peek();
-        
         switch (firstToken.type) {
-            case TokenType::KW_DROP: // DROP
+            case TokenType::KW_DROP:
+                if (currentTokenIndex + 1 < (int)tokens.size()) {
+                    if (tokens[currentTokenIndex + 1].type == TokenType::KW_USER)
+                        return parseDropUserStatement();
+                    if (tokens[currentTokenIndex + 1].type == TokenType::KW_DATABASE)
+                        return parseDropDatabaseStatement();
+                }
                 return parseDropTableStatement();
-                
-            case TokenType::KW_CREATE: // CREATE
-                // 核心分流：偷看下一个词元，决定是建表还是建库
+            case TokenType::KW_CREATE:
                 if (currentTokenIndex + 1 < tokens.size()) {
+                    if (tokens[currentTokenIndex + 1].type == TokenType::KW_USER)
+                        return parseCreateUserStatement();
                     std::string nextVal = tokens[currentTokenIndex + 1].value;
-                    if (tokens[currentTokenIndex + 1].type == TokenType::KW_DATABASE || nextVal == "DATABASE" || nextVal == "database") {
+                    if (tokens[currentTokenIndex + 1].type == TokenType::KW_DATABASE || nextVal == "DATABASE" || nextVal == "database")
                         return parseCreateDatabaseStatement();
-                    }
                 }
-                // 默认走建表逻辑
                 return parseCreateTableStatement();
-                
-            case TokenType::KW_USE: // USE
-                return parseUseDatabaseStatement();
-                
-            case TokenType::KW_INSERT: // INSERT
-                return parseInsertStatement();
-
-            case TokenType::KW_SELECT: // SELECT
-                return parseSelectStatement();
-
-            //case TokenType::KW_DELETE: // DELETE
-                //return parseDeleteStatement();
+            case TokenType::KW_USE: return parseUseDatabaseStatement();
+            case TokenType::KW_GRANT:  return parseGrantRevokeStatement();
+            case TokenType::KW_REVOKE: return parseGrantRevokeStatement();
+            case TokenType::KW_BACKUP: return parseBackupDatabaseStatement();
+            case TokenType::KW_RESTORE:return parseRestoreDatabaseStatement();
+            case TokenType::KW_ALTER:  return parseAlterTableStatement();
+            case TokenType::KW_UPDATE: return parseUpdateStatement();
+            case TokenType::KW_INSERT: return parseInsertStatement();
+            case TokenType::KW_SELECT: return parseSelectStatement();
             default:
-                // 防御性兜底：如果 Lexer 把 USE 当成了普通标识符
-                if (firstToken.type == TokenType::IDENTIFIER && (firstToken.value == "USE" || firstToken.value == "use")) {
+                if (firstToken.type == TokenType::IDENTIFIER && (firstToken.value == "USE" || firstToken.value == "use"))
                     return parseUseDatabaseStatement();
-                }
-                
-                throw std::runtime_error("Syntax Error: Unsupported SQL statement starting with '" + 
+                throw std::runtime_error("Syntax Error: Unsupported SQL statement starting with '" +
                                          firstToken.value + "' at position " + std::to_string(firstToken.column));
         }
     }
 
-    bool SQLParserImpl::isAtEnd() const {
-        return peek().type == TokenType::END_OF_FILE;
-    }
-
-    const Token& SQLParserImpl::peek() const {
-        return tokens[currentTokenIndex];
-    }
-
-    const Token& SQLParserImpl::previous() const {
-        return tokens[currentTokenIndex - 1];
-    }
-
-    const Token& SQLParserImpl::consume() {
-        if (!isAtEnd()) {
-            currentTokenIndex++;
-        }
-        return previous(); // 返回被跨过的那一个 Token
-    }
-
-    bool SQLParserImpl::check(TokenType type) const {
-        if (isAtEnd()) return false;
-        return peek().type == type;
-    }
-
+    bool SQLParserImpl::isAtEnd() const { return peek().type == TokenType::END_OF_FILE; }
+    const Token& SQLParserImpl::peek() const { return tokens[currentTokenIndex]; }
+    const Token& SQLParserImpl::previous() const { return tokens[currentTokenIndex - 1]; }
+    const Token& SQLParserImpl::consume() { if (!isAtEnd()) currentTokenIndex++; return previous(); }
+    bool SQLParserImpl::check(TokenType type) const { if (isAtEnd()) return false; return peek().type == type; }
     const Token& SQLParserImpl::match(TokenType expected) {
-        // 如果当前指针指向的类型与预期一致，吞噬，前进
-        if (check(expected)) {
-            return consume();
-        }
-        
-        // 类型不匹配，立即抛出包含物理坐标的语法错误
-        throw std::runtime_error("Syntax Error: Expected different token near '" + 
+        if (check(expected)) return consume();
+        throw std::runtime_error("Syntax Error: Expected different token near '" +
                                  peek().value + "' at position " + std::to_string(peek().column));
     }
 
-    // DROP 语句解析
+    // ============================================================
+    //  DROP TABLE 语句解析
+    // ============================================================
     std::unique_ptr<ASTNode> SQLParserImpl::parseDropTableStatement() {
-        // 线性严格断言匹配
-        match(TokenType::KW_DROP);
-        match(TokenType::KW_TABLE);
-        
-        // 提取表名 Token，保存其 value 数据
+        match(TokenType::KW_DROP); match(TokenType::KW_TABLE);
         const Token& tableNameToken = match(TokenType::IDENTIFIER);
-        
-        match(TokenType::SYM_SEMICOLON); // 语句必须以分号结束
-
-        // 堆内存分配并挂载数据
+        match(TokenType::SYM_SEMICOLON);
         auto node = std::make_unique<DropTableASTNode>();
         node->tableName = tableNameToken.value;
-        
         return node;
     }
 
-    // CREATE 语句解析
+    // ============================================================
+    //  CREATE TABLE 语句解析
+    // ============================================================
     std::unique_ptr<ASTNode> SQLParserImpl::parseCreateTableStatement() {
-        // 解析头部：CREATE TABLE 表名 (
-        match(TokenType::KW_CREATE);
-        match(TokenType::KW_TABLE);
+        match(TokenType::KW_CREATE); match(TokenType::KW_TABLE);
         const Token& tableNameToken = match(TokenType::IDENTIFIER);
-        match(TokenType::SYM_LPAREN); // 匹配左括号 '('
-
+        match(TokenType::SYM_LPAREN);
         auto node = std::make_unique<CreateTableASTNode>();
         node->tableName = tableNameToken.value;
-
-        // 解析列定义：(列名 类型 [约束], ...)
         if (!check(TokenType::SYM_RPAREN)) {
             do {
                 ColumnDefinition col;
-                
-                // 提取列名
                 col.name = match(TokenType::IDENTIFIER).value;
-
-                // 提取列的数据类型
                 const Token& typeToken = consume();
-                if (typeToken.type == TokenType::KW_INT || 
-                    typeToken.type == TokenType::KW_CHAR || 
-                    typeToken.type == TokenType::KW_VARCHAR) {
-                    
-                    col.type = typeToken.value; // 保存类型名称
-                    
-                    // 探查并吞噬数据类型后面的参数，比如 VARCHAR(20)
+                if (typeToken.type == TokenType::KW_INT || typeToken.type == TokenType::KW_CHAR ||
+                    typeToken.type == TokenType::KW_VARCHAR || typeToken.type == TokenType::KW_DOUBLE ||
+                    typeToken.type == TokenType::KW_DATETIME) {
+                    col.type = typeToken.value;
                     if (check(TokenType::SYM_LPAREN)) {
-                        match(TokenType::SYM_LPAREN); // 吞掉 '('
-                        const Token& paramToken = match(TokenType::NUMBER_LITERAL); // 拿到数字 '20'
-                        col.param = std::stoi(paramToken.value); // 强转成整数存入结构体
-                        match(TokenType::SYM_RPAREN); // 吞掉 ')'
+                        match(TokenType::SYM_LPAREN);
+                        col.param = std::stoi(match(TokenType::NUMBER_LITERAL).value);
+                        match(TokenType::SYM_RPAREN);
                     }
-                    
                 } else {
-                    throw std::runtime_error("Syntax Error: Invalid or missing data type for column '" + 
-                                             col.name + "' at position " + std::to_string(typeToken.column));
+                    throw std::runtime_error("Syntax Error: Invalid data type for column '" + col.name + "'");
                 }
-
-                // 提取后续可能的约束 (PRIMARY KEY, NOT NULL, UNIQUE)
-                // 由于约束可能有多个且顺序不固定，采用 while 循环持续探查
-                while (check(TokenType::KW_PRIMARY) || check(TokenType::KW_NOT) || check(TokenType::KW_UNIQUE)) {
+                while (check(TokenType::KW_PRIMARY) || check(TokenType::KW_NOT) || check(TokenType::KW_UNIQUE) || check(TokenType::KW_DEFAULT) || check(TokenType::KW_CHECK) || check(TokenType::KW_IDENTITY)) {
                     if (check(TokenType::KW_PRIMARY)) {
-                        match(TokenType::KW_PRIMARY);
-                        match(TokenType::KW_KEY); // PRIMARY 后面必须紧跟 KEY
-                        col.isPrimaryKey = true;
-                    } 
-                    else if (check(TokenType::KW_NOT)) {
-                        match(TokenType::KW_NOT);
-                        match(TokenType::KW_NULL); // NOT 后面必须紧跟 NULL
-                        col.isNotNull = true;
-                    } 
-                    else if (check(TokenType::KW_UNIQUE)) {
-                        match(TokenType::KW_UNIQUE);
-                        col.isUnique = true;
+                        if (col.isPrimaryKey) throw std::runtime_error("Syntax Error: duplicate PRIMARY KEY on '" + col.name + "'");
+                        match(TokenType::KW_PRIMARY); match(TokenType::KW_KEY); col.isPrimaryKey = true;
+                    } else if (check(TokenType::KW_NOT)) {
+                        if (col.isNotNull) throw std::runtime_error("Syntax Error: duplicate NOT NULL on '" + col.name + "'");
+                        match(TokenType::KW_NOT); match(TokenType::KW_NULL); col.isNotNull = true;
+                    } else if (check(TokenType::KW_UNIQUE)) {
+                        if (col.isUnique) throw std::runtime_error("Syntax Error: duplicate UNIQUE on '" + col.name + "'");
+                        match(TokenType::KW_UNIQUE); col.isUnique = true;
+                    } else if (check(TokenType::KW_DEFAULT)) {
+                        if (col.hasDefault) throw std::runtime_error("Syntax Error: duplicate DEFAULT on '" + col.name + "'");
+                        match(TokenType::KW_DEFAULT);
+                        // 默认值：数字字面量或字符串字面量
+                        if (check(TokenType::NUMBER_LITERAL)) {
+                            col.defaultValue = consume().value;
+                        } else if (check(TokenType::STRING_LITERAL)) {
+                            col.defaultValue = consume().value;
+                        } else if (check(TokenType::KW_NULL)) {
+                            consume(); col.defaultValue = "NULL";
+                        } else {
+                            throw std::runtime_error("Syntax Error: DEFAULT 需要字面量默认值");
+                        }
+                        col.hasDefault = true;
+                    } else if (check(TokenType::KW_CHECK)) {
+                        if (col.hasCheck) throw std::runtime_error("Syntax Error: duplicate CHECK on '" + col.name + "'");
+                        match(TokenType::KW_CHECK);
+                        match(TokenType::SYM_LPAREN);
+                        // 将 CHECK 条件提取为纯文本（到匹配的右括号为止）
+                        std::string cond;
+                        int depth = 1;
+                        while (depth > 0 && !isAtEnd()) {
+                            const Token& t = consume();
+                            if (t.type == TokenType::SYM_LPAREN) depth++;
+                            else if (t.type == TokenType::SYM_RPAREN) { depth--; if (depth == 0) break; }
+                            cond += t.value;
+                        }
+                        if (depth > 0) throw std::runtime_error("Syntax Error: CHECK 缺少闭合括号");
+                        col.checkCondition = cond;
+                        col.hasCheck = true;
+                    } else if (check(TokenType::KW_IDENTITY)) {
+                        if (col.isIdentity) throw std::runtime_error("Syntax Error: duplicate IDENTITY on '" + col.name + "'");
+                        match(TokenType::KW_IDENTITY); col.isIdentity = true;
                     }
                 }
-
-                // 将解析完毕的单列定义压入节点数组
                 node->columns.push_back(col);
-
-            // 逗号判决：遇到逗号说明还有下一列，循环继续；否则跳出
-            } while (check(TokenType::SYM_COMMA) && (match(TokenType::SYM_COMMA), true)); 
+            } while (check(TokenType::SYM_COMMA) && (match(TokenType::SYM_COMMA), true));
         }
-
-        // 解析尾部：) ;
-        match(TokenType::SYM_RPAREN); // 匹配右括号 ')'
-        match(TokenType::SYM_SEMICOLON);
-
+        match(TokenType::SYM_RPAREN); match(TokenType::SYM_SEMICOLON);
         return node;
     }
 
-    // 3.5.1 INSERT 语句解析逻辑
-    // INSERT INTO <table_name> (<col1>, <col2>) VALUES (<val1>, <val2>);
-    std::unique_ptr<ASTNode> SQLParserImpl::parseInsertStatement() {
-        match(TokenType::KW_INSERT);
-        match(TokenType::KW_INTO);
-        
-        auto node = std::make_unique<InsertASTNode>();
+    // ============================================================
+    //  ALTER TABLE 语句解析
+    //  ALTER TABLE tablename ADD COLUMN colname type(params);
+    //  ALTER TABLE tablename DROP COLUMN colname;
+    //  ALTER TABLE tablename MODIFY COLUMN colname type(params);
+    // ============================================================
+    std::unique_ptr<ASTNode> SQLParserImpl::parseAlterTableStatement() {
+        match(TokenType::KW_ALTER); match(TokenType::KW_TABLE);
+        auto node = std::make_unique<AlterTableASTNode>();
         node->tableName = match(TokenType::IDENTIFIER).value;
 
-        // 解析列名列表 (可选)
-        if (check(TokenType::SYM_LPAREN)) {
-            match(TokenType::SYM_LPAREN);
-            do {
-                node->columns.push_back(match(TokenType::IDENTIFIER).value);
-            } while (check(TokenType::SYM_COMMA) && (match(TokenType::SYM_COMMA), true));
-            match(TokenType::SYM_RPAREN);
+        // ADD / DROP / MODIFY
+        if (check(TokenType::KW_ADD)) {
+            consume(); node->alterOp = "ADD";
+        } else if (check(TokenType::KW_DROP)) {
+            consume(); node->alterOp = "DROP";
+        } else if (check(TokenType::KW_MODIFY)) {
+            consume(); node->alterOp = "MODIFY";
+        } else {
+            throw std::runtime_error("Syntax Error: ALTER TABLE 需要 ADD、DROP 或 MODIFY。");
         }
 
-        match(TokenType::KW_VALUES);
-        match(TokenType::SYM_LPAREN);
-        // 解析值列表
-        do {
-            const Token& val = peek();
-            if (val.type == TokenType::NUMBER_LITERAL || val.type == TokenType::STRING_LITERAL) {
-                // 直接调用 parsePrimary()，它会自动吞噬字面量并打包成 ASTNode 智能指针返回
-                node->values.push_back(parsePrimary()); 
-            } else {
-                throw std::runtime_error("Syntax Error: Expected literal value in INSERT near '" + val.value + "'");
-            }
-        } while (check(TokenType::SYM_COMMA) && (match(TokenType::SYM_COMMA), true));
-        match(TokenType::SYM_RPAREN);
-        match(TokenType::SYM_SEMICOLON);
+        // 可选的 COLUMN 关键字
+        if (check(TokenType::KW_COLUMN)) consume();
 
+        node->columnName = match(TokenType::IDENTIFIER).value;
+
+        // ADD / MODIFY 需要类型定义
+        if (node->alterOp == "ADD" || node->alterOp == "MODIFY") {
+            const Token& typeToken = consume();
+            if (typeToken.type == TokenType::KW_INT || typeToken.type == TokenType::KW_CHAR ||
+                typeToken.type == TokenType::KW_VARCHAR || typeToken.type == TokenType::KW_DOUBLE ||
+                typeToken.type == TokenType::KW_DATETIME) {
+                node->columnType = typeToken.value;
+                if (check(TokenType::SYM_LPAREN)) {
+                    match(TokenType::SYM_LPAREN);
+                    node->columnParam = std::stoi(match(TokenType::NUMBER_LITERAL).value);
+                    match(TokenType::SYM_RPAREN);
+                }
+            } else {
+                throw std::runtime_error("Syntax Error: ALTER TABLE 需要合法的数据类型。");
+            }
+        }
+
+        match(TokenType::SYM_SEMICOLON);
         return node;
     }
 
-    // 3.5.3 SELECT 语句解析逻辑 (简化版 A 级需求)
-    // SELECT <cols> FROM <table_name> WHERE <condition>;
+    // ============================================================
+    //  UPDATE 语句解析
+    //  UPDATE tablename SET col = expr, ... WHERE condition;
+    // ============================================================
+    std::unique_ptr<ASTNode> SQLParserImpl::parseUpdateStatement() {
+        match(TokenType::KW_UPDATE);
+        auto node = std::make_unique<UpdateASTNode>();
+        node->tableName = match(TokenType::IDENTIFIER).value;
+        match(TokenType::KW_SET);
+        do {
+            SetClause sc;
+            sc.field = match(TokenType::IDENTIFIER).value;
+            match(TokenType::SYM_EQ);
+            sc.valueExpr = parseExpression(); // 支持 grade * 1.05 等表达式
+            node->setValues.push_back(std::move(sc));
+        } while (check(TokenType::SYM_COMMA) && (consume(), true));
+        if (check(TokenType::KW_WHERE)) { consume(); node->whereExpressionTree = parseOr(); }
+        match(TokenType::SYM_SEMICOLON);
+        return node;
+    }
+
+    // ============================================================
+    //  INSERT 语句解析（支持 VALUES 和 SELECT 两种形式）
+    // ============================================================
+    std::unique_ptr<ASTNode> SQLParserImpl::parseInsertStatement() {
+        match(TokenType::KW_INSERT); match(TokenType::KW_INTO);
+        auto node = std::make_unique<InsertASTNode>();
+        node->tableName = match(TokenType::IDENTIFIER).value;
+        if (check(TokenType::SYM_LPAREN)) {
+            match(TokenType::SYM_LPAREN);
+            do { node->columns.push_back(match(TokenType::IDENTIFIER).value); }
+            while (check(TokenType::SYM_COMMA) && (match(TokenType::SYM_COMMA), true));
+            match(TokenType::SYM_RPAREN);
+        }
+        // INSERT ... SELECT ...
+        if (check(TokenType::KW_SELECT)) {
+            node->selectSource = parseSelectStatement();
+            return node;
+        }
+        // INSERT ... VALUES (...)
+        match(TokenType::KW_VALUES); match(TokenType::SYM_LPAREN);
+        do {
+            const Token& val = peek();
+            if (val.type == TokenType::NUMBER_LITERAL || val.type == TokenType::STRING_LITERAL)
+                node->values.push_back(parsePrimary());
+            else throw std::runtime_error("Syntax Error: Expected literal in INSERT near '" + val.value + "'");
+        } while (check(TokenType::SYM_COMMA) && (match(TokenType::SYM_COMMA), true));
+        match(TokenType::SYM_RPAREN); match(TokenType::SYM_SEMICOLON);
+        return node;
+    }
+
+    // ============================================================
+    //  SELECT 语句解析（完整版：JOIN / GROUP BY / HAVING / ORDER BY / 子查询 / 算术）
+    // ============================================================
     std::unique_ptr<ASTNode> SQLParserImpl::parseSelectStatement() {
         match(TokenType::KW_SELECT);
         auto node = std::make_unique<SelectASTNode>();
 
-        // 解析查询字段
+        // DISTINCT
+        if (check(TokenType::KW_DISTINCT)) { consume(); node->isDistinct = true; }
+
+        // 目标列列表
         if (check(TokenType::SYM_STAR)) {
-            consume(); // 吞掉 *
-            // 内部逻辑可以约定空列表代表 *
+            auto col = std::make_unique<ColumnRefNode>(); col->columnName = "*";
+            node->targetFields.push_back(std::move(col)); consume();
         } else {
-            do {
-                node->targetFields.push_back(parseExpression());
-            } while (check(TokenType::SYM_COMMA) && (match(TokenType::SYM_COMMA), true));
+            do { node->targetFields.push_back(parseSelectItem()); }
+            while (check(TokenType::SYM_COMMA) && (consume(), true));
         }
 
+        // FROM 子句（支持 JOIN）
         match(TokenType::KW_FROM);
-    
-        // 物理逻辑：创建一个表节点，用来承载表名
-        auto tableNode = std::make_unique<TableNode>();
-        tableNode->tableName = match(TokenType::IDENTIFIER).value;
-    
-        // 将这个节点移动到 Select 节点的 fromSource 指针中
-        node->fromSource = std::move(tableNode);
+        node->fromSource = parseTableSource();
 
-        // 解析 WHERE 子句
-        if (check(TokenType::KW_WHERE)) {
-            match(TokenType::KW_WHERE);
-            node->whereExpressionTree = parseExpression();
+        // WHERE
+        if (check(TokenType::KW_WHERE)) { consume(); node->whereExpressionTree = parseOr(); }
+
+        // GROUP BY
+        if (check(TokenType::KW_GROUP)) {
+            consume(); match(TokenType::KW_BY);
+            do { node->groupByFields.push_back(parseExpression()); }
+            while (check(TokenType::SYM_COMMA) && (consume(), true));
         }
 
-        match(TokenType::SYM_SEMICOLON);
+        // HAVING
+        if (check(TokenType::KW_HAVING)) { consume(); node->havingExpressionTree = parseOr(); }
+
+        // ORDER BY
+        if (check(TokenType::KW_ORDER)) {
+            consume(); match(TokenType::KW_BY);
+            do { node->orderByItems.push_back(parseOrderByItem()); }
+            while (check(TokenType::SYM_COMMA) && (consume(), true));
+        }
+
+        // 顶层查询需要分号；子查询内部以 ) 结束则跳过
+        if (!check(TokenType::SYM_RPAREN)) match(TokenType::SYM_SEMICOLON);
         return node;
     }
 
-
-    // 核心：表达式解析 (处理条件判断)
-    // 采用优先级梯度：Expression -> Equality (=, !=) -> Comparison (>, <) -> Primary
-    std::unique_ptr<ASTNode> SQLParserImpl::parseExpression() {
-        return parseEquality();
+    // SELECT 列表单项：表达式 [AS] 别名
+    std::unique_ptr<ASTNode> SQLParserImpl::parseSelectItem() {
+        auto expr = parseExpression();
+        if (check(TokenType::KW_AS)) {
+            consume();
+            auto alias = std::make_unique<BinaryOperatorNode>(); alias->op = "AS";
+            alias->left = std::move(expr);
+            auto name = std::make_unique<ColumnRefNode>(); name->columnName = match(TokenType::IDENTIFIER).value;
+            alias->right = std::move(name);
+            return alias;
+        }
+        if (check(TokenType::IDENTIFIER)) {
+            auto alias = std::make_unique<BinaryOperatorNode>(); alias->op = "AS";
+            alias->left = std::move(expr);
+            auto name = std::make_unique<ColumnRefNode>(); name->columnName = consume().value;
+            alias->right = std::move(name);
+            return alias;
+        }
+        return expr;
     }
 
-    std::unique_ptr<ASTNode> SQLParserImpl::parseEquality() {
-        auto left = parseComparison();
-
-        while (check(TokenType::SYM_EQ) || check(TokenType::SYM_NEQ)) {
-            const Token& op = consume();
-            auto right = parseComparison();
-            
-            auto newNode = std::make_unique<BinaryOperatorNode>();
-            newNode->op = op.value;
-            newNode->left = std::move(left);
-            newNode->right = std::move(right);
-            left = std::move(newNode);
+    // 表源：支持 JOIN 链式和逗号隐式 CROSS JOIN
+    std::unique_ptr<ASTNode> SQLParserImpl::parseTableSource() {
+        auto left = parseTableRef();
+        while (true) {
+            std::string joinType;
+            if (check(TokenType::KW_LEFT)) { consume(); match(TokenType::KW_JOIN); joinType = "LEFT"; }
+            else if (check(TokenType::KW_RIGHT)) { consume(); match(TokenType::KW_JOIN); joinType = "RIGHT"; }
+            else if (check(TokenType::KW_INNER)) { consume(); joinType = "INNER"; if (check(TokenType::KW_JOIN)) consume(); }
+            else if (check(TokenType::KW_CROSS)) { consume(); joinType = "CROSS"; if (check(TokenType::KW_JOIN)) consume(); }
+            else if (check(TokenType::KW_FULL)) { consume(); joinType = "FULL"; if (check(TokenType::KW_JOIN)) consume(); }
+            else if (check(TokenType::KW_JOIN)) { consume(); joinType = "INNER"; }
+            else if (check(TokenType::SYM_COMMA)) { consume(); joinType = "CROSS"; }
+            else break;
+            auto join = std::make_unique<JoinNode>();
+            join->left = std::move(left); join->joinType = joinType;
+            join->right = parseTableRef();
+            if (joinType != "CROSS") { match(TokenType::KW_ON); join->onCondition = parseOr(); }
+            left = std::move(join);
         }
         return left;
     }
 
+    // 单个表引用：表名 [别名] 或 (子查询) 别名
+    std::unique_ptr<ASTNode> SQLParserImpl::parseTableRef() {
+        if (check(TokenType::SYM_LPAREN)) {
+            consume();
+            if (check(TokenType::KW_SELECT)) {
+                auto sub = std::make_unique<SubqueryNode>();
+                sub->subquery = parseSelectStatement();
+                match(TokenType::SYM_RPAREN);
+                if (check(TokenType::KW_AS)) consume();
+                std::string alias = match(TokenType::IDENTIFIER).value;
+                auto wrap = std::make_unique<JoinNode>(); wrap->joinType = "SUBQUERY";
+                wrap->left = std::move(sub);
+                auto aliasNode = std::make_unique<TableNode>();
+                aliasNode->tableName = alias; aliasNode->alias = alias;
+                wrap->right = std::move(aliasNode);
+                return wrap;
+            }
+            throw std::runtime_error("Syntax Error: Expected subquery in FROM");
+        }
+        auto table = std::make_unique<TableNode>();
+        table->tableName = match(TokenType::IDENTIFIER).value;
+        if (check(TokenType::KW_AS)) consume();
+        if (check(TokenType::IDENTIFIER)) table->alias = consume().value;
+        return table;
+    }
+
+    // ORDER BY 单项
+    OrderByItem SQLParserImpl::parseOrderByItem() {
+        auto expr = parseExpression(); bool asc = true;
+        if (check(TokenType::KW_ASC)) consume();
+        else if (check(TokenType::KW_DESC)) { consume(); asc = false; }
+        OrderByItem item; item.isAsc = asc;
+        if (auto col = dynamic_cast<ColumnRefNode*>(expr.get())) item.field = col->columnName;
+        return item;
+    }
+
+    // ============================================================
+    //  表达式解析：递归下降 + 运算符优先级
+    //  优先级链：OR → AND → NOT → +,- → *,/ → 比较 → Primary
+    // ============================================================
+    std::unique_ptr<ASTNode> SQLParserImpl::parseExpression() { return parseOr(); }
+
+    std::unique_ptr<ASTNode> SQLParserImpl::parseOr() {
+        auto left = parseAnd();
+        while (check(TokenType::KW_OR)) {
+            auto op = consume(); auto right = parseAnd();
+            auto bin = std::make_unique<BinaryOperatorNode>(); bin->op = op.value;
+            bin->left = std::move(left); bin->right = std::move(right); left = std::move(bin);
+        }
+        return left;
+    }
+
+    std::unique_ptr<ASTNode> SQLParserImpl::parseAnd() {
+        auto left = parseNot();
+        while (check(TokenType::KW_AND)) {
+            auto op = consume(); auto right = parseNot();
+            auto bin = std::make_unique<BinaryOperatorNode>(); bin->op = op.value;
+            bin->left = std::move(left); bin->right = std::move(right); left = std::move(bin);
+        }
+        return left;
+    }
+
+    // NOT 取反
+    std::unique_ptr<ASTNode> SQLParserImpl::parseNot() {
+        if (check(TokenType::KW_NOT)) {
+            consume();
+            auto expr = parseAddSub();
+            auto notNode = std::make_unique<BinaryOperatorNode>(); notNode->op = "NOT";
+            notNode->left = std::move(expr); return notNode;
+        }
+        return parseAddSub();
+    }
+
+    // 加减运算：+ , -
+    std::unique_ptr<ASTNode> SQLParserImpl::parseAddSub() {
+        auto left = parseMulDiv();
+        while (check(TokenType::SYM_PLUS) || check(TokenType::SYM_MINUS)) {
+            auto op = consume(); auto right = parseMulDiv();
+            auto bin = std::make_unique<BinaryOperatorNode>(); bin->op = op.value;
+            bin->left = std::move(left); bin->right = std::move(right); left = std::move(bin);
+        }
+        return left;
+    }
+
+    // 乘除运算：* , /
+    std::unique_ptr<ASTNode> SQLParserImpl::parseMulDiv() {
+        auto left = parseComparison();
+        while (check(TokenType::SYM_STAR) || check(TokenType::SYM_SLASH)) {
+            auto op = consume(); auto right = parseComparison();
+            auto bin = std::make_unique<BinaryOperatorNode>(); bin->op = op.value;
+            bin->left = std::move(left); bin->right = std::move(right); left = std::move(bin);
+        }
+        return left;
+    }
+
+    // 比较运算：= != > < >= <=  LIKE  IS NULL  IN  BETWEEN
     std::unique_ptr<ASTNode> SQLParserImpl::parseComparison() {
         auto left = parsePrimary();
 
-        while (check(TokenType::SYM_GT) || check(TokenType::SYM_GE) || 
-               check(TokenType::SYM_LT) || check(TokenType::SYM_LE)) {
-            const Token& op = consume();
-            auto right = parsePrimary();
-            
-            auto newNode = std::make_unique<BinaryOperatorNode>();
-            newNode->op = op.value;
-            newNode->left = std::move(left);
-            newNode->right = std::move(right);
-            left = std::move(newNode);
+        // 基础比较运算符
+        if (check(TokenType::SYM_EQ) || check(TokenType::SYM_NEQ) || check(TokenType::SYM_GT) ||
+            check(TokenType::SYM_LT) || check(TokenType::SYM_GE) || check(TokenType::SYM_LE)) {
+            auto op = consume(); auto right = parsePrimary();
+            auto bin = std::make_unique<BinaryOperatorNode>(); bin->op = op.value;
+            bin->left = std::move(left); bin->right = std::move(right); return bin;
         }
+
+        // LIKE 模糊匹配
+        if (check(TokenType::KW_LIKE)) {
+            consume();
+            auto bin = std::make_unique<BinaryOperatorNode>(); bin->op = "LIKE";
+            bin->left = std::move(left); bin->right = parsePrimary(); return bin;
+        }
+
+        // IS [NOT] NULL
+        if (check(TokenType::KW_IS)) {
+            consume();
+            bool nn = false; if (check(TokenType::KW_NOT)) { consume(); nn = true; }
+            match(TokenType::KW_NULL);
+            auto n = std::make_unique<IsNullNode>(); n->expr = std::move(left); n->notNull = nn; return n;
+        }
+
+        // [NOT] IN (子查询 | 值列表)
+        if (check(TokenType::KW_IN) || (check(TokenType::KW_NOT) && currentTokenIndex + 1 < (int)tokens.size() && tokens[currentTokenIndex + 1].type == TokenType::KW_IN)) {
+            bool ni = false; if (check(TokenType::KW_NOT)) { consume(); ni = true; }
+            match(TokenType::KW_IN); match(TokenType::SYM_LPAREN);
+            if (check(TokenType::KW_SELECT)) {
+                auto sub = std::make_unique<SubqueryNode>(); sub->subquery = parseSelectStatement(); match(TokenType::SYM_RPAREN);
+                auto bin = std::make_unique<BinaryOperatorNode>(); bin->op = ni ? "NOT IN" : "IN";
+                bin->left = std::move(left); bin->right = std::move(sub); return bin;
+            }
+            auto inList = std::make_unique<InListNode>();
+            do { inList->items.push_back(parsePrimary()); } while (check(TokenType::SYM_COMMA) && (consume(), true));
+            match(TokenType::SYM_RPAREN);
+            auto bin = std::make_unique<BinaryOperatorNode>(); bin->op = ni ? "NOT IN" : "IN";
+            bin->left = std::move(left); bin->right = std::move(inList); return bin;
+        }
+
+        // [NOT] BETWEEN x AND y
+        if (check(TokenType::KW_BETWEEN) || (check(TokenType::KW_NOT) && currentTokenIndex + 1 < (int)tokens.size() && tokens[currentTokenIndex + 1].type == TokenType::KW_BETWEEN)) {
+            bool nb = false; if (check(TokenType::KW_NOT)) { consume(); nb = true; }
+            match(TokenType::KW_BETWEEN); auto low = parsePrimary(); match(TokenType::KW_AND); auto high = parsePrimary();
+            auto between = std::make_unique<BetweenNode>();
+            between->expr = std::move(left); between->low = std::move(low); between->high = std::move(high);
+            if (nb) {
+                auto bin = std::make_unique<BinaryOperatorNode>(); bin->op = "NOT_BETWEEN";
+                bin->left = std::move(between); return bin;
+            }
+            return between;
+        }
+
         return left;
     }
 
+    // 最小单元：字面量、EXISTS、括号表达式/子查询、列引用、函数调用
     std::unique_ptr<ASTNode> SQLParserImpl::parsePrimary() {
         const Token& token = peek();
 
+        // 字面量：数字或字符串
         if (token.type == TokenType::NUMBER_LITERAL || token.type == TokenType::STRING_LITERAL) {
-            auto node = std::make_unique<LiteralNode>();
-            node->value = consume().value;
-            return node;
+            auto node = std::make_unique<LiteralNode>(); node->value = consume().value; return node;
         }
 
-        if (token.type == TokenType::IDENTIFIER) {
-            auto node = std::make_unique<ColumnRefNode>();
-            node->columnName = consume().value;
-            return node;
+        // EXISTS (子查询)
+        if (token.type == TokenType::KW_EXISTS) {
+            consume(); match(TokenType::SYM_LPAREN);
+            auto sub = std::make_unique<SubqueryNode>(); sub->subquery = parseSelectStatement(); match(TokenType::SYM_RPAREN);
+            auto bin = std::make_unique<BinaryOperatorNode>(); bin->op = "EXISTS"; bin->left = std::move(sub); return bin;
+        }
+
+        // 括号：(表达式) 或 (子查询)
+        if (check(TokenType::SYM_LPAREN)) {
+            consume();
+            if (check(TokenType::KW_SELECT)) {
+                auto sub = std::make_unique<SubqueryNode>(); sub->subquery = parseSelectStatement(); match(TokenType::SYM_RPAREN); return sub;
+            }
+            auto expr = parseOr(); match(TokenType::SYM_RPAREN); return expr;
+        }
+
+        // 标识符（点号引用 table.column）、聚合函数（COUNT/SUM/AVG/MAX/MIN）
+        if (token.type == TokenType::IDENTIFIER || token.type == TokenType::KW_COUNT || token.type == TokenType::KW_SUM ||
+            token.type == TokenType::KW_AVG || token.type == TokenType::KW_MAX || token.type == TokenType::KW_MIN) {
+            // 后跟 '(' → 函数调用
+            if (currentTokenIndex + 1 < (int)tokens.size() && tokens[currentTokenIndex + 1].type == TokenType::SYM_LPAREN)
+                return parseFunctionCall();
+
+            std::string name = consume().value;
+
+            // 点号：table.column
+            if (check(TokenType::SYM_DOT)) {
+                consume();
+                std::string cn = check(TokenType::SYM_STAR) ? (consume(), "*") : match(TokenType::IDENTIFIER).value;
+                auto col = std::make_unique<ColumnRefNode>(); col->tableName = name; col->columnName = cn; return col;
+            }
+
+            // 简单列引用
+            auto col = std::make_unique<ColumnRefNode>(); col->columnName = name; return col;
         }
 
         throw std::runtime_error("Syntax Error: Unexpected token in expression: " + token.value);
     }
 
-    std::unique_ptr<ASTNode> SQLParserImpl::parseCreateDatabaseStatement() {
-        match(TokenType::KW_CREATE); // 吞掉 CREATE
-        
-        // 兼容 Lexer 的识别结果
-        if (check(TokenType::KW_DATABASE)) {
-            consume();
-        } else {
-            match(TokenType::IDENTIFIER); // 兜底：吞掉 "DATABASE" 字符串
+    // 函数调用：COUNT(*), SUM(col), AVG(DISTINCT col) 等
+    std::unique_ptr<ASTNode> SQLParserImpl::parseFunctionCall() {
+        auto func = std::make_unique<FunctionCallNode>();
+        func->functionName = consume().value; match(TokenType::SYM_LPAREN);
+        if (check(TokenType::KW_DISTINCT)) { consume(); func->isDistinct = true; }
+        if (check(TokenType::SYM_STAR)) consume(); // COUNT(*)
+        else if (!check(TokenType::SYM_RPAREN)) {
+            do { func->arguments.push_back(parseExpression()); } while (check(TokenType::SYM_COMMA) && (consume(), true));
         }
+        match(TokenType::SYM_RPAREN); return func;
+    }
 
+    // ============================================================
+    //  DROP DATABASE
+    // ============================================================
+    std::unique_ptr<ASTNode> SQLParserImpl::parseDropDatabaseStatement() {
+        match(TokenType::KW_DROP);
+        if (check(TokenType::KW_DATABASE)) consume();
+        else match(TokenType::IDENTIFIER); // 兜底："DATABASE" 被当成标识符
         const Token& dbNameToken = match(TokenType::IDENTIFIER);
-        
-        // 可选的分号收尾
-        if (check(TokenType::SYM_SEMICOLON)) {
-            consume();
-        }
-
-        auto node = std::make_unique<CreateDatabaseASTNode>();
+        if (!check(TokenType::SYM_SEMICOLON) && !isAtEnd())
+            throw std::runtime_error("Syntax Error: Unexpected token near database name");
+        if (check(TokenType::SYM_SEMICOLON)) consume();
+        auto node = std::make_unique<DropDatabaseASTNode>();
         node->dbName = dbNameToken.value;
         return node;
+    }
+
+    // ============================================================
+    //  BACKUP / RESTORE DATABASE
+    // ============================================================
+    std::unique_ptr<ASTNode> SQLParserImpl::parseBackupDatabaseStatement() {
+        match(TokenType::KW_BACKUP);
+        if (check(TokenType::KW_DATABASE)) consume();
+        auto node = std::make_unique<BackupDatabaseASTNode>();
+        node->dbName = match(TokenType::IDENTIFIER).value;
+        if (check(TokenType::KW_TO)) consume();
+        node->path = match(TokenType::STRING_LITERAL).value;
+        if (check(TokenType::SYM_SEMICOLON)) consume();
+        return node;
+    }
+
+    std::unique_ptr<ASTNode> SQLParserImpl::parseRestoreDatabaseStatement() {
+        match(TokenType::KW_RESTORE);
+        if (check(TokenType::KW_DATABASE)) consume();
+        auto node = std::make_unique<RestoreDatabaseASTNode>();
+        node->dbName = match(TokenType::IDENTIFIER).value;
+        if (check(TokenType::KW_FROM)) consume();
+        node->path = match(TokenType::STRING_LITERAL).value;
+        if (check(TokenType::SYM_SEMICOLON)) consume();
+        return node;
+    }
+
+    // ============================================================
+    //  用户管理
+    // ============================================================
+    std::unique_ptr<ASTNode> SQLParserImpl::parseCreateUserStatement() {
+        match(TokenType::KW_CREATE); match(TokenType::KW_USER);
+        auto node = std::make_unique<CreateUserASTNode>();
+        node->username = match(TokenType::IDENTIFIER).value;
+        match(TokenType::KW_IDENTIFIED); match(TokenType::KW_BY);
+        node->password = match(TokenType::STRING_LITERAL).value;
+        if (check(TokenType::SYM_SEMICOLON)) consume();
+        return node;
+    }
+
+    std::unique_ptr<ASTNode> SQLParserImpl::parseDropUserStatement() {
+        match(TokenType::KW_DROP); match(TokenType::KW_USER);
+        auto node = std::make_unique<DropUserASTNode>();
+        node->username = match(TokenType::IDENTIFIER).value;
+        if (check(TokenType::SYM_SEMICOLON)) consume();
+        return node;
+    }
+
+    std::unique_ptr<ASTNode> SQLParserImpl::parseGrantRevokeStatement() {
+        std::string mode = check(TokenType::KW_GRANT) ? "GRANT" : "REVOKE";
+        consume();
+        auto node = std::make_unique<GrantRevokeASTNode>();
+        node->mode = mode;
+        // 角色名: ADMIN 或 USER
+        node->role = match(TokenType::IDENTIFIER).value;
+        node->username = match(TokenType::IDENTIFIER).value;
+        if (check(TokenType::SYM_SEMICOLON)) consume();
+        return node;
+    }
+
+    // ============================================================
+    //  CREATE / USE DATABASE
+    // ============================================================
+    std::unique_ptr<ASTNode> SQLParserImpl::parseCreateDatabaseStatement() {
+        match(TokenType::KW_CREATE);
+        if (check(TokenType::KW_DATABASE)) consume(); else match(TokenType::IDENTIFIER);
+        const Token& dbNameToken = match(TokenType::IDENTIFIER);
+        if (!check(TokenType::SYM_SEMICOLON) && !isAtEnd())
+            throw std::runtime_error("Syntax Error: Unexpected token near database name");
+        if (check(TokenType::SYM_SEMICOLON)) consume();
+        auto node = std::make_unique<CreateDatabaseASTNode>(); node->dbName = dbNameToken.value; return node;
     }
 
     std::unique_ptr<ASTNode> SQLParserImpl::parseUseDatabaseStatement() {
-        // 兼容 Lexer
-        if (check(TokenType::KW_USE)) {
-            consume();
-        } else {
-            match(TokenType::IDENTIFIER); // 兜底：吞掉 "USE"
-        }
-
-        // 兼容用户写 "USE DATABASE test;" 或者直接写 "USE test;"
-        if (check(TokenType::KW_DATABASE)) {
-            consume();
-        } else if (check(TokenType::IDENTIFIER) && (peek().value == "DATABASE" || peek().value == "database")) {
-            consume();
-        }
-
+        if (check(TokenType::KW_USE)) consume(); else match(TokenType::IDENTIFIER);
+        if (check(TokenType::KW_DATABASE)) consume();
+        else if (check(TokenType::IDENTIFIER) && (peek().value == "DATABASE" || peek().value == "database")) consume();
         const Token& dbNameToken = match(TokenType::IDENTIFIER);
-        
-        if (check(TokenType::SYM_SEMICOLON)) {
-            consume();
-        }
-
-        auto node = std::make_unique<UseDatabaseASTNode>();
-        node->dbName = dbNameToken.value;
-        return node;
+        if (check(TokenType::SYM_SEMICOLON)) consume();
+        auto node = std::make_unique<UseDatabaseASTNode>(); node->dbName = dbNameToken.value; return node;
     }
-
-    /* std::unique_ptr<ASTNode> SQLParserImpl::parseDeleteStatement() {
-        match(TokenType::KW_DELETE); // 吞掉 DELETE
-        match(TokenType::KW_FROM);   // 吞掉 FROM
-        
-        auto node = std::make_unique<DeleteASTNode>();
-        
-        // 提取表名
-        node->tableName = match(TokenType::IDENTIFIER).value;
-
-        // 提取可选的 WHERE 子句
-        if (check(TokenType::KW_WHERE)) {
-            match(TokenType::KW_WHERE);
-            node->whereExpressionTree = parseExpression();
-        }
-
-        // 匹配末尾分号
-        if (check(TokenType::SYM_SEMICOLON)) {
-            match(TokenType::SYM_SEMICOLON);
-        }
-
-        return node;
-    }*/ // 删库还在测试中
 
 } // namespace Parser
