@@ -10,7 +10,7 @@
                 "${workspaceFolder}/build"
             ],
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "E://Environment//mingw64//bin/"
             },
             "group": {
                 "kind": "build",

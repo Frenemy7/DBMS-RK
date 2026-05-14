@@ -5,20 +5,25 @@
 #include "../../include/execution/IExecutor.h"
 #include "../../include/catalog/ICatalogManager.h"
 #include "../../include/storage/IStorageEngine.h"
+#include "../../include/integrity/IIntegrityManager.h"
+#include "../../include/maintenance/IDatabaseMaintenance.h"
+#include "../../include/security/ISecurityManager.h"
+#include <memory>
 
 namespace Execution {
 
-    // 这是一个静态工厂类，不需要被实例化，直接用 类名::方法名 调用
     class ExecutorFactory {
     public:
-        // 核心生产线：根据传入的 ast 节点类型，生产出对应的执行器
-        static IExecutor* createExecutor(
-            Parser::ASTNode* ast, 
-            Catalog::ICatalogManager* catalog, 
-            Storage::IStorageEngine* storage
+        static std::unique_ptr<IExecutor> createExecutor(
+            std::unique_ptr<Parser::ASTNode> ast,
+            Catalog::ICatalogManager* catalog,
+            Storage::IStorageEngine* storage,
+            Integrity::IIntegrityManager* integrity,
+            Maintenance::IDatabaseMaintenance* maintenance = nullptr,
+            Security::ISecurityManager* security = nullptr
         );
     };
 
-}
+} // namespace Execution
 
 #endif // EXECUTOR_FACTORY_H

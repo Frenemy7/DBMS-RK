@@ -54,6 +54,9 @@ namespace Catalog {
         // 执行 DROP DATABASE 时调用：从 ruanko.db 中移除记录
         virtual bool dropDatabase(const std::string& dbName) = 0;
 
+        virtual void setCurrentDatabase(const std::string& dbName) = 0;
+
+
         // 更新表的宏观元数据 (用于 INSERT/DELETE 后更新记录数 record_num，或更新修改时间 mtime)
         virtual bool updateTableMeta(const std::string& tableName, const Meta::TableBlock& newTableMeta) = 0;
 

@@ -11,9 +11,10 @@ namespace Parser {
     public:
         SQLType getType() const override { return SQLType::INSERT; }
 
-        std::string tableName; // 表名
-        std::vector<std::string> columns; // 插入的列名
-        std::vector<std::unique_ptr<ASTNode>> values; // 插入的值
+        std::string tableName;
+        std::vector<std::string> columns;
+        std::vector<std::unique_ptr<ASTNode>> values;     // INSERT ... VALUES (...)
+        std::unique_ptr<ASTNode> selectSource = nullptr;   // INSERT ... SELECT ...（非空则为 SELECT 语句）
     };
 
 }
