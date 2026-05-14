@@ -1,3 +1,0 @@
-E:/C++/Code_cpp/Database/miniDBMS/build/CMakeFiles/miniDBMS.dir
-E:/C++/Code_cpp/Database/miniDBMS/build/CMakeFiles/edit_cache.dir
-E:/C++/Code_cpp/Database/miniDBMS/build/CMakeFiles/rebuild_cache.dir
