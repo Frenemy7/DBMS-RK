@@ -31,6 +31,23 @@ int main() {
     }
     cout << "[系统] 底层存储引擎与数据字典加载完毕。" << endl;
 
+    // 登录
+    string currentUser;
+    while (currentUser.empty()) {
+        cout << "登录用户名: ";
+        string user, pass;
+        getline(cin, user);
+        cout << "密码: ";
+        getline(cin, pass);
+        if (security.authenticate(user, pass)) {
+            currentUser = user;
+            auto role = security.getRole(user);
+            cout << "欢迎, " << user << "! 角色: " << (role == Security::Role::ADMIN ? "ADMIN" : "USER") << endl;
+        } else {
+            cout << "认证失败，请重试。" << endl;
+        }
+    }
+
     // 2. 实例化解析器
     Parser::SQLParserImpl parser;
 
@@ -71,6 +88,21 @@ int main() {
 
             try {
                 auto astTree = parser.parse(singleSql);
+
+                // 权限拦截：非 ADMIN 不允许执行 DDL/用户管理
+                if (astTree && security.getRole(currentUser) != Security::Role::ADMIN) {
+                    auto t = astTree->getType();
+                    if (t == Parser::SQLType::CREATE_TABLE || t == Parser::SQLType::DROP_TABLE ||
+                        t == Parser::SQLType::ALTER_TABLE  || t == Parser::SQLType::CREATE_DATABASE ||
+                        t == Parser::SQLType::DROP_DATABASE|| t == Parser::SQLType::CREATE_USER ||
+                        t == Parser::SQLType::DROP_USER   || t == Parser::SQLType::GRANT_ROLE ||
+                        t == Parser::SQLType::REVOKE_ROLE || t == Parser::SQLType::BACKUP_DATABASE ||
+                        t == Parser::SQLType::RESTORE_DATABASE) {
+                        cerr << "[权限] 拒绝: 当前用户 '" << currentUser << "' 无 DDL 权限（需 ADMIN 角色）。" << endl;
+                        remaining = remaining.substr(semi + 1);
+                        continue;
+                    }
+                }
                 if (astTree) {
                     auto executor = Execution::ExecutorFactory::createExecutor(
                         std::move(astTree), &catalogManager, &storageEngine, &integrityManager, &maintenance, &security

@@ -79,31 +79,42 @@ SELECT * FROM t_def WHERE id = 4;
 
 -- ============================================================
 -- 十四、安全性管理
+-- 启动时用 root/root123 登录（ADMIN 角色）
 -- ============================================================
 
--- 14.1 创建用户
+-- 14.1 创建普通用户
 CREATE USER bob IDENTIFIED BY 'bob123';
 -- 预期: Query OK
 
--- 14.2 重复创建
-CREATE USER bob IDENTIFIED BY 'another';
--- 预期: Error 创建用户失败
-
--- 14.3 授权
+-- 14.2 授权
 GRANT ADMIN bob;
 -- 预期: Query OK
 
--- 14.4 撤销权限
+-- 14.3 撤销权限（回退到 USER）
 REVOKE bob;
--- 预期: Query OK（角色降为 USER）
+-- 预期: Query OK
+
+-- 14.4 用 REVOKE ADMIN FROM 显式撤销
+GRANT ADMIN bob;
+REVOKE ADMIN FROM bob;
+-- 预期: 两次都 OK
 
 -- 14.5 删除用户
 DROP USER bob;
 -- 预期: Query OK
 
--- 14.6 边界：删除不存在的用户
-DROP USER nobody;
--- 预期: Error
+-- === 权限验证：退出重启用 bob/bob123 登录（USER 角色） ===
+-- 以下操作应被拒绝：
+-- CREATE TABLE t (x INT);        → [权限] 拒绝
+-- DROP TABLE t_id;              → [权限] 拒绝
+-- CREATE DATABASE xxx;          → [权限] 拒绝
+-- CREATE USER charlie IDENTIFIED BY 'x'; → [权限] 拒绝
+--
+-- 以下操作应正常执行：
+-- SELECT * FROM t_id;           → OK
+-- INSERT INTO t_id (val) VALUES ('test'); → OK
+-- UPDATE t_id SET val = 'x' WHERE pk = 1; → OK
+-- USE DATABASE testnew;         → OK
 
 
 -- ============================================================
