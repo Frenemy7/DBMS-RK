@@ -32,7 +32,14 @@ namespace Parser {
         std::unique_ptr<ASTNode> parseUseDatabaseStatement();
         std::unique_ptr<ASTNode> parseCreateTableStatement();
         std::unique_ptr<ASTNode> parseDropTableStatement();
+        std::unique_ptr<ASTNode> parseCreateIndexStatement();
+        std::unique_ptr<ASTNode> parseDropIndexStatement();
         std::unique_ptr<ASTNode> parseAlterTableStatement();
+
+        bool checkIdentifierValue(const std::string& value) const;
+        const Token& matchIdentifierValue(const std::string& value);
+        bool isIdentifierLike() const;
+        const Token& matchIdentifierLike();
 
         // DML
         std::unique_ptr<ASTNode> parseInsertStatement();

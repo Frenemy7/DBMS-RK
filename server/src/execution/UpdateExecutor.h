@@ -5,6 +5,7 @@
 #include "../../include/catalog/ICatalogManager.h"
 #include "../../include/storage/IStorageEngine.h"
 #include "../../include/integrity/IIntegrityManager.h"
+#include "../../include/index/IIndexManager.h"
 #include "../../include/parser/UpdateASTNode.h"
 #include "../../include/meta/TableMeta.h"
 #include <memory>
@@ -19,6 +20,10 @@ namespace Execution {
         Catalog::ICatalogManager* catalog;
         Storage::IStorageEngine* storage;
         Integrity::IIntegrityManager* integrity;
+        Index::IIndexManager* indexManager_;
+        std::unique_ptr<Index::IIndexManager> ownedIndexManager_;
+
+        Index::IIndexManager* indexManager();
 
         // 表达式求值（支持列引用、字面量、算术运算）
         std::string evalExpr(Parser::ASTNode* node, const std::vector<std::string>& row,
@@ -29,7 +34,8 @@ namespace Execution {
         UpdateExecutor(std::unique_ptr<Parser::UpdateASTNode> ast,
                        Catalog::ICatalogManager* cat,
                        Storage::IStorageEngine* stor,
-                       Integrity::IIntegrityManager* integ);
+                       Integrity::IIntegrityManager* integ,
+                       Index::IIndexManager* index = nullptr);
         ~UpdateExecutor() override;
         bool execute() override;
     };

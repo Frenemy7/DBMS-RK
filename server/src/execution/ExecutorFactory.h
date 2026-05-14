@@ -6,9 +6,11 @@
 #include "../../include/catalog/ICatalogManager.h"
 #include "../../include/storage/IStorageEngine.h"
 #include "../../include/integrity/IIntegrityManager.h"
-#include "../../include/maintenance/IDatabaseMaintenance.h"
-#include "../../include/security/ISecurityManager.h"
 #include <memory>
+
+namespace Index { class IIndexManager; }
+namespace Maintenance { class IDatabaseMaintenance; }
+namespace Security { class ISecurityManager; }
 
 namespace Execution {
 
@@ -20,7 +22,8 @@ namespace Execution {
             Storage::IStorageEngine* storage,
             Integrity::IIntegrityManager* integrity,
             Maintenance::IDatabaseMaintenance* maintenance = nullptr,
-            Security::ISecurityManager* security = nullptr
+            Security::ISecurityManager* security = nullptr,
+            Index::IIndexManager* index = nullptr
         );
     };
 

@@ -11,6 +11,8 @@ namespace Parser {
     enum class SQLType {
         CREATE_TABLE,
         DROP_TABLE,
+        CREATE_INDEX,
+        DROP_INDEX,
         INSERT,
         SELECT,
         UPDATE,

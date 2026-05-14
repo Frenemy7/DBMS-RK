@@ -5,6 +5,7 @@
 #include "../../include/execution/IOperator.h"
 #include "../../include/catalog/ICatalogManager.h"
 #include "../../include/storage/IStorageEngine.h"
+#include "../../include/index/IIndexManager.h"
 #include "../../include/parser/SelectASTNode.h"
 #include <memory>
 #include <vector>
@@ -17,11 +18,16 @@ namespace Execution {
         std::unique_ptr<Parser::SelectASTNode> astNode;
         Catalog::ICatalogManager* catalogManager;
         Storage::IStorageEngine* storageEngine;
+        Index::IIndexManager* indexManager_;
+        std::unique_ptr<Index::IIndexManager> ownedIndexManager_;
+
+        Index::IIndexManager* indexManager();
 
     public:
         SelectExecutor(std::unique_ptr<Parser::SelectASTNode> astNode,
                        Catalog::ICatalogManager* catalog,
-                       Storage::IStorageEngine* storage);
+                       Storage::IStorageEngine* storage,
+                       Index::IIndexManager* index = nullptr);
 
         ~SelectExecutor() override = default;
 
