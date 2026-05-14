@@ -2,7 +2,7 @@ CMakeFiles/miniDBMS.dir/server/src/execution/SelectExecutor.cpp.obj: \
  E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\SelectExecutor.cpp \
  E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\SelectExecutor.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/execution/IExecutor.h \
- E:/C++/Code_cpp/Database/miniDBMS/server/include/catalog/ICatalogManager.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/execution/IOperator.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/meta/TableMeta.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/common/Constants.h \
  E:/Environment/mingw64/x86_64-w64-mingw32/include/windows.h \
@@ -301,10 +301,57 @@ CMakeFiles/miniDBMS.dir/server/src/execution/SelectExecutor.cpp.obj: \
  E:/Environment/mingw64/x86_64-w64-mingw32/include/winsvc.h \
  E:/Environment/mingw64/x86_64-w64-mingw32/include/mcx.h \
  E:/Environment/mingw64/x86_64-w64-mingw32/include/imm.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/string \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/vector \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/requires_hosted.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stringfwd.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_algobase.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/functexcept.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/exception_defines.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/cpp_type_traits.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/version.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/type_traits \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/ext/type_traits.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/ext/numeric_traits.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_pair.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/move.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/utility.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_iterator_base_types.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_iterator_base_funcs.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/concept_check.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/debug/assertions.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_iterator.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/ptr_traits.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/debug/debug.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/predefined_ops.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bit \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/concepts \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/allocator.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/x86_64-w64-mingw32/bits/c++allocator.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/new_allocator.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/new \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/exception.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/memoryfwd.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_construct.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_uninitialized.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/ext/alloc_traits.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/alloc_traits.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_vector.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/initializer_list \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_bvector.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/functional_hash.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/hash_bytes.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/refwrap.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/invoke.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_function.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/backward/binders.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/range_access.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/vector.tcc \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/memory_resource.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/cstddef \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/uses_allocator.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/uses_allocator_args.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/tuple \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/string \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stringfwd.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/char_traits.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/postypes.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/cwchar \
@@ -314,17 +361,6 @@ CMakeFiles/miniDBMS.dir/server/src/execution/SelectExecutor.cpp.obj: \
  E:/Environment/mingw64/x86_64-w64-mingw32/include/_mingw_stat64.h \
  E:/Environment/mingw64/x86_64-w64-mingw32/include/swprintf.inl \
  E:/Environment/mingw64/x86_64-w64-mingw32/include/sec_api/wchar_s.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/type_traits \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/version.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/allocator.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/x86_64-w64-mingw32/bits/c++allocator.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/new_allocator.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/new \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/exception.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/functexcept.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/exception_defines.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/move.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/cpp_type_traits.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/localefwd.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/x86_64-w64-mingw32/bits/c++locale.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/clocale \
@@ -335,50 +371,16 @@ CMakeFiles/miniDBMS.dir/server/src/execution/SelectExecutor.cpp.obj: \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/cctype \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/ostream_insert.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/cxxabi_forced.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_iterator_base_funcs.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/concept_check.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/debug/assertions.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_iterator_base_types.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_iterator.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/ext/type_traits.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/ptr_traits.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_function.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/backward/binders.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/ext/numeric_traits.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_algobase.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_pair.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/utility.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/debug/debug.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/predefined_ops.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bit \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/concepts \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/refwrap.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/invoke.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/range_access.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/initializer_list \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/basic_string.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/ext/alloc_traits.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/alloc_traits.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_construct.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/string_view \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/functional_hash.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/hash_bytes.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/string_view.tcc \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/ext/string_conversions.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/cstdio \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/cerrno \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/charconv.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/basic_string.tcc \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/memory_resource.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/cstddef \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/uses_allocator.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/uses_allocator_args.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/tuple \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/vector \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_uninitialized.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_vector.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_bvector.h \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/vector.tcc \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/catalog/ICatalogManager.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/meta/TableMeta.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/storage/IStorageEngine.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/parser/SelectASTNode.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/parser/ASTNode.h \
@@ -409,14 +411,37 @@ CMakeFiles/miniDBMS.dir/server/src/execution/SelectExecutor.cpp.obj: \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/backward/auto_ptr.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/pstl/glue_memory_defs.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/pstl/execution_defs.h \
+ E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\QueryBuilder.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/parser/ASTNode.h \
  E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\operators/SeqScanOperator.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/execution/IOperator.h \
- E:/C++/Code_cpp/Database/miniDBMS/server/include/meta/TableMeta.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/catalog/ICatalogManager.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/storage/IStorageEngine.h \
  E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\operators/FilterOperator.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/parser/ASTNode.h \
  E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\operators/ProjectOperator.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/functional \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/std_function.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/unordered_map \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/unordered_map.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/hashtable.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/hashtable_policy.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/enable_special_members.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/node_handle.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/erase_if.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/array \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/compare \
+ E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\operators/JoinOperator.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/meta/TableMeta.h \
+ E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\operators/AggregateOperator.h \
+ E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\operators/SortOperator.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/parser/SelectASTNode.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/algorithm \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_algo.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/algorithmfwd.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_heap.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/uniform_int_dist.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/pstl/glue_algorithm_defs.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/iostream \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/ostream \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/ostream.h \

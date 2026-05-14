@@ -10,7 +10,10 @@ namespace Integrity {
         PRIMARY_KEY = 1,
         FOREIGN_KEY = 2,
         UNIQUE = 3,
-        NOT_NULL = 4
+        NOT_NULL = 4,
+        DEFAULT_VALUE = 5,
+        CHECK_CONSTRAINT = 6,
+        IDENTITY = 7
     };
 
     class IIntegrityManager {

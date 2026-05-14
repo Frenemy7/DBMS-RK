@@ -53,10 +53,18 @@ namespace Execution {
                 // 如果 AST 节点中记录了参数 (如 VARCHAR(64))，则填入 param；否则默认 256
                 field.param = (colDef.param > 0) ? colDef.param : 256; 
             } 
+            else if (colDef.type == "DOUBLE") {
+                field.type = static_cast<int>(Common::DataType::DOUBLE);
+                field.param = 8; // C++ 标准 double 占 8 字节
+            } 
+            else if (colDef.type == "DATETIME") {
+                field.type = static_cast<int>(Common::DataType::DATETIME);
+                field.param = 16; // Windows SYSTEMTIME 结构体占 16 字节
+            }
             else {
                 std::cerr << "执行错误：不支持的数据类型 '" << colDef.type << "'" << std::endl;
                 return false;
-            }
+            } 
 
             field.integrities = 0; 
 
@@ -107,14 +115,47 @@ namespace Execution {
                 if (colDef.isUnique) {
                     Meta::IntegrityBlock uqBlock;
                     std::memset(&uqBlock, 0, sizeof(Meta::IntegrityBlock));
-                    
                     std::string uqName = "UQ_" + astNode->tableName + "_" + colDef.name;
                     std::strncpy(uqBlock.name, uqName.c_str(), Common::MAX_NAME_LEN - 1);
                     std::strncpy(uqBlock.field, colDef.name.c_str(), Common::MAX_NAME_LEN - 1);
-                    
                     uqBlock.type = Integrity::UNIQUE;
-                    
                     catalogManager->addIntegrity(astNode->tableName, uqBlock);
+                }
+
+                // 提取自增约束
+                if (colDef.isIdentity) {
+                    Meta::IntegrityBlock idBlock;
+                    std::memset(&idBlock, 0, sizeof(Meta::IntegrityBlock));
+                    std::string idName = "ID_" + astNode->tableName + "_" + colDef.name;
+                    std::strncpy(idBlock.name, idName.c_str(), Common::MAX_NAME_LEN - 1);
+                    std::strncpy(idBlock.field, colDef.name.c_str(), Common::MAX_NAME_LEN - 1);
+                    idBlock.type = Integrity::IDENTITY;
+                    std::strncpy(idBlock.param, "1", 1); // 从 1 开始
+                    catalogManager->addIntegrity(astNode->tableName, idBlock);
+                }
+
+                // 提取 CHECK 约束
+                if (colDef.hasCheck) {
+                    Meta::IntegrityBlock chkBlock;
+                    std::memset(&chkBlock, 0, sizeof(Meta::IntegrityBlock));
+                    std::string chkName = "CH_" + astNode->tableName + "_" + colDef.name;
+                    std::strncpy(chkBlock.name, chkName.c_str(), Common::MAX_NAME_LEN - 1);
+                    std::strncpy(chkBlock.field, colDef.name.c_str(), Common::MAX_NAME_LEN - 1);
+                    chkBlock.type = Integrity::CHECK_CONSTRAINT;
+                    std::strncpy(chkBlock.param, colDef.checkCondition.c_str(), Common::MAX_PATH_LEN - 1);
+                    catalogManager->addIntegrity(astNode->tableName, chkBlock);
+                }
+
+                // 提取默认值约束
+                if (colDef.hasDefault) {
+                    Meta::IntegrityBlock defBlock;
+                    std::memset(&defBlock, 0, sizeof(Meta::IntegrityBlock));
+                    std::string defName = "DF_" + astNode->tableName + "_" + colDef.name;
+                    std::strncpy(defBlock.name, defName.c_str(), Common::MAX_NAME_LEN - 1);
+                    std::strncpy(defBlock.field, colDef.name.c_str(), Common::MAX_NAME_LEN - 1);
+                    defBlock.type = Integrity::DEFAULT_VALUE;
+                    std::strncpy(defBlock.param, colDef.defaultValue.c_str(), Common::MAX_PATH_LEN - 1);
+                    catalogManager->addIntegrity(astNode->tableName, defBlock);
                 }
             }
 

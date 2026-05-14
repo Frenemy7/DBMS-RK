@@ -101,11 +101,41 @@ CMakeFiles/miniDBMS.dir/server/src/catalog/CatalogManagerImpl.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miniDBMS.dir/server/src/catalog/CatalogManagerImpl.cpp.s"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\C++\Code_cpp\Database\miniDBMS\server\src\catalog\CatalogManagerImpl.cpp -o CMakeFiles\miniDBMS.dir\server\src\catalog\CatalogManagerImpl.cpp.s
 
+CMakeFiles/miniDBMS.dir/server/src/execution/AlterTableExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/flags.make
+CMakeFiles/miniDBMS.dir/server/src/execution/AlterTableExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
+CMakeFiles/miniDBMS.dir/server/src/execution/AlterTableExecutor.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/AlterTableExecutor.cpp
+CMakeFiles/miniDBMS.dir/server/src/execution/AlterTableExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/AlterTableExecutor.cpp.obj"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/execution/AlterTableExecutor.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\execution\AlterTableExecutor.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\execution\AlterTableExecutor.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\AlterTableExecutor.cpp
+
+CMakeFiles/miniDBMS.dir/server/src/execution/AlterTableExecutor.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/miniDBMS.dir/server/src/execution/AlterTableExecutor.cpp.i"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\AlterTableExecutor.cpp > CMakeFiles\miniDBMS.dir\server\src\execution\AlterTableExecutor.cpp.i
+
+CMakeFiles/miniDBMS.dir/server/src/execution/AlterTableExecutor.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miniDBMS.dir/server/src/execution/AlterTableExecutor.cpp.s"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\AlterTableExecutor.cpp -o CMakeFiles\miniDBMS.dir\server\src\execution\AlterTableExecutor.cpp.s
+
+CMakeFiles/miniDBMS.dir/server/src/execution/BackupRestoreExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/flags.make
+CMakeFiles/miniDBMS.dir/server/src/execution/BackupRestoreExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
+CMakeFiles/miniDBMS.dir/server/src/execution/BackupRestoreExecutor.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/BackupRestoreExecutor.cpp
+CMakeFiles/miniDBMS.dir/server/src/execution/BackupRestoreExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/BackupRestoreExecutor.cpp.obj"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/execution/BackupRestoreExecutor.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\execution\BackupRestoreExecutor.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\execution\BackupRestoreExecutor.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\BackupRestoreExecutor.cpp
+
+CMakeFiles/miniDBMS.dir/server/src/execution/BackupRestoreExecutor.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/miniDBMS.dir/server/src/execution/BackupRestoreExecutor.cpp.i"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\BackupRestoreExecutor.cpp > CMakeFiles\miniDBMS.dir\server\src\execution\BackupRestoreExecutor.cpp.i
+
+CMakeFiles/miniDBMS.dir/server/src/execution/BackupRestoreExecutor.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miniDBMS.dir/server/src/execution/BackupRestoreExecutor.cpp.s"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\BackupRestoreExecutor.cpp -o CMakeFiles\miniDBMS.dir\server\src\execution\BackupRestoreExecutor.cpp.s
+
 CMakeFiles/miniDBMS.dir/server/src/execution/CreateDatabaseExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/flags.make
 CMakeFiles/miniDBMS.dir/server/src/execution/CreateDatabaseExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
 CMakeFiles/miniDBMS.dir/server/src/execution/CreateDatabaseExecutor.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/CreateDatabaseExecutor.cpp
 CMakeFiles/miniDBMS.dir/server/src/execution/CreateDatabaseExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/CreateDatabaseExecutor.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/CreateDatabaseExecutor.cpp.obj"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/execution/CreateDatabaseExecutor.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\execution\CreateDatabaseExecutor.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\execution\CreateDatabaseExecutor.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\CreateDatabaseExecutor.cpp
 
 CMakeFiles/miniDBMS.dir/server/src/execution/CreateDatabaseExecutor.cpp.i: cmake_force
@@ -120,7 +150,7 @@ CMakeFiles/miniDBMS.dir/server/src/execution/CreateExecutor.cpp.obj: CMakeFiles/
 CMakeFiles/miniDBMS.dir/server/src/execution/CreateExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
 CMakeFiles/miniDBMS.dir/server/src/execution/CreateExecutor.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/CreateExecutor.cpp
 CMakeFiles/miniDBMS.dir/server/src/execution/CreateExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/CreateExecutor.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/CreateExecutor.cpp.obj"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/execution/CreateExecutor.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\execution\CreateExecutor.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\execution\CreateExecutor.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\CreateExecutor.cpp
 
 CMakeFiles/miniDBMS.dir/server/src/execution/CreateExecutor.cpp.i: cmake_force
@@ -135,7 +165,7 @@ CMakeFiles/miniDBMS.dir/server/src/execution/DeleteExecutor.cpp.obj: CMakeFiles/
 CMakeFiles/miniDBMS.dir/server/src/execution/DeleteExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
 CMakeFiles/miniDBMS.dir/server/src/execution/DeleteExecutor.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/DeleteExecutor.cpp
 CMakeFiles/miniDBMS.dir/server/src/execution/DeleteExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/DeleteExecutor.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/DeleteExecutor.cpp.obj"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/execution/DeleteExecutor.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\execution\DeleteExecutor.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\execution\DeleteExecutor.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\DeleteExecutor.cpp
 
 CMakeFiles/miniDBMS.dir/server/src/execution/DeleteExecutor.cpp.i: cmake_force
@@ -146,11 +176,41 @@ CMakeFiles/miniDBMS.dir/server/src/execution/DeleteExecutor.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miniDBMS.dir/server/src/execution/DeleteExecutor.cpp.s"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\DeleteExecutor.cpp -o CMakeFiles\miniDBMS.dir\server\src\execution\DeleteExecutor.cpp.s
 
+CMakeFiles/miniDBMS.dir/server/src/execution/DropDatabaseExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/flags.make
+CMakeFiles/miniDBMS.dir/server/src/execution/DropDatabaseExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
+CMakeFiles/miniDBMS.dir/server/src/execution/DropDatabaseExecutor.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/DropDatabaseExecutor.cpp
+CMakeFiles/miniDBMS.dir/server/src/execution/DropDatabaseExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/DropDatabaseExecutor.cpp.obj"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/execution/DropDatabaseExecutor.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\execution\DropDatabaseExecutor.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\execution\DropDatabaseExecutor.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\DropDatabaseExecutor.cpp
+
+CMakeFiles/miniDBMS.dir/server/src/execution/DropDatabaseExecutor.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/miniDBMS.dir/server/src/execution/DropDatabaseExecutor.cpp.i"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\DropDatabaseExecutor.cpp > CMakeFiles\miniDBMS.dir\server\src\execution\DropDatabaseExecutor.cpp.i
+
+CMakeFiles/miniDBMS.dir/server/src/execution/DropDatabaseExecutor.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miniDBMS.dir/server/src/execution/DropDatabaseExecutor.cpp.s"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\DropDatabaseExecutor.cpp -o CMakeFiles\miniDBMS.dir\server\src\execution\DropDatabaseExecutor.cpp.s
+
+CMakeFiles/miniDBMS.dir/server/src/execution/DropTableExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/flags.make
+CMakeFiles/miniDBMS.dir/server/src/execution/DropTableExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
+CMakeFiles/miniDBMS.dir/server/src/execution/DropTableExecutor.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/DropTableExecutor.cpp
+CMakeFiles/miniDBMS.dir/server/src/execution/DropTableExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/DropTableExecutor.cpp.obj"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/execution/DropTableExecutor.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\execution\DropTableExecutor.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\execution\DropTableExecutor.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\DropTableExecutor.cpp
+
+CMakeFiles/miniDBMS.dir/server/src/execution/DropTableExecutor.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/miniDBMS.dir/server/src/execution/DropTableExecutor.cpp.i"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\DropTableExecutor.cpp > CMakeFiles\miniDBMS.dir\server\src\execution\DropTableExecutor.cpp.i
+
+CMakeFiles/miniDBMS.dir/server/src/execution/DropTableExecutor.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miniDBMS.dir/server/src/execution/DropTableExecutor.cpp.s"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\DropTableExecutor.cpp -o CMakeFiles\miniDBMS.dir\server\src\execution\DropTableExecutor.cpp.s
+
 CMakeFiles/miniDBMS.dir/server/src/execution/ExecutorFactory.cpp.obj: CMakeFiles/miniDBMS.dir/flags.make
 CMakeFiles/miniDBMS.dir/server/src/execution/ExecutorFactory.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
 CMakeFiles/miniDBMS.dir/server/src/execution/ExecutorFactory.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/ExecutorFactory.cpp
 CMakeFiles/miniDBMS.dir/server/src/execution/ExecutorFactory.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/ExecutorFactory.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/ExecutorFactory.cpp.obj"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/execution/ExecutorFactory.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\execution\ExecutorFactory.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\execution\ExecutorFactory.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\ExecutorFactory.cpp
 
 CMakeFiles/miniDBMS.dir/server/src/execution/ExecutorFactory.cpp.i: cmake_force
@@ -165,7 +225,7 @@ CMakeFiles/miniDBMS.dir/server/src/execution/InsertExecutor.cpp.obj: CMakeFiles/
 CMakeFiles/miniDBMS.dir/server/src/execution/InsertExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
 CMakeFiles/miniDBMS.dir/server/src/execution/InsertExecutor.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/InsertExecutor.cpp
 CMakeFiles/miniDBMS.dir/server/src/execution/InsertExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/InsertExecutor.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/InsertExecutor.cpp.obj"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/execution/InsertExecutor.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\execution\InsertExecutor.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\execution\InsertExecutor.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\InsertExecutor.cpp
 
 CMakeFiles/miniDBMS.dir/server/src/execution/InsertExecutor.cpp.i: cmake_force
@@ -176,11 +236,26 @@ CMakeFiles/miniDBMS.dir/server/src/execution/InsertExecutor.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miniDBMS.dir/server/src/execution/InsertExecutor.cpp.s"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\InsertExecutor.cpp -o CMakeFiles\miniDBMS.dir\server\src\execution\InsertExecutor.cpp.s
 
+CMakeFiles/miniDBMS.dir/server/src/execution/QueryBuilder.cpp.obj: CMakeFiles/miniDBMS.dir/flags.make
+CMakeFiles/miniDBMS.dir/server/src/execution/QueryBuilder.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
+CMakeFiles/miniDBMS.dir/server/src/execution/QueryBuilder.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/QueryBuilder.cpp
+CMakeFiles/miniDBMS.dir/server/src/execution/QueryBuilder.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/QueryBuilder.cpp.obj"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/execution/QueryBuilder.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\execution\QueryBuilder.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\execution\QueryBuilder.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\QueryBuilder.cpp
+
+CMakeFiles/miniDBMS.dir/server/src/execution/QueryBuilder.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/miniDBMS.dir/server/src/execution/QueryBuilder.cpp.i"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\QueryBuilder.cpp > CMakeFiles\miniDBMS.dir\server\src\execution\QueryBuilder.cpp.i
+
+CMakeFiles/miniDBMS.dir/server/src/execution/QueryBuilder.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miniDBMS.dir/server/src/execution/QueryBuilder.cpp.s"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\QueryBuilder.cpp -o CMakeFiles\miniDBMS.dir\server\src\execution\QueryBuilder.cpp.s
+
 CMakeFiles/miniDBMS.dir/server/src/execution/SelectExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/flags.make
 CMakeFiles/miniDBMS.dir/server/src/execution/SelectExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
 CMakeFiles/miniDBMS.dir/server/src/execution/SelectExecutor.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/SelectExecutor.cpp
 CMakeFiles/miniDBMS.dir/server/src/execution/SelectExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/SelectExecutor.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/SelectExecutor.cpp.obj"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/execution/SelectExecutor.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\execution\SelectExecutor.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\execution\SelectExecutor.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\SelectExecutor.cpp
 
 CMakeFiles/miniDBMS.dir/server/src/execution/SelectExecutor.cpp.i: cmake_force
@@ -195,7 +270,7 @@ CMakeFiles/miniDBMS.dir/server/src/execution/UpdateExecutor.cpp.obj: CMakeFiles/
 CMakeFiles/miniDBMS.dir/server/src/execution/UpdateExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
 CMakeFiles/miniDBMS.dir/server/src/execution/UpdateExecutor.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/UpdateExecutor.cpp
 CMakeFiles/miniDBMS.dir/server/src/execution/UpdateExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/UpdateExecutor.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/UpdateExecutor.cpp.obj"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/execution/UpdateExecutor.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\execution\UpdateExecutor.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\execution\UpdateExecutor.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\UpdateExecutor.cpp
 
 CMakeFiles/miniDBMS.dir/server/src/execution/UpdateExecutor.cpp.i: cmake_force
@@ -210,7 +285,7 @@ CMakeFiles/miniDBMS.dir/server/src/execution/UseDatabaseExecutor.cpp.obj: CMakeF
 CMakeFiles/miniDBMS.dir/server/src/execution/UseDatabaseExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
 CMakeFiles/miniDBMS.dir/server/src/execution/UseDatabaseExecutor.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/UseDatabaseExecutor.cpp
 CMakeFiles/miniDBMS.dir/server/src/execution/UseDatabaseExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/UseDatabaseExecutor.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/UseDatabaseExecutor.cpp.obj"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/execution/UseDatabaseExecutor.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\execution\UseDatabaseExecutor.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\execution\UseDatabaseExecutor.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\UseDatabaseExecutor.cpp
 
 CMakeFiles/miniDBMS.dir/server/src/execution/UseDatabaseExecutor.cpp.i: cmake_force
@@ -221,11 +296,41 @@ CMakeFiles/miniDBMS.dir/server/src/execution/UseDatabaseExecutor.cpp.s: cmake_fo
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miniDBMS.dir/server/src/execution/UseDatabaseExecutor.cpp.s"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\UseDatabaseExecutor.cpp -o CMakeFiles\miniDBMS.dir\server\src\execution\UseDatabaseExecutor.cpp.s
 
+CMakeFiles/miniDBMS.dir/server/src/execution/UserExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/flags.make
+CMakeFiles/miniDBMS.dir/server/src/execution/UserExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
+CMakeFiles/miniDBMS.dir/server/src/execution/UserExecutor.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/UserExecutor.cpp
+CMakeFiles/miniDBMS.dir/server/src/execution/UserExecutor.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/UserExecutor.cpp.obj"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/execution/UserExecutor.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\execution\UserExecutor.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\execution\UserExecutor.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\UserExecutor.cpp
+
+CMakeFiles/miniDBMS.dir/server/src/execution/UserExecutor.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/miniDBMS.dir/server/src/execution/UserExecutor.cpp.i"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\UserExecutor.cpp > CMakeFiles\miniDBMS.dir\server\src\execution\UserExecutor.cpp.i
+
+CMakeFiles/miniDBMS.dir/server/src/execution/UserExecutor.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miniDBMS.dir/server/src/execution/UserExecutor.cpp.s"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\UserExecutor.cpp -o CMakeFiles\miniDBMS.dir\server\src\execution\UserExecutor.cpp.s
+
+CMakeFiles/miniDBMS.dir/server/src/execution/operators/AggregateOperator.cpp.obj: CMakeFiles/miniDBMS.dir/flags.make
+CMakeFiles/miniDBMS.dir/server/src/execution/operators/AggregateOperator.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
+CMakeFiles/miniDBMS.dir/server/src/execution/operators/AggregateOperator.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/operators/AggregateOperator.cpp
+CMakeFiles/miniDBMS.dir/server/src/execution/operators/AggregateOperator.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/operators/AggregateOperator.cpp.obj"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/execution/operators/AggregateOperator.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\execution\operators\AggregateOperator.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\execution\operators\AggregateOperator.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\operators\AggregateOperator.cpp
+
+CMakeFiles/miniDBMS.dir/server/src/execution/operators/AggregateOperator.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/miniDBMS.dir/server/src/execution/operators/AggregateOperator.cpp.i"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\operators\AggregateOperator.cpp > CMakeFiles\miniDBMS.dir\server\src\execution\operators\AggregateOperator.cpp.i
+
+CMakeFiles/miniDBMS.dir/server/src/execution/operators/AggregateOperator.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miniDBMS.dir/server/src/execution/operators/AggregateOperator.cpp.s"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\operators\AggregateOperator.cpp -o CMakeFiles\miniDBMS.dir\server\src\execution\operators\AggregateOperator.cpp.s
+
 CMakeFiles/miniDBMS.dir/server/src/execution/operators/FilterOperator.cpp.obj: CMakeFiles/miniDBMS.dir/flags.make
 CMakeFiles/miniDBMS.dir/server/src/execution/operators/FilterOperator.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
 CMakeFiles/miniDBMS.dir/server/src/execution/operators/FilterOperator.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/operators/FilterOperator.cpp
 CMakeFiles/miniDBMS.dir/server/src/execution/operators/FilterOperator.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/operators/FilterOperator.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/operators/FilterOperator.cpp.obj"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/execution/operators/FilterOperator.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\execution\operators\FilterOperator.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\execution\operators\FilterOperator.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\operators\FilterOperator.cpp
 
 CMakeFiles/miniDBMS.dir/server/src/execution/operators/FilterOperator.cpp.i: cmake_force
@@ -236,11 +341,26 @@ CMakeFiles/miniDBMS.dir/server/src/execution/operators/FilterOperator.cpp.s: cma
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miniDBMS.dir/server/src/execution/operators/FilterOperator.cpp.s"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\operators\FilterOperator.cpp -o CMakeFiles\miniDBMS.dir\server\src\execution\operators\FilterOperator.cpp.s
 
+CMakeFiles/miniDBMS.dir/server/src/execution/operators/JoinOperator.cpp.obj: CMakeFiles/miniDBMS.dir/flags.make
+CMakeFiles/miniDBMS.dir/server/src/execution/operators/JoinOperator.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
+CMakeFiles/miniDBMS.dir/server/src/execution/operators/JoinOperator.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/operators/JoinOperator.cpp
+CMakeFiles/miniDBMS.dir/server/src/execution/operators/JoinOperator.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/operators/JoinOperator.cpp.obj"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/execution/operators/JoinOperator.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\execution\operators\JoinOperator.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\execution\operators\JoinOperator.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\operators\JoinOperator.cpp
+
+CMakeFiles/miniDBMS.dir/server/src/execution/operators/JoinOperator.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/miniDBMS.dir/server/src/execution/operators/JoinOperator.cpp.i"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\operators\JoinOperator.cpp > CMakeFiles\miniDBMS.dir\server\src\execution\operators\JoinOperator.cpp.i
+
+CMakeFiles/miniDBMS.dir/server/src/execution/operators/JoinOperator.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miniDBMS.dir/server/src/execution/operators/JoinOperator.cpp.s"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\operators\JoinOperator.cpp -o CMakeFiles\miniDBMS.dir\server\src\execution\operators\JoinOperator.cpp.s
+
 CMakeFiles/miniDBMS.dir/server/src/execution/operators/ProjectOperator.cpp.obj: CMakeFiles/miniDBMS.dir/flags.make
 CMakeFiles/miniDBMS.dir/server/src/execution/operators/ProjectOperator.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
 CMakeFiles/miniDBMS.dir/server/src/execution/operators/ProjectOperator.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/operators/ProjectOperator.cpp
 CMakeFiles/miniDBMS.dir/server/src/execution/operators/ProjectOperator.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/operators/ProjectOperator.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/operators/ProjectOperator.cpp.obj"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/execution/operators/ProjectOperator.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\execution\operators\ProjectOperator.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\execution\operators\ProjectOperator.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\operators\ProjectOperator.cpp
 
 CMakeFiles/miniDBMS.dir/server/src/execution/operators/ProjectOperator.cpp.i: cmake_force
@@ -255,7 +375,7 @@ CMakeFiles/miniDBMS.dir/server/src/execution/operators/SeqScanOperator.cpp.obj: 
 CMakeFiles/miniDBMS.dir/server/src/execution/operators/SeqScanOperator.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
 CMakeFiles/miniDBMS.dir/server/src/execution/operators/SeqScanOperator.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/operators/SeqScanOperator.cpp
 CMakeFiles/miniDBMS.dir/server/src/execution/operators/SeqScanOperator.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/operators/SeqScanOperator.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/operators/SeqScanOperator.cpp.obj"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/execution/operators/SeqScanOperator.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\execution\operators\SeqScanOperator.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\execution\operators\SeqScanOperator.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\operators\SeqScanOperator.cpp
 
 CMakeFiles/miniDBMS.dir/server/src/execution/operators/SeqScanOperator.cpp.i: cmake_force
@@ -266,11 +386,26 @@ CMakeFiles/miniDBMS.dir/server/src/execution/operators/SeqScanOperator.cpp.s: cm
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miniDBMS.dir/server/src/execution/operators/SeqScanOperator.cpp.s"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\operators\SeqScanOperator.cpp -o CMakeFiles\miniDBMS.dir\server\src\execution\operators\SeqScanOperator.cpp.s
 
+CMakeFiles/miniDBMS.dir/server/src/execution/operators/SortOperator.cpp.obj: CMakeFiles/miniDBMS.dir/flags.make
+CMakeFiles/miniDBMS.dir/server/src/execution/operators/SortOperator.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
+CMakeFiles/miniDBMS.dir/server/src/execution/operators/SortOperator.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/operators/SortOperator.cpp
+CMakeFiles/miniDBMS.dir/server/src/execution/operators/SortOperator.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/execution/operators/SortOperator.cpp.obj"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/execution/operators/SortOperator.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\execution\operators\SortOperator.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\execution\operators\SortOperator.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\operators\SortOperator.cpp
+
+CMakeFiles/miniDBMS.dir/server/src/execution/operators/SortOperator.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/miniDBMS.dir/server/src/execution/operators/SortOperator.cpp.i"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\operators\SortOperator.cpp > CMakeFiles\miniDBMS.dir\server\src\execution\operators\SortOperator.cpp.i
+
+CMakeFiles/miniDBMS.dir/server/src/execution/operators/SortOperator.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miniDBMS.dir/server/src/execution/operators/SortOperator.cpp.s"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\operators\SortOperator.cpp -o CMakeFiles\miniDBMS.dir\server\src\execution\operators\SortOperator.cpp.s
+
 CMakeFiles/miniDBMS.dir/server/src/integrity/IntegrityManagerImpl.cpp.obj: CMakeFiles/miniDBMS.dir/flags.make
 CMakeFiles/miniDBMS.dir/server/src/integrity/IntegrityManagerImpl.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
 CMakeFiles/miniDBMS.dir/server/src/integrity/IntegrityManagerImpl.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/integrity/IntegrityManagerImpl.cpp
 CMakeFiles/miniDBMS.dir/server/src/integrity/IntegrityManagerImpl.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/integrity/IntegrityManagerImpl.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/integrity/IntegrityManagerImpl.cpp.obj"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/integrity/IntegrityManagerImpl.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\integrity\IntegrityManagerImpl.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\integrity\IntegrityManagerImpl.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\integrity\IntegrityManagerImpl.cpp
 
 CMakeFiles/miniDBMS.dir/server/src/integrity/IntegrityManagerImpl.cpp.i: cmake_force
@@ -281,11 +416,26 @@ CMakeFiles/miniDBMS.dir/server/src/integrity/IntegrityManagerImpl.cpp.s: cmake_f
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miniDBMS.dir/server/src/integrity/IntegrityManagerImpl.cpp.s"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\C++\Code_cpp\Database\miniDBMS\server\src\integrity\IntegrityManagerImpl.cpp -o CMakeFiles\miniDBMS.dir\server\src\integrity\IntegrityManagerImpl.cpp.s
 
+CMakeFiles/miniDBMS.dir/server/src/maintenance/DatabaseMaintenanceImpl.cpp.obj: CMakeFiles/miniDBMS.dir/flags.make
+CMakeFiles/miniDBMS.dir/server/src/maintenance/DatabaseMaintenanceImpl.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
+CMakeFiles/miniDBMS.dir/server/src/maintenance/DatabaseMaintenanceImpl.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/maintenance/DatabaseMaintenanceImpl.cpp
+CMakeFiles/miniDBMS.dir/server/src/maintenance/DatabaseMaintenanceImpl.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/maintenance/DatabaseMaintenanceImpl.cpp.obj"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/maintenance/DatabaseMaintenanceImpl.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\maintenance\DatabaseMaintenanceImpl.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\maintenance\DatabaseMaintenanceImpl.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\maintenance\DatabaseMaintenanceImpl.cpp
+
+CMakeFiles/miniDBMS.dir/server/src/maintenance/DatabaseMaintenanceImpl.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/miniDBMS.dir/server/src/maintenance/DatabaseMaintenanceImpl.cpp.i"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E E:\C++\Code_cpp\Database\miniDBMS\server\src\maintenance\DatabaseMaintenanceImpl.cpp > CMakeFiles\miniDBMS.dir\server\src\maintenance\DatabaseMaintenanceImpl.cpp.i
+
+CMakeFiles/miniDBMS.dir/server/src/maintenance/DatabaseMaintenanceImpl.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miniDBMS.dir/server/src/maintenance/DatabaseMaintenanceImpl.cpp.s"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\C++\Code_cpp\Database\miniDBMS\server\src\maintenance\DatabaseMaintenanceImpl.cpp -o CMakeFiles\miniDBMS.dir\server\src\maintenance\DatabaseMaintenanceImpl.cpp.s
+
 CMakeFiles/miniDBMS.dir/server/src/parser/Lexer.cpp.obj: CMakeFiles/miniDBMS.dir/flags.make
 CMakeFiles/miniDBMS.dir/server/src/parser/Lexer.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
 CMakeFiles/miniDBMS.dir/server/src/parser/Lexer.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/parser/Lexer.cpp
 CMakeFiles/miniDBMS.dir/server/src/parser/Lexer.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/parser/Lexer.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/parser/Lexer.cpp.obj"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/parser/Lexer.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\parser\Lexer.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\parser\Lexer.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\parser\Lexer.cpp
 
 CMakeFiles/miniDBMS.dir/server/src/parser/Lexer.cpp.i: cmake_force
@@ -300,7 +450,7 @@ CMakeFiles/miniDBMS.dir/server/src/parser/SQLParserImpl.cpp.obj: CMakeFiles/mini
 CMakeFiles/miniDBMS.dir/server/src/parser/SQLParserImpl.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
 CMakeFiles/miniDBMS.dir/server/src/parser/SQLParserImpl.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/parser/SQLParserImpl.cpp
 CMakeFiles/miniDBMS.dir/server/src/parser/SQLParserImpl.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/parser/SQLParserImpl.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/parser/SQLParserImpl.cpp.obj"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/parser/SQLParserImpl.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\parser\SQLParserImpl.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\parser\SQLParserImpl.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\parser\SQLParserImpl.cpp
 
 CMakeFiles/miniDBMS.dir/server/src/parser/SQLParserImpl.cpp.i: cmake_force
@@ -311,11 +461,26 @@ CMakeFiles/miniDBMS.dir/server/src/parser/SQLParserImpl.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miniDBMS.dir/server/src/parser/SQLParserImpl.cpp.s"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\C++\Code_cpp\Database\miniDBMS\server\src\parser\SQLParserImpl.cpp -o CMakeFiles\miniDBMS.dir\server\src\parser\SQLParserImpl.cpp.s
 
+CMakeFiles/miniDBMS.dir/server/src/security/SecurityManagerImpl.cpp.obj: CMakeFiles/miniDBMS.dir/flags.make
+CMakeFiles/miniDBMS.dir/server/src/security/SecurityManagerImpl.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
+CMakeFiles/miniDBMS.dir/server/src/security/SecurityManagerImpl.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/security/SecurityManagerImpl.cpp
+CMakeFiles/miniDBMS.dir/server/src/security/SecurityManagerImpl.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/security/SecurityManagerImpl.cpp.obj"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/security/SecurityManagerImpl.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\security\SecurityManagerImpl.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\security\SecurityManagerImpl.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\security\SecurityManagerImpl.cpp
+
+CMakeFiles/miniDBMS.dir/server/src/security/SecurityManagerImpl.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/miniDBMS.dir/server/src/security/SecurityManagerImpl.cpp.i"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E E:\C++\Code_cpp\Database\miniDBMS\server\src\security\SecurityManagerImpl.cpp > CMakeFiles\miniDBMS.dir\server\src\security\SecurityManagerImpl.cpp.i
+
+CMakeFiles/miniDBMS.dir/server/src/security/SecurityManagerImpl.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miniDBMS.dir/server/src/security/SecurityManagerImpl.cpp.s"
+	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S E:\C++\Code_cpp\Database\miniDBMS\server\src\security\SecurityManagerImpl.cpp -o CMakeFiles\miniDBMS.dir\server\src\security\SecurityManagerImpl.cpp.s
+
 CMakeFiles/miniDBMS.dir/server/src/storage/StorageEngineImpl.cpp.obj: CMakeFiles/miniDBMS.dir/flags.make
 CMakeFiles/miniDBMS.dir/server/src/storage/StorageEngineImpl.cpp.obj: CMakeFiles/miniDBMS.dir/includes_CXX.rsp
 CMakeFiles/miniDBMS.dir/server/src/storage/StorageEngineImpl.cpp.obj: E:/C++/Code_cpp/Database/miniDBMS/server/src/storage/StorageEngineImpl.cpp
 CMakeFiles/miniDBMS.dir/server/src/storage/StorageEngineImpl.cpp.obj: CMakeFiles/miniDBMS.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/storage/StorageEngineImpl.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object CMakeFiles/miniDBMS.dir/server/src/storage/StorageEngineImpl.cpp.obj"
 	E:\Environment\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miniDBMS.dir/server/src/storage/StorageEngineImpl.cpp.obj -MF CMakeFiles\miniDBMS.dir\server\src\storage\StorageEngineImpl.cpp.obj.d -o CMakeFiles\miniDBMS.dir\server\src\storage\StorageEngineImpl.cpp.obj -c E:\C++\Code_cpp\Database\miniDBMS\server\src\storage\StorageEngineImpl.cpp
 
 CMakeFiles/miniDBMS.dir/server/src/storage/StorageEngineImpl.cpp.i: cmake_force
@@ -330,20 +495,31 @@ CMakeFiles/miniDBMS.dir/server/src/storage/StorageEngineImpl.cpp.s: cmake_force
 miniDBMS_OBJECTS = \
 "CMakeFiles/miniDBMS.dir/server/main.cpp.obj" \
 "CMakeFiles/miniDBMS.dir/server/src/catalog/CatalogManagerImpl.cpp.obj" \
+"CMakeFiles/miniDBMS.dir/server/src/execution/AlterTableExecutor.cpp.obj" \
+"CMakeFiles/miniDBMS.dir/server/src/execution/BackupRestoreExecutor.cpp.obj" \
 "CMakeFiles/miniDBMS.dir/server/src/execution/CreateDatabaseExecutor.cpp.obj" \
 "CMakeFiles/miniDBMS.dir/server/src/execution/CreateExecutor.cpp.obj" \
 "CMakeFiles/miniDBMS.dir/server/src/execution/DeleteExecutor.cpp.obj" \
+"CMakeFiles/miniDBMS.dir/server/src/execution/DropDatabaseExecutor.cpp.obj" \
+"CMakeFiles/miniDBMS.dir/server/src/execution/DropTableExecutor.cpp.obj" \
 "CMakeFiles/miniDBMS.dir/server/src/execution/ExecutorFactory.cpp.obj" \
 "CMakeFiles/miniDBMS.dir/server/src/execution/InsertExecutor.cpp.obj" \
+"CMakeFiles/miniDBMS.dir/server/src/execution/QueryBuilder.cpp.obj" \
 "CMakeFiles/miniDBMS.dir/server/src/execution/SelectExecutor.cpp.obj" \
 "CMakeFiles/miniDBMS.dir/server/src/execution/UpdateExecutor.cpp.obj" \
 "CMakeFiles/miniDBMS.dir/server/src/execution/UseDatabaseExecutor.cpp.obj" \
+"CMakeFiles/miniDBMS.dir/server/src/execution/UserExecutor.cpp.obj" \
+"CMakeFiles/miniDBMS.dir/server/src/execution/operators/AggregateOperator.cpp.obj" \
 "CMakeFiles/miniDBMS.dir/server/src/execution/operators/FilterOperator.cpp.obj" \
+"CMakeFiles/miniDBMS.dir/server/src/execution/operators/JoinOperator.cpp.obj" \
 "CMakeFiles/miniDBMS.dir/server/src/execution/operators/ProjectOperator.cpp.obj" \
 "CMakeFiles/miniDBMS.dir/server/src/execution/operators/SeqScanOperator.cpp.obj" \
+"CMakeFiles/miniDBMS.dir/server/src/execution/operators/SortOperator.cpp.obj" \
 "CMakeFiles/miniDBMS.dir/server/src/integrity/IntegrityManagerImpl.cpp.obj" \
+"CMakeFiles/miniDBMS.dir/server/src/maintenance/DatabaseMaintenanceImpl.cpp.obj" \
 "CMakeFiles/miniDBMS.dir/server/src/parser/Lexer.cpp.obj" \
 "CMakeFiles/miniDBMS.dir/server/src/parser/SQLParserImpl.cpp.obj" \
+"CMakeFiles/miniDBMS.dir/server/src/security/SecurityManagerImpl.cpp.obj" \
 "CMakeFiles/miniDBMS.dir/server/src/storage/StorageEngineImpl.cpp.obj"
 
 # External object files for target miniDBMS
@@ -351,26 +527,37 @@ miniDBMS_EXTERNAL_OBJECTS =
 
 miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/main.cpp.obj
 miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/catalog/CatalogManagerImpl.cpp.obj
+miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/execution/AlterTableExecutor.cpp.obj
+miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/execution/BackupRestoreExecutor.cpp.obj
 miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/execution/CreateDatabaseExecutor.cpp.obj
 miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/execution/CreateExecutor.cpp.obj
 miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/execution/DeleteExecutor.cpp.obj
+miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/execution/DropDatabaseExecutor.cpp.obj
+miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/execution/DropTableExecutor.cpp.obj
 miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/execution/ExecutorFactory.cpp.obj
 miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/execution/InsertExecutor.cpp.obj
+miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/execution/QueryBuilder.cpp.obj
 miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/execution/SelectExecutor.cpp.obj
 miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/execution/UpdateExecutor.cpp.obj
 miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/execution/UseDatabaseExecutor.cpp.obj
+miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/execution/UserExecutor.cpp.obj
+miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/execution/operators/AggregateOperator.cpp.obj
 miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/execution/operators/FilterOperator.cpp.obj
+miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/execution/operators/JoinOperator.cpp.obj
 miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/execution/operators/ProjectOperator.cpp.obj
 miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/execution/operators/SeqScanOperator.cpp.obj
+miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/execution/operators/SortOperator.cpp.obj
 miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/integrity/IntegrityManagerImpl.cpp.obj
+miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/maintenance/DatabaseMaintenanceImpl.cpp.obj
 miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/parser/Lexer.cpp.obj
 miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/parser/SQLParserImpl.cpp.obj
+miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/security/SecurityManagerImpl.cpp.obj
 miniDBMS.exe: CMakeFiles/miniDBMS.dir/server/src/storage/StorageEngineImpl.cpp.obj
 miniDBMS.exe: CMakeFiles/miniDBMS.dir/build.make
 miniDBMS.exe: CMakeFiles/miniDBMS.dir/linkLibs.rsp
 miniDBMS.exe: CMakeFiles/miniDBMS.dir/objects1.rsp
 miniDBMS.exe: CMakeFiles/miniDBMS.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Linking CXX executable miniDBMS.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=E:\C++\Code_cpp\Database\miniDBMS\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Linking CXX executable miniDBMS.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\miniDBMS.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

@@ -480,4 +480,13 @@ CMakeFiles/miniDBMS.dir/server/src/integrity/IntegrityManagerImpl.cpp.obj: \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/unique_ptr.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/fs_dir.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/fs_ops.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/functional \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/std_function.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/unordered_map \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/unordered_map.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/hashtable.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/hashtable_policy.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/enable_special_members.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/array \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/compare \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/iostream

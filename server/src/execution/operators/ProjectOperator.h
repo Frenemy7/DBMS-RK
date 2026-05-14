@@ -6,19 +6,28 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <functional>
 
 namespace Execution {
 
     class ProjectOperator : public IOperator {
     private:
-        std::unique_ptr<IOperator> child_; // 流水线的上一环（比如 Scan 或 Filter）
-        std::vector<std::string> targetFields_; // 用户想要查询的列名 (如 "name", "age")
-        
-        std::vector<Meta::FieldBlock> outputSchema_; // 裁剪后的表头
-        std::vector<int> keepIndices_; // 记录需要保留的列在原数据中的下标
+        std::unique_ptr<IOperator> child_;
+        std::vector<std::string> targetFields_;
+        std::vector<Parser::ASTNode*> targetASTs_;  // 完整的 SELECT 项 AST（用于求值）
+
+        std::vector<Meta::FieldBlock> outputSchema_;
+        std::vector<int> keepIndices_;
+        std::vector<Parser::ASTNode*> computedExprs_; // keepIndices_[i]==-1 时对应的表达式
+
+        // 表达式求值（复刻 FilterOperator 的逻辑）
+        std::string evalExpr(Parser::ASTNode* node, const std::vector<std::string>& row);
+        int findCol(const std::string& name) const;
 
     public:
-        ProjectOperator(std::unique_ptr<IOperator> child, const std::vector<std::string>& targets);
+        ProjectOperator(std::unique_ptr<IOperator> child,
+                        const std::vector<std::string>& targets,
+                        const std::vector<Parser::ASTNode*>& astTargets = {});
         ~ProjectOperator() override = default;
 
         bool init() override;

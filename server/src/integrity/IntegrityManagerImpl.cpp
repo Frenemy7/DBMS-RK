@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <functional>
 #include <iostream>
 #include <limits>
 #include <map>
@@ -248,6 +249,14 @@ namespace Integrity {
                         return false;
                     }
                     break;
+                case CHECK_CONSTRAINT: {
+                    std::string cond = safeString(integrity.param, Common::MAX_PATH_LEN);
+                    if (!checkConstraint(cond, valueMap, fields)) {
+                        std::cerr << "Error: CHECK 约束违反。" << std::endl;
+                        return false;
+                    }
+                    break;
+                }
                 case FOREIGN_KEY: {
                     if (isNullValue(value)) break;
 
@@ -298,6 +307,16 @@ namespace Integrity {
                         return false;
                     }
                     break;
+                case CHECK_CONSTRAINT: {
+                    auto fields = catalog->getFields(tableName);
+                    std::map<std::string, std::string> vm; vm[field] = value;
+                    std::string cond = safeString(integrity.param, Common::MAX_PATH_LEN);
+                    if (!checkConstraint(cond, vm, fields)) {
+                        std::cerr << "Error: CHECK 约束违反。" << std::endl;
+                        return false;
+                    }
+                    break;
+                }
                 case FOREIGN_KEY: {
                     if (isNullValue(value)) break;
 
@@ -523,6 +542,114 @@ namespace Integrity {
         }
 
         return "";
+    }
+
+    // CHECK 约束简单求值：替换列名为实际值，然后做数值或字符串比较
+    bool IntegrityManagerImpl::checkConstraint(const std::string& condition,
+                                                const std::map<std::string, std::string>& valueMap,
+                                                const std::vector<Meta::FieldBlock>& fields) {
+        std::string expr = condition;
+
+        // 替换列名为实际值
+        for (const auto& f : fields) {
+            std::string name = safeString(f.name, Common::MAX_NAME_LEN);
+            auto it = valueMap.find(name);
+            if (it != valueMap.end()) {
+                std::string val = it->second;
+                // 去引号
+                if (val.size() >= 2 && val.front() == '\'' && val.back() == '\'')
+                    val = val.substr(1, val.size() - 2);
+                // 单词级别的替换（防止 "age" 匹配 "age2"）
+                size_t pos = 0;
+                while ((pos = expr.find(name, pos)) != std::string::npos) {
+                    bool leftOk = (pos == 0 || !std::isalnum(static_cast<unsigned char>(expr[pos - 1])));
+                    bool rightOk = (pos + name.size() >= expr.size() || !std::isalnum(static_cast<unsigned char>(expr[pos + name.size()])));
+                    if (leftOk && rightOk) {
+                        expr.replace(pos, name.size(), val);
+                        pos += val.size();
+                    } else {
+                        pos += name.size();
+                    }
+                }
+            }
+        }
+
+        // 解析 AND/OR 连接的子条件
+        // 先在顶层按 AND 拆，再按 OR 拆，递归求值
+        // 查找顶层 AND（不在括号内的）
+        std::function<bool(std::string)> evalExpr = [&](std::string s) -> bool {
+            // 去除外层空格
+            while (!s.empty() && s.front() == ' ') s.erase(0, 1);
+            while (!s.empty() && s.back() == ' ') s.pop_back();
+
+            // 查找顶层 AND
+            int depth = 0;
+            for (size_t i = 0; i < s.size(); ++i) {
+                if (s[i] == '(') depth++;
+                else if (s[i] == ')') depth--;
+                else if (depth == 0 && i + 4 <= s.size() && s.substr(i, 4) == " AND") {
+                    return evalExpr(s.substr(0, i)) && evalExpr(s.substr(i + 4));
+                }
+            }
+
+            // 查找顶层 OR
+            depth = 0;
+            for (size_t i = 0; i < s.size(); ++i) {
+                if (s[i] == '(') depth++;
+                else if (s[i] == ')') depth--;
+                else if (depth == 0 && i + 3 <= s.size() && s.substr(i, 3) == " OR") {
+                    return evalExpr(s.substr(0, i)) || evalExpr(s.substr(i + 3));
+                }
+            }
+
+            // 去除外层括号
+            if (!s.empty() && s.front() == '(' && s.back() == ')')
+                return evalExpr(s.substr(1, s.size() - 2));
+
+            // 单个比较：左值 op 右值
+            // 支持的运算符：>= <= <> != = > <
+            std::string op;
+            size_t opPos = std::string::npos;
+
+            auto findOp = [&](const std::string& o) -> bool {
+                size_t p = s.find(o);
+                if (p != std::string::npos && p > 0 && p < s.size() - o.size()) {
+                    op = o; opPos = p; return true;
+                }
+                return false;
+            };
+
+            if (!findOp(">=") && !findOp("<=") && !findOp("<>") && !findOp("!=")
+                && !findOp("=") && !findOp(">") && !findOp("<"))
+                return false;
+
+            std::string lv = s.substr(0, opPos);
+            std::string rv = s.substr(opPos + op.size());
+            // 去空格
+            while (!lv.empty() && lv.back() == ' ') lv.pop_back();
+            while (!rv.empty() && rv.front() == ' ') rv.erase(0, 1);
+
+            // 尝试数值比较
+            try {
+                double ln = std::stod(lv), rn = std::stod(rv);
+                if (op == "=" || op == "==") return std::fabs(ln - rn) < 1e-9;
+                if (op == "!=" || op == "<>") return std::fabs(ln - rn) >= 1e-9;
+                if (op == ">") return ln > rn;
+                if (op == "<") return ln < rn;
+                if (op == ">=") return ln >= rn;
+                if (op == "<=") return ln <= rn;
+            } catch (...) {}
+            // 字符串比较
+            if (op == "=") return lv == rv;
+            if (op == "!=" || op == "<>") return lv != rv;
+            if (op == ">") return lv > rv;
+            if (op == "<") return lv < rv;
+            if (op == ">=") return lv >= rv;
+            if (op == "<=") return lv <= rv;
+            return false;
+        };
+
+        return evalExpr(expr);
     }
 
     std::vector<std::string> IntegrityManagerImpl::listCurrentDatabaseTables() {

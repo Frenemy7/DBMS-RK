@@ -406,6 +406,30 @@ CMakeFiles/miniDBMS.dir/server/src/execution/operators/FilterOperator.cpp.obj: \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/backward/auto_ptr.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/pstl/glue_memory_defs.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/pstl/execution_defs.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/src/execution/QueryBuilder.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/execution/IOperator.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/parser/ASTNode.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/parser/SelectASTNode.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/parser/ASTNode.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/catalog/ICatalogManager.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/meta/TableMeta.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/storage/IStorageEngine.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/cmath \
+ E:/Environment/mingw64/x86_64-w64-mingw32/include/math.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/specfun.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/limits \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/tr1/gamma.tcc \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/tr1/special_function_util.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/tr1/bessel_function.tcc \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/tr1/beta_function.tcc \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/tr1/ell_integral.tcc \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/tr1/exp_integral.tcc \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/tr1/hypergeometric.tcc \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/tr1/legendre_function.tcc \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/tr1/modified_bessel_func.tcc \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/tr1/poly_hermite.tcc \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/tr1/poly_laguerre.tcc \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/tr1/riemann_zeta.tcc \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/iostream \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/ostream \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/ostream.h \
@@ -429,4 +453,10 @@ CMakeFiles/miniDBMS.dir/server/src/execution/operators/FilterOperator.cpp.obj: \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/basic_ios.tcc \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/ostream.tcc \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/istream \
- E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/istream.tcc
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/istream.tcc \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/algorithm \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_algo.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/algorithmfwd.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_heap.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/uniform_int_dist.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/pstl/glue_algorithm_defs.h

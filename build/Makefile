@@ -176,6 +176,54 @@ server/src/catalog/CatalogManagerImpl.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/catalog/CatalogManagerImpl.cpp.s
 .PHONY : server/src/catalog/CatalogManagerImpl.cpp.s
 
+server/src/execution/AlterTableExecutor.obj: server/src/execution/AlterTableExecutor.cpp.obj
+.PHONY : server/src/execution/AlterTableExecutor.obj
+
+# target to build an object file
+server/src/execution/AlterTableExecutor.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/AlterTableExecutor.cpp.obj
+.PHONY : server/src/execution/AlterTableExecutor.cpp.obj
+
+server/src/execution/AlterTableExecutor.i: server/src/execution/AlterTableExecutor.cpp.i
+.PHONY : server/src/execution/AlterTableExecutor.i
+
+# target to preprocess a source file
+server/src/execution/AlterTableExecutor.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/AlterTableExecutor.cpp.i
+.PHONY : server/src/execution/AlterTableExecutor.cpp.i
+
+server/src/execution/AlterTableExecutor.s: server/src/execution/AlterTableExecutor.cpp.s
+.PHONY : server/src/execution/AlterTableExecutor.s
+
+# target to generate assembly for a file
+server/src/execution/AlterTableExecutor.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/AlterTableExecutor.cpp.s
+.PHONY : server/src/execution/AlterTableExecutor.cpp.s
+
+server/src/execution/BackupRestoreExecutor.obj: server/src/execution/BackupRestoreExecutor.cpp.obj
+.PHONY : server/src/execution/BackupRestoreExecutor.obj
+
+# target to build an object file
+server/src/execution/BackupRestoreExecutor.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/BackupRestoreExecutor.cpp.obj
+.PHONY : server/src/execution/BackupRestoreExecutor.cpp.obj
+
+server/src/execution/BackupRestoreExecutor.i: server/src/execution/BackupRestoreExecutor.cpp.i
+.PHONY : server/src/execution/BackupRestoreExecutor.i
+
+# target to preprocess a source file
+server/src/execution/BackupRestoreExecutor.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/BackupRestoreExecutor.cpp.i
+.PHONY : server/src/execution/BackupRestoreExecutor.cpp.i
+
+server/src/execution/BackupRestoreExecutor.s: server/src/execution/BackupRestoreExecutor.cpp.s
+.PHONY : server/src/execution/BackupRestoreExecutor.s
+
+# target to generate assembly for a file
+server/src/execution/BackupRestoreExecutor.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/BackupRestoreExecutor.cpp.s
+.PHONY : server/src/execution/BackupRestoreExecutor.cpp.s
+
 server/src/execution/CreateDatabaseExecutor.obj: server/src/execution/CreateDatabaseExecutor.cpp.obj
 .PHONY : server/src/execution/CreateDatabaseExecutor.obj
 
@@ -248,6 +296,54 @@ server/src/execution/DeleteExecutor.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/DeleteExecutor.cpp.s
 .PHONY : server/src/execution/DeleteExecutor.cpp.s
 
+server/src/execution/DropDatabaseExecutor.obj: server/src/execution/DropDatabaseExecutor.cpp.obj
+.PHONY : server/src/execution/DropDatabaseExecutor.obj
+
+# target to build an object file
+server/src/execution/DropDatabaseExecutor.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/DropDatabaseExecutor.cpp.obj
+.PHONY : server/src/execution/DropDatabaseExecutor.cpp.obj
+
+server/src/execution/DropDatabaseExecutor.i: server/src/execution/DropDatabaseExecutor.cpp.i
+.PHONY : server/src/execution/DropDatabaseExecutor.i
+
+# target to preprocess a source file
+server/src/execution/DropDatabaseExecutor.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/DropDatabaseExecutor.cpp.i
+.PHONY : server/src/execution/DropDatabaseExecutor.cpp.i
+
+server/src/execution/DropDatabaseExecutor.s: server/src/execution/DropDatabaseExecutor.cpp.s
+.PHONY : server/src/execution/DropDatabaseExecutor.s
+
+# target to generate assembly for a file
+server/src/execution/DropDatabaseExecutor.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/DropDatabaseExecutor.cpp.s
+.PHONY : server/src/execution/DropDatabaseExecutor.cpp.s
+
+server/src/execution/DropTableExecutor.obj: server/src/execution/DropTableExecutor.cpp.obj
+.PHONY : server/src/execution/DropTableExecutor.obj
+
+# target to build an object file
+server/src/execution/DropTableExecutor.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/DropTableExecutor.cpp.obj
+.PHONY : server/src/execution/DropTableExecutor.cpp.obj
+
+server/src/execution/DropTableExecutor.i: server/src/execution/DropTableExecutor.cpp.i
+.PHONY : server/src/execution/DropTableExecutor.i
+
+# target to preprocess a source file
+server/src/execution/DropTableExecutor.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/DropTableExecutor.cpp.i
+.PHONY : server/src/execution/DropTableExecutor.cpp.i
+
+server/src/execution/DropTableExecutor.s: server/src/execution/DropTableExecutor.cpp.s
+.PHONY : server/src/execution/DropTableExecutor.s
+
+# target to generate assembly for a file
+server/src/execution/DropTableExecutor.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/DropTableExecutor.cpp.s
+.PHONY : server/src/execution/DropTableExecutor.cpp.s
+
 server/src/execution/ExecutorFactory.obj: server/src/execution/ExecutorFactory.cpp.obj
 .PHONY : server/src/execution/ExecutorFactory.obj
 
@@ -295,6 +391,30 @@ server/src/execution/InsertExecutor.s: server/src/execution/InsertExecutor.cpp.s
 server/src/execution/InsertExecutor.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/InsertExecutor.cpp.s
 .PHONY : server/src/execution/InsertExecutor.cpp.s
+
+server/src/execution/QueryBuilder.obj: server/src/execution/QueryBuilder.cpp.obj
+.PHONY : server/src/execution/QueryBuilder.obj
+
+# target to build an object file
+server/src/execution/QueryBuilder.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/QueryBuilder.cpp.obj
+.PHONY : server/src/execution/QueryBuilder.cpp.obj
+
+server/src/execution/QueryBuilder.i: server/src/execution/QueryBuilder.cpp.i
+.PHONY : server/src/execution/QueryBuilder.i
+
+# target to preprocess a source file
+server/src/execution/QueryBuilder.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/QueryBuilder.cpp.i
+.PHONY : server/src/execution/QueryBuilder.cpp.i
+
+server/src/execution/QueryBuilder.s: server/src/execution/QueryBuilder.cpp.s
+.PHONY : server/src/execution/QueryBuilder.s
+
+# target to generate assembly for a file
+server/src/execution/QueryBuilder.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/QueryBuilder.cpp.s
+.PHONY : server/src/execution/QueryBuilder.cpp.s
 
 server/src/execution/SelectExecutor.obj: server/src/execution/SelectExecutor.cpp.obj
 .PHONY : server/src/execution/SelectExecutor.obj
@@ -368,6 +488,54 @@ server/src/execution/UseDatabaseExecutor.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/UseDatabaseExecutor.cpp.s
 .PHONY : server/src/execution/UseDatabaseExecutor.cpp.s
 
+server/src/execution/UserExecutor.obj: server/src/execution/UserExecutor.cpp.obj
+.PHONY : server/src/execution/UserExecutor.obj
+
+# target to build an object file
+server/src/execution/UserExecutor.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/UserExecutor.cpp.obj
+.PHONY : server/src/execution/UserExecutor.cpp.obj
+
+server/src/execution/UserExecutor.i: server/src/execution/UserExecutor.cpp.i
+.PHONY : server/src/execution/UserExecutor.i
+
+# target to preprocess a source file
+server/src/execution/UserExecutor.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/UserExecutor.cpp.i
+.PHONY : server/src/execution/UserExecutor.cpp.i
+
+server/src/execution/UserExecutor.s: server/src/execution/UserExecutor.cpp.s
+.PHONY : server/src/execution/UserExecutor.s
+
+# target to generate assembly for a file
+server/src/execution/UserExecutor.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/UserExecutor.cpp.s
+.PHONY : server/src/execution/UserExecutor.cpp.s
+
+server/src/execution/operators/AggregateOperator.obj: server/src/execution/operators/AggregateOperator.cpp.obj
+.PHONY : server/src/execution/operators/AggregateOperator.obj
+
+# target to build an object file
+server/src/execution/operators/AggregateOperator.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/operators/AggregateOperator.cpp.obj
+.PHONY : server/src/execution/operators/AggregateOperator.cpp.obj
+
+server/src/execution/operators/AggregateOperator.i: server/src/execution/operators/AggregateOperator.cpp.i
+.PHONY : server/src/execution/operators/AggregateOperator.i
+
+# target to preprocess a source file
+server/src/execution/operators/AggregateOperator.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/operators/AggregateOperator.cpp.i
+.PHONY : server/src/execution/operators/AggregateOperator.cpp.i
+
+server/src/execution/operators/AggregateOperator.s: server/src/execution/operators/AggregateOperator.cpp.s
+.PHONY : server/src/execution/operators/AggregateOperator.s
+
+# target to generate assembly for a file
+server/src/execution/operators/AggregateOperator.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/operators/AggregateOperator.cpp.s
+.PHONY : server/src/execution/operators/AggregateOperator.cpp.s
+
 server/src/execution/operators/FilterOperator.obj: server/src/execution/operators/FilterOperator.cpp.obj
 .PHONY : server/src/execution/operators/FilterOperator.obj
 
@@ -391,6 +559,30 @@ server/src/execution/operators/FilterOperator.s: server/src/execution/operators/
 server/src/execution/operators/FilterOperator.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/operators/FilterOperator.cpp.s
 .PHONY : server/src/execution/operators/FilterOperator.cpp.s
+
+server/src/execution/operators/JoinOperator.obj: server/src/execution/operators/JoinOperator.cpp.obj
+.PHONY : server/src/execution/operators/JoinOperator.obj
+
+# target to build an object file
+server/src/execution/operators/JoinOperator.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/operators/JoinOperator.cpp.obj
+.PHONY : server/src/execution/operators/JoinOperator.cpp.obj
+
+server/src/execution/operators/JoinOperator.i: server/src/execution/operators/JoinOperator.cpp.i
+.PHONY : server/src/execution/operators/JoinOperator.i
+
+# target to preprocess a source file
+server/src/execution/operators/JoinOperator.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/operators/JoinOperator.cpp.i
+.PHONY : server/src/execution/operators/JoinOperator.cpp.i
+
+server/src/execution/operators/JoinOperator.s: server/src/execution/operators/JoinOperator.cpp.s
+.PHONY : server/src/execution/operators/JoinOperator.s
+
+# target to generate assembly for a file
+server/src/execution/operators/JoinOperator.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/operators/JoinOperator.cpp.s
+.PHONY : server/src/execution/operators/JoinOperator.cpp.s
 
 server/src/execution/operators/ProjectOperator.obj: server/src/execution/operators/ProjectOperator.cpp.obj
 .PHONY : server/src/execution/operators/ProjectOperator.obj
@@ -440,6 +632,30 @@ server/src/execution/operators/SeqScanOperator.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/operators/SeqScanOperator.cpp.s
 .PHONY : server/src/execution/operators/SeqScanOperator.cpp.s
 
+server/src/execution/operators/SortOperator.obj: server/src/execution/operators/SortOperator.cpp.obj
+.PHONY : server/src/execution/operators/SortOperator.obj
+
+# target to build an object file
+server/src/execution/operators/SortOperator.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/operators/SortOperator.cpp.obj
+.PHONY : server/src/execution/operators/SortOperator.cpp.obj
+
+server/src/execution/operators/SortOperator.i: server/src/execution/operators/SortOperator.cpp.i
+.PHONY : server/src/execution/operators/SortOperator.i
+
+# target to preprocess a source file
+server/src/execution/operators/SortOperator.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/operators/SortOperator.cpp.i
+.PHONY : server/src/execution/operators/SortOperator.cpp.i
+
+server/src/execution/operators/SortOperator.s: server/src/execution/operators/SortOperator.cpp.s
+.PHONY : server/src/execution/operators/SortOperator.s
+
+# target to generate assembly for a file
+server/src/execution/operators/SortOperator.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/execution/operators/SortOperator.cpp.s
+.PHONY : server/src/execution/operators/SortOperator.cpp.s
+
 server/src/integrity/IntegrityManagerImpl.obj: server/src/integrity/IntegrityManagerImpl.cpp.obj
 .PHONY : server/src/integrity/IntegrityManagerImpl.obj
 
@@ -463,6 +679,30 @@ server/src/integrity/IntegrityManagerImpl.s: server/src/integrity/IntegrityManag
 server/src/integrity/IntegrityManagerImpl.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/integrity/IntegrityManagerImpl.cpp.s
 .PHONY : server/src/integrity/IntegrityManagerImpl.cpp.s
+
+server/src/maintenance/DatabaseMaintenanceImpl.obj: server/src/maintenance/DatabaseMaintenanceImpl.cpp.obj
+.PHONY : server/src/maintenance/DatabaseMaintenanceImpl.obj
+
+# target to build an object file
+server/src/maintenance/DatabaseMaintenanceImpl.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/maintenance/DatabaseMaintenanceImpl.cpp.obj
+.PHONY : server/src/maintenance/DatabaseMaintenanceImpl.cpp.obj
+
+server/src/maintenance/DatabaseMaintenanceImpl.i: server/src/maintenance/DatabaseMaintenanceImpl.cpp.i
+.PHONY : server/src/maintenance/DatabaseMaintenanceImpl.i
+
+# target to preprocess a source file
+server/src/maintenance/DatabaseMaintenanceImpl.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/maintenance/DatabaseMaintenanceImpl.cpp.i
+.PHONY : server/src/maintenance/DatabaseMaintenanceImpl.cpp.i
+
+server/src/maintenance/DatabaseMaintenanceImpl.s: server/src/maintenance/DatabaseMaintenanceImpl.cpp.s
+.PHONY : server/src/maintenance/DatabaseMaintenanceImpl.s
+
+# target to generate assembly for a file
+server/src/maintenance/DatabaseMaintenanceImpl.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/maintenance/DatabaseMaintenanceImpl.cpp.s
+.PHONY : server/src/maintenance/DatabaseMaintenanceImpl.cpp.s
 
 server/src/parser/Lexer.obj: server/src/parser/Lexer.cpp.obj
 .PHONY : server/src/parser/Lexer.obj
@@ -512,6 +752,30 @@ server/src/parser/SQLParserImpl.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/parser/SQLParserImpl.cpp.s
 .PHONY : server/src/parser/SQLParserImpl.cpp.s
 
+server/src/security/SecurityManagerImpl.obj: server/src/security/SecurityManagerImpl.cpp.obj
+.PHONY : server/src/security/SecurityManagerImpl.obj
+
+# target to build an object file
+server/src/security/SecurityManagerImpl.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/security/SecurityManagerImpl.cpp.obj
+.PHONY : server/src/security/SecurityManagerImpl.cpp.obj
+
+server/src/security/SecurityManagerImpl.i: server/src/security/SecurityManagerImpl.cpp.i
+.PHONY : server/src/security/SecurityManagerImpl.i
+
+# target to preprocess a source file
+server/src/security/SecurityManagerImpl.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/security/SecurityManagerImpl.cpp.i
+.PHONY : server/src/security/SecurityManagerImpl.cpp.i
+
+server/src/security/SecurityManagerImpl.s: server/src/security/SecurityManagerImpl.cpp.s
+.PHONY : server/src/security/SecurityManagerImpl.s
+
+# target to generate assembly for a file
+server/src/security/SecurityManagerImpl.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miniDBMS.dir\build.make CMakeFiles/miniDBMS.dir/server/src/security/SecurityManagerImpl.cpp.s
+.PHONY : server/src/security/SecurityManagerImpl.cpp.s
+
 server/src/storage/StorageEngineImpl.obj: server/src/storage/StorageEngineImpl.cpp.obj
 .PHONY : server/src/storage/StorageEngineImpl.obj
 
@@ -551,6 +815,12 @@ help:
 	@echo ... server/src/catalog/CatalogManagerImpl.obj
 	@echo ... server/src/catalog/CatalogManagerImpl.i
 	@echo ... server/src/catalog/CatalogManagerImpl.s
+	@echo ... server/src/execution/AlterTableExecutor.obj
+	@echo ... server/src/execution/AlterTableExecutor.i
+	@echo ... server/src/execution/AlterTableExecutor.s
+	@echo ... server/src/execution/BackupRestoreExecutor.obj
+	@echo ... server/src/execution/BackupRestoreExecutor.i
+	@echo ... server/src/execution/BackupRestoreExecutor.s
 	@echo ... server/src/execution/CreateDatabaseExecutor.obj
 	@echo ... server/src/execution/CreateDatabaseExecutor.i
 	@echo ... server/src/execution/CreateDatabaseExecutor.s
@@ -560,12 +830,21 @@ help:
 	@echo ... server/src/execution/DeleteExecutor.obj
 	@echo ... server/src/execution/DeleteExecutor.i
 	@echo ... server/src/execution/DeleteExecutor.s
+	@echo ... server/src/execution/DropDatabaseExecutor.obj
+	@echo ... server/src/execution/DropDatabaseExecutor.i
+	@echo ... server/src/execution/DropDatabaseExecutor.s
+	@echo ... server/src/execution/DropTableExecutor.obj
+	@echo ... server/src/execution/DropTableExecutor.i
+	@echo ... server/src/execution/DropTableExecutor.s
 	@echo ... server/src/execution/ExecutorFactory.obj
 	@echo ... server/src/execution/ExecutorFactory.i
 	@echo ... server/src/execution/ExecutorFactory.s
 	@echo ... server/src/execution/InsertExecutor.obj
 	@echo ... server/src/execution/InsertExecutor.i
 	@echo ... server/src/execution/InsertExecutor.s
+	@echo ... server/src/execution/QueryBuilder.obj
+	@echo ... server/src/execution/QueryBuilder.i
+	@echo ... server/src/execution/QueryBuilder.s
 	@echo ... server/src/execution/SelectExecutor.obj
 	@echo ... server/src/execution/SelectExecutor.i
 	@echo ... server/src/execution/SelectExecutor.s
@@ -575,24 +854,42 @@ help:
 	@echo ... server/src/execution/UseDatabaseExecutor.obj
 	@echo ... server/src/execution/UseDatabaseExecutor.i
 	@echo ... server/src/execution/UseDatabaseExecutor.s
+	@echo ... server/src/execution/UserExecutor.obj
+	@echo ... server/src/execution/UserExecutor.i
+	@echo ... server/src/execution/UserExecutor.s
+	@echo ... server/src/execution/operators/AggregateOperator.obj
+	@echo ... server/src/execution/operators/AggregateOperator.i
+	@echo ... server/src/execution/operators/AggregateOperator.s
 	@echo ... server/src/execution/operators/FilterOperator.obj
 	@echo ... server/src/execution/operators/FilterOperator.i
 	@echo ... server/src/execution/operators/FilterOperator.s
+	@echo ... server/src/execution/operators/JoinOperator.obj
+	@echo ... server/src/execution/operators/JoinOperator.i
+	@echo ... server/src/execution/operators/JoinOperator.s
 	@echo ... server/src/execution/operators/ProjectOperator.obj
 	@echo ... server/src/execution/operators/ProjectOperator.i
 	@echo ... server/src/execution/operators/ProjectOperator.s
 	@echo ... server/src/execution/operators/SeqScanOperator.obj
 	@echo ... server/src/execution/operators/SeqScanOperator.i
 	@echo ... server/src/execution/operators/SeqScanOperator.s
+	@echo ... server/src/execution/operators/SortOperator.obj
+	@echo ... server/src/execution/operators/SortOperator.i
+	@echo ... server/src/execution/operators/SortOperator.s
 	@echo ... server/src/integrity/IntegrityManagerImpl.obj
 	@echo ... server/src/integrity/IntegrityManagerImpl.i
 	@echo ... server/src/integrity/IntegrityManagerImpl.s
+	@echo ... server/src/maintenance/DatabaseMaintenanceImpl.obj
+	@echo ... server/src/maintenance/DatabaseMaintenanceImpl.i
+	@echo ... server/src/maintenance/DatabaseMaintenanceImpl.s
 	@echo ... server/src/parser/Lexer.obj
 	@echo ... server/src/parser/Lexer.i
 	@echo ... server/src/parser/Lexer.s
 	@echo ... server/src/parser/SQLParserImpl.obj
 	@echo ... server/src/parser/SQLParserImpl.i
 	@echo ... server/src/parser/SQLParserImpl.s
+	@echo ... server/src/security/SecurityManagerImpl.obj
+	@echo ... server/src/security/SecurityManagerImpl.i
+	@echo ... server/src/security/SecurityManagerImpl.s
 	@echo ... server/src/storage/StorageEngineImpl.obj
 	@echo ... server/src/storage/StorageEngineImpl.i
 	@echo ... server/src/storage/StorageEngineImpl.s

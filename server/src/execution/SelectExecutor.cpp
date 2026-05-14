@@ -1,94 +1,218 @@
 #include "SelectExecutor.h"
+#include "QueryBuilder.h"
 #include "operators/SeqScanOperator.h"
 #include "operators/FilterOperator.h"
 #include "operators/ProjectOperator.h"
+#include "operators/JoinOperator.h"
+#include "operators/AggregateOperator.h"
+#include "operators/SortOperator.h"
+#include "../../include/parser/SelectASTNode.h"
+#include <algorithm>
 #include <iostream>
 #include <iomanip>
 
+namespace {
+
+// 从 HAVING AST 中收集聚合函数名，AggregateOperator 需要计算这些列
+void collectHavingAggs(Parser::ASTNode* node, std::vector<std::string>& out) {
+    if (!node) return;
+    if (auto bin = dynamic_cast<Parser::BinaryOperatorNode*>(node)) {
+        collectHavingAggs(bin->left.get(), out);
+        collectHavingAggs(bin->right.get(), out);
+    }
+    if (auto func = dynamic_cast<Parser::FunctionCallNode*>(node)) {
+        out.push_back(func->functionName);
+    }
+}
+
+} // namespace
+
 namespace Execution {
 
-    SelectExecutor::SelectExecutor(std::unique_ptr<Parser::SelectASTNode> ast,
-                                   Catalog::ICatalogManager* catalog,
-                                   Storage::IStorageEngine* storage)
-        : astNode(std::move(ast)), catalogManager(catalog), storageEngine(storage) {}
+SelectExecutor::SelectExecutor(std::unique_ptr<Parser::SelectASTNode> ast,
+                               Catalog::ICatalogManager* catalog,
+                               Storage::IStorageEngine* storage)
+    : astNode(std::move(ast)), catalogManager(catalog), storageEngine(storage) {}
 
-    bool SelectExecutor::execute() {
-        if (!astNode || !catalogManager || !storageEngine) {
-            std::cerr << "[执行错误] SelectExecutor 依赖缺失！" << std::endl;
-            return false;
+bool SelectExecutor::execute() {
+    if (!astNode || !catalogManager || !storageEngine) {
+        std::cerr << "[执行错误] SelectExecutor 依赖缺失！" << std::endl;
+        return false;
+    }
+
+    // 1. 从 FROM/JOIN 构建底层算子
+    std::unique_ptr<IOperator> rootOp = buildTableSource(astNode->fromSource.get(), catalogManager, storageEngine);
+    if (!rootOp) {
+        std::cerr << "Error: 无法解析 FROM 子句。" << std::endl;
+        return false;
+    }
+
+    // 提取主查询的别名和 schema（用于关联子查询）
+    std::string mainAlias;
+    std::vector<Meta::FieldBlock> mainSchema;
+    if (auto tableNode = dynamic_cast<Parser::TableNode*>(astNode->fromSource.get())) {
+        mainAlias = tableNode->alias.empty() ? tableNode->tableName : tableNode->alias;
+        if (catalogManager->hasTable(tableNode->tableName)) {
+            mainSchema = catalogManager->getFields(tableNode->tableName);
+            std::sort(mainSchema.begin(), mainSchema.end(),
+                [](const Meta::FieldBlock& a, const Meta::FieldBlock& b) { return a.order < b.order; });
         }
+    }
 
-        std::unique_ptr<IOperator> rootOperator = nullptr;
+    // 2. WHERE → Filter
+    if (astNode->whereExpressionTree) {
+        auto f = std::make_unique<FilterOperator>(std::move(rootOp), astNode->whereExpressionTree.get());
+        f->setSubqueryContext(catalogManager, storageEngine);
+        f->setOuterContext(nullptr, mainSchema, mainAlias);
+        rootOp = std::move(f);
+    }
 
-        // 解析 AST，自底向上拼装
-        // 解析 FROM 子句 (生成 SeqScan 底层扫描车间)
-        if (auto tableNode = dynamic_cast<Parser::TableNode*>(astNode->fromSource.get())) {
-            rootOperator = std::make_unique<SeqScanOperator>(tableNode->tableName, catalogManager, storageEngine);
-        } else {
-            std::cerr << "Error: FROM 子句目前仅支持单物理表扫描。" << std::endl;
-            return false;
-        }
-
-        // 解析 WHERE 子句 (生成 Filter 质检车间，包裹在 Scan 外面)
-        if (astNode->whereExpressionTree != nullptr) {
-            rootOperator = std::make_unique<FilterOperator>(
-                std::move(rootOperator), 
-                astNode->whereExpressionTree.get()
-            );
-        }
-
-        // 解析 SELECT 目标列 (生成 Project 裁剪车间，包裹在最外面)
-        std::vector<std::string> targetCols;
-        for (const auto& targetNode : astNode->targetFields) {
-            // 解析 AST 中的 ColumnRefNode
-            if (auto colRef = dynamic_cast<Parser::ColumnRefNode*>(targetNode.get())) {
-                targetCols.push_back(colRef->columnName);
+    // 3. GROUP BY / 聚合 → Aggregate
+    bool hasGroupBy = !astNode->groupByFields.empty();
+    bool hasAggregates = false;
+    for (const auto& t : astNode->targetFields) {
+        if (dynamic_cast<Parser::FunctionCallNode*>(t.get())) { hasAggregates = true; break; }
+        if (auto bin = dynamic_cast<Parser::BinaryOperatorNode*>(t.get())) {
+            if (bin->op == "AS" && dynamic_cast<Parser::FunctionCallNode*>(bin->left.get())) {
+                hasAggregates = true; break;
             }
         }
-        
-        // 挂载投影车间 (如果 targetCols 为空，ProjectOperator 内部会自动按 SELECT * 处理)
-        rootOperator = std::make_unique<ProjectOperator>(
-            std::move(rootOperator), 
-            targetCols
-        );
+    }
 
-        // 初始化整个流水线
-        if (!rootOperator->init()) {
-            // 如果报错（比如表不存在，列名写错），子算子已经打印了 Error，这里直接退出
-            return false; 
+    // HAVING 聚合占位节点：必须在 if 块外声明
+    std::vector<Parser::FunctionCallNode> havingNodes1;
+    std::vector<Parser::FunctionCallNode> havingNodes2;
+
+    if (hasGroupBy || hasAggregates) {
+        if (!rootOp->init()) return false;
+        auto inSchema = rootOp->getOutputSchema();
+
+        rootOp = buildTableSource(astNode->fromSource.get(), catalogManager, storageEngine);
+        if (astNode->whereExpressionTree) {
+            auto f = std::make_unique<FilterOperator>(std::move(rootOp), astNode->whereExpressionTree.get());
+            f->setSubqueryContext(catalogManager, storageEngine);
+            rootOp = std::move(f);
         }
-        // 获取流水线顶层吐出的最终表头
-        std::vector<Meta::FieldBlock> finalSchema = rootOperator->getOutputSchema();
 
-        // 打印表头边界线
-        std::cout << "+" << std::string(finalSchema.size() * 16 - 1, '-') << "+" << std::endl;
-        
-        // 打印列名
-        for (const auto& field : finalSchema) {
-            std::cout << "| " << std::left << std::setw(14) << field.name;
-        }
-        std::cout << "|" << std::endl;
-        std::cout << "+" << std::string(finalSchema.size() * 16 - 1, '-') << "+" << std::endl;
+        std::vector<Parser::ASTNode*> groupByPtrs;
+        for (auto& g : astNode->groupByFields) groupByPtrs.push_back(g.get());
+        std::vector<Parser::ASTNode*> targetPtrs;
+        for (auto& t : astNode->targetFields) targetPtrs.push_back(t.get());
 
-        // 循环拉取数据
-        std::vector<std::string> row;
-        int rowCount = 0;
-        
-        while (rootOperator->next(row)) {
-            for (const auto& col : row) {
-                // 如果字符串过长，截断以保持表格美观
-                std::string displayCol = col.length() > 13 ? col.substr(0, 10) + "..." : col;
-                std::cout << "| " << std::left << std::setw(14) << displayCol;
+        // HAVING 中引用的聚合函数也要计算
+        std::vector<std::string> havingNames1a;
+        if (astNode->havingExpressionTree) {
+            collectHavingAggs(astNode->havingExpressionTree.get(), havingNames1a);
+            for (const auto& name : havingNames1a) {
+                havingNodes1.push_back(Parser::FunctionCallNode());
+                havingNodes1.back().functionName = name;
+                targetPtrs.push_back(&havingNodes1.back());
             }
-            std::cout << "|" << std::endl;
-            rowCount++;
         }
 
-        // 打印底部统计
-        std::cout << "+" << std::string(finalSchema.size() * 16 - 1, '-') << "+" << std::endl;
-        std::cout << rowCount << " rows in set." << std::endl;
+        rootOp = std::make_unique<AggregateOperator>(std::move(rootOp), groupByPtrs, targetPtrs, inSchema);
 
+        if (astNode->havingExpressionTree) {
+            auto f = std::make_unique<FilterOperator>(std::move(rootOp), astNode->havingExpressionTree.get());
+            f->setSubqueryContext(catalogManager, storageEngine);
+            rootOp = std::move(f);
+        }
+    }
+
+    // 4. ORDER BY → Sort
+    if (!astNode->orderByItems.empty()) {
+        if (!rootOp->init()) return false;
+        auto inSchema = rootOp->getOutputSchema();
+
+        rootOp = buildTableSource(astNode->fromSource.get(), catalogManager, storageEngine);
+        if (astNode->whereExpressionTree) {
+            auto f = std::make_unique<FilterOperator>(std::move(rootOp), astNode->whereExpressionTree.get());
+            f->setSubqueryContext(catalogManager, storageEngine);
+            rootOp = std::move(f);
+        }
+        if (hasGroupBy || hasAggregates) {
+            std::vector<Parser::ASTNode*> groupByPtrs;
+            for (auto& g : astNode->groupByFields) groupByPtrs.push_back(g.get());
+            std::vector<Parser::ASTNode*> targetPtrs;
+            for (auto& t : astNode->targetFields) targetPtrs.push_back(t.get());
+            std::vector<std::string> havingNames2a;
+            if (astNode->havingExpressionTree) {
+                collectHavingAggs(astNode->havingExpressionTree.get(), havingNames2a);
+                for (const auto& name : havingNames2a) {
+                    havingNodes2.push_back(Parser::FunctionCallNode());
+                    havingNodes2.back().functionName = name;
+                    targetPtrs.push_back(&havingNodes2.back());
+                }
+            }
+            rootOp = std::make_unique<AggregateOperator>(std::move(rootOp), groupByPtrs, targetPtrs, inSchema);
+            if (astNode->havingExpressionTree) {
+                auto f = std::make_unique<FilterOperator>(std::move(rootOp), astNode->havingExpressionTree.get());
+                f->setSubqueryContext(catalogManager, storageEngine);
+                rootOp = std::move(f);
+            }
+        }
+
+        rootOp = std::make_unique<SortOperator>(std::move(rootOp), astNode->orderByItems, inSchema);
+    }
+
+    // 5. SELECT target list → Project
+    std::vector<std::string> targetCols;
+    std::vector<Parser::ASTNode*> targetASTs; // 原始 AST，供 ProjectOperator 求值用
+    bool hasStar = false;
+    for (auto& t : astNode->targetFields) {
+        targetASTs.push_back(t.get());
+        if (auto bin = dynamic_cast<Parser::BinaryOperatorNode*>(t.get())) {
+            if (bin->op == "AS" && bin->right) {
+                if (auto aliasCol = dynamic_cast<Parser::ColumnRefNode*>(bin->right.get())) {
+                    targetCols.push_back(aliasCol->columnName);
+                    continue;
+                }
+            }
+        }
+        if (auto col = dynamic_cast<Parser::ColumnRefNode*>(t.get())) {
+            if (col->columnName == "*") { hasStar = true; break; }
+            targetCols.push_back(col->columnName);
+        }
+        else if (auto func = dynamic_cast<Parser::FunctionCallNode*>(t.get())) {
+            targetCols.push_back(func->functionName);
+        }
+    }
+    if (hasStar) targetCols.clear();
+
+    rootOp = std::make_unique<ProjectOperator>(std::move(rootOp), targetCols, targetASTs);
+
+    // 6. 初始化并输出
+    if (!rootOp->init()) return false;
+
+    std::vector<Meta::FieldBlock> finalSchema = rootOp->getOutputSchema();
+    if (finalSchema.empty()) {
+        std::cout << "Empty set." << std::endl;
         return true;
     }
+
+    int colWidth = 16;
+    std::cout << "+" << std::string(finalSchema.size() * colWidth - 1, '-') << "+" << std::endl;
+    for (const auto& field : finalSchema) {
+        std::cout << "| " << std::left << std::setw(colWidth - 2) << field.name;
+    }
+    std::cout << "|" << std::endl;
+    std::cout << "+" << std::string(finalSchema.size() * colWidth - 1, '-') << "+" << std::endl;
+
+    std::vector<std::string> row;
+    int rowCount = 0;
+    while (rootOp->next(row)) {
+        for (const auto& col : row) {
+            std::string displayCol = col.length() > (size_t)(colWidth - 3) ? col.substr(0, colWidth - 5) + "..." : col;
+            std::cout << "| " << std::left << std::setw(colWidth - 2) << displayCol;
+        }
+        std::cout << "|" << std::endl;
+        rowCount++;
+    }
+
+    std::cout << "+" << std::string(finalSchema.size() * colWidth - 1, '-') << "+" << std::endl;
+    std::cout << rowCount << " rows in set." << std::endl;
+
+    return true;
+}
 
 } // namespace Execution

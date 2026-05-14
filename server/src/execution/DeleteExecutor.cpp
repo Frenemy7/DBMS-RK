@@ -26,7 +26,7 @@ namespace Execution {
             return false;
         }
 
-        // 1. 获取表的物理元数据，并找出主键列的名字和物理偏移量
+        // 获取表的物理元数据，并找出主键列的名字和物理偏移量
         auto fields = catalogManager_->getFields(tableName);
         std::sort(fields.begin(), fields.end(), [](const Meta::FieldBlock& a, const Meta::FieldBlock& b) {
             return a.order < b.order;
@@ -46,9 +46,8 @@ namespace Execution {
             return false;
         }
 
-        // ========================================================
-        // 阶段一：逻辑查找（复用流水线，找出所有需要被枪毙的主键值）
-        // ========================================================
+    
+        // 逻辑查找（复用流水线，找出所有需要被枪毙的主键值）
         std::set<std::string> pksToDelete;
 
         std::unique_ptr<IOperator> rootOperator = std::make_unique<SeqScanOperator>(tableName, catalogManager_, storageEngine_);
@@ -68,7 +67,7 @@ namespace Execution {
         while (rootOperator->next(row)) {
             std::string pkValue = row[pkIndex];
 
-            // 呼叫组员的安保系统，检查是否有外键约束拦着不让删
+            // 检查是否有外键约束
             if (!integrityManager_->checkDelete(tableName, pkValue)) {
                 std::cerr << "Error: 违反外键约束！记录 (PK=" << pkValue << ") 正在被其他表引用，拒绝删除。" << std::endl;
                 return false; 
@@ -81,9 +80,8 @@ namespace Execution {
             return true;
         }
 
-        // ========================================================
-        // 阶段二：物理重写（将不需要删除的记录重新覆盖进硬盘）
-        // ========================================================
+       
+        // 物理重写（将不需要删除的记录重新覆盖进硬盘）
         Meta::TableBlock tableMeta = catalogManager_->getTableMeta(tableName);
         std::string trdPath = "data/" + catalogManager_->getCurrentDatabase() + "/" + std::string(tableMeta.trd);
         long fileSize = storageEngine_->getFileSize(trdPath);
@@ -102,9 +100,15 @@ namespace Execution {
 
             if (field.type == static_cast<int>(Common::DataType::INTEGER)) {
                 currentOffset += 4;
+            } else if (field.type == static_cast<int>(Common::DataType::BOOL)) {
+                currentOffset += 4;
             } else if (field.type == static_cast<int>(Common::DataType::VARCHAR)) {
                 int size = (field.param > 0) ? field.param : Common::MAX_PATH_LEN;
                 currentOffset += ((size + 3) / 4) * 4;
+            } else if (field.type == static_cast<int>(Common::DataType::DOUBLE)) {
+                currentOffset += 8;
+            } else if (field.type == static_cast<int>(Common::DataType::DATETIME)) {
+                currentOffset += ((sizeof(SYSTEMTIME) + 3) / 4) * 4;
             }
         }
         recordSize = currentOffset;
@@ -143,7 +147,6 @@ namespace Execution {
         }
 
         // 把洗干净的数据重新拍进硬盘（覆盖写）
-        // 这里的 writeRaw 如果你们底层没有覆盖写接口，可以用 C++ 原生 fstream 处理
         std::ofstream outfile(trdPath, std::ios::binary | std::ios::trunc);
         outfile.write(newBuffer, newBufferCursor);
         outfile.close();

@@ -27,6 +27,10 @@ namespace Integrity {
         bool checkForeignKey(const std::string& fieldValue,
                              const std::string& referencedTable,
                              const std::string& referencedField);
+        // CHECK 约束求值
+        bool checkConstraint(const std::string& condition,
+                             const std::map<std::string, std::string>& valueMap,
+                             const std::vector<Meta::FieldBlock>& fields);
 
         std::map<std::string, std::string> buildValueMap(
             const std::string& tableName,

@@ -410,7 +410,11 @@ CMakeFiles/miniDBMS.dir/server/src/execution/InsertExecutor.cpp.obj: \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/backward/auto_ptr.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/pstl/glue_memory_defs.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/pstl/execution_defs.h \
+ E:\C++\Code_cpp\Database\miniDBMS\server\src\execution\QueryBuilder.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/execution/IOperator.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/meta/TableMeta.h \
  E:/C++/Code_cpp/Database/miniDBMS/server/include/parser/ASTNode.h \
+ E:/C++/Code_cpp/Database/miniDBMS/server/include/parser/SelectASTNode.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/iostream \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/ostream \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/ostream.h \
@@ -436,6 +440,11 @@ CMakeFiles/miniDBMS.dir/server/src/execution/InsertExecutor.cpp.obj: \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/istream \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/istream.tcc \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/cstring \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/fstream \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/codecvt.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/x86_64-w64-mingw32/bits/basic_file.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/x86_64-w64-mingw32/bits/c++io.h \
+ E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/fstream.tcc \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/algorithm \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/stl_algo.h \
  E:/Environment/mingw64/lib/gcc/x86_64-w64-mingw32/15.2.0/include/c++/bits/algorithmfwd.h \
