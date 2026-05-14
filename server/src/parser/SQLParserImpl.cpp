@@ -2,12 +2,24 @@
 #include "../../include/parser/DropTableASTNode.h"
 #include "../../include/parser/CreateTableASTNode.h"
 #include "../../include/parser/InsertASTNode.h"
+#include "../../include/parser/DeleteASTNode.h"
 #include "../../include/parser/UpdateASTNode.h"
 #include "../../include/parser/SelectASTNode.h"
+#include "../../include/parser/IndexASTNode.h"
+#include <algorithm>
+#include <cctype>
 #include <iostream>
 #include <stdexcept>
 
 namespace Parser {
+
+    namespace {
+        std::string toUpperCopy(std::string value) {
+            std::transform(value.begin(), value.end(), value.begin(),
+                           [](unsigned char ch) { return static_cast<char>(std::toupper(ch)); });
+            return value;
+        }
+    }
 
     // 构造函数：初始化游标位置
     SQLParserImpl::SQLParserImpl() : currentTokenIndex(0) {}
@@ -25,10 +37,18 @@ namespace Parser {
                         return parseDropUserStatement();
                     if (tokens[currentTokenIndex + 1].type == TokenType::KW_DATABASE)
                         return parseDropDatabaseStatement();
+                    if (toUpperCopy(tokens[currentTokenIndex + 1].value) == "INDEX")
+                        return parseDropIndexStatement();
                 }
                 return parseDropTableStatement();
             case TokenType::KW_CREATE:
                 if (currentTokenIndex + 1 < tokens.size()) {
+                    if (tokens[currentTokenIndex + 1].type == TokenType::KW_UNIQUE &&
+                        currentTokenIndex + 2 < tokens.size() &&
+                        toUpperCopy(tokens[currentTokenIndex + 2].value) == "INDEX")
+                        return parseCreateIndexStatement();
+                    if (toUpperCopy(tokens[currentTokenIndex + 1].value) == "INDEX")
+                        return parseCreateIndexStatement();
                     if (tokens[currentTokenIndex + 1].type == TokenType::KW_USER)
                         return parseCreateUserStatement();
                     std::string nextVal = tokens[currentTokenIndex + 1].value;
@@ -44,6 +64,7 @@ namespace Parser {
             case TokenType::KW_ALTER:  return parseAlterTableStatement();
             case TokenType::KW_UPDATE: return parseUpdateStatement();
             case TokenType::KW_INSERT: return parseInsertStatement();
+            case TokenType::KW_DELETE: return parseDeleteStatement();
             case TokenType::KW_SELECT: return parseSelectStatement();
             default:
                 if (firstToken.type == TokenType::IDENTIFIER && (firstToken.value == "USE" || firstToken.value == "use"))
@@ -58,6 +79,34 @@ namespace Parser {
     const Token& SQLParserImpl::previous() const { return tokens[currentTokenIndex - 1]; }
     const Token& SQLParserImpl::consume() { if (!isAtEnd()) currentTokenIndex++; return previous(); }
     bool SQLParserImpl::check(TokenType type) const { if (isAtEnd()) return false; return peek().type == type; }
+    bool SQLParserImpl::checkIdentifierValue(const std::string& value) const {
+        if (isAtEnd()) return false;
+        return toUpperCopy(peek().value) == value;
+    }
+    const Token& SQLParserImpl::matchIdentifierValue(const std::string& value) {
+        if (checkIdentifierValue(value)) return consume();
+        throw std::runtime_error("Syntax Error: Expected '" + value + "' near '" +
+                                 peek().value + "' at position " + std::to_string(peek().column));
+    }
+    bool SQLParserImpl::isIdentifierLike() const {
+        if (isAtEnd()) return false;
+        switch (peek().type) {
+            case TokenType::IDENTIFIER:
+            case TokenType::KW_COUNT:
+            case TokenType::KW_SUM:
+            case TokenType::KW_AVG:
+            case TokenType::KW_MAX:
+            case TokenType::KW_MIN:
+                return true;
+            default:
+                return false;
+        }
+    }
+    const Token& SQLParserImpl::matchIdentifierLike() {
+        if (isIdentifierLike()) return consume();
+        throw std::runtime_error("Syntax Error: Expected identifier near '" +
+                                 peek().value + "' at position " + std::to_string(peek().column));
+    }
     const Token& SQLParserImpl::match(TokenType expected) {
         if (check(expected)) return consume();
         throw std::runtime_error("Syntax Error: Expected different token near '" +
@@ -73,6 +122,52 @@ namespace Parser {
         match(TokenType::SYM_SEMICOLON);
         auto node = std::make_unique<DropTableASTNode>();
         node->tableName = tableNameToken.value;
+        return node;
+    }
+
+    std::unique_ptr<ASTNode> SQLParserImpl::parseCreateIndexStatement() {
+        match(TokenType::KW_CREATE);
+        auto node = std::make_unique<CreateIndexASTNode>();
+
+        if (check(TokenType::KW_UNIQUE)) {
+            consume();
+            node->unique = true;
+        }
+
+        matchIdentifierValue("INDEX");
+        node->indexName = matchIdentifierLike().value;
+        match(TokenType::KW_ON);
+        node->tableName = matchIdentifierLike().value;
+        match(TokenType::SYM_LPAREN);
+
+        do {
+            IndexFieldDefinition field;
+            field.fieldName = matchIdentifierLike().value;
+            if (check(TokenType::KW_ASC)) {
+                consume();
+                field.asc = true;
+            } else if (check(TokenType::KW_DESC)) {
+                consume();
+                field.asc = false;
+            }
+            node->fields.push_back(field);
+        } while (check(TokenType::SYM_COMMA) && (consume(), true));
+
+        match(TokenType::SYM_RPAREN);
+        if (check(TokenType::SYM_SEMICOLON)) consume();
+        return node;
+    }
+
+    std::unique_ptr<ASTNode> SQLParserImpl::parseDropIndexStatement() {
+        match(TokenType::KW_DROP);
+        matchIdentifierValue("INDEX");
+
+        auto node = std::make_unique<DropIndexASTNode>();
+        node->indexName = matchIdentifierLike().value;
+        match(TokenType::KW_ON);
+        node->tableName = matchIdentifierLike().value;
+
+        if (check(TokenType::SYM_SEMICOLON)) consume();
         return node;
     }
 
@@ -220,6 +315,22 @@ namespace Parser {
         } while (check(TokenType::SYM_COMMA) && (consume(), true));
         if (check(TokenType::KW_WHERE)) { consume(); node->whereExpressionTree = parseOr(); }
         match(TokenType::SYM_SEMICOLON);
+        return node;
+    }
+
+    std::unique_ptr<ASTNode> SQLParserImpl::parseDeleteStatement() {
+        match(TokenType::KW_DELETE);
+        match(TokenType::KW_FROM);
+
+        auto node = std::make_unique<DeleteASTNode>();
+        node->tableName = match(TokenType::IDENTIFIER).value;
+
+        if (check(TokenType::KW_WHERE)) {
+            consume();
+            node->whereExpressionTree = parseOr();
+        }
+
+        if (check(TokenType::SYM_SEMICOLON)) consume();
         return node;
     }
 
