@@ -24,7 +24,6 @@
 #include <QWidget>
 #include <algorithm>
 #include <QInputDialog>
-#include <QInputDialog>
 
 namespace
 {
@@ -36,7 +35,9 @@ namespace
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       m_isLoadingTable(false),
-      m_hasUnsavedChanges(false)
+      m_hasUnsavedChanges(false),
+      m_dbClient(new DbClient(this)),
+      m_loginPending(false)
 {
     m_connectionName = "本地连接";
 
@@ -53,8 +54,14 @@ MainWindow::MainWindow(QWidget *parent)
     loadExplorer();
     updateWindowCaption();
 
+    connect(m_dbClient, &DbClient::connected, this, &MainWindow::onServerConnected);
+    connect(m_dbClient, &DbClient::loginSucceeded, this, &MainWindow::onServerLoginSucceeded);
+    connect(m_dbClient, &DbClient::responseReceived, this, &MainWindow::onServerResponse);
+    connect(m_dbClient, &DbClient::errorReceived, this, &MainWindow::onServerError);
+    connect(m_dbClient, &DbClient::disconnected, this, &MainWindow::onServerDisconnected);
+
     appendLog("客户端 UI 已启动。");
-    appendLog("当前版本为图形化原型，使用模拟数据。");
+    appendLog("请通过“新建连接”连接服务端，然后在 SQL 编辑器中执行语句。");
     m_statusLabel->setText("就绪");
 }
 
@@ -235,7 +242,7 @@ void MainWindow::createCentralArea()
     sqlLayout->setContentsMargins(8, 8, 8, 8);
     sqlLayout->setSpacing(8);
 
-    auto *sqlHint = new QLabel("SQL 编辑器（当前版本为模拟执行）", sqlPage);
+    auto *sqlHint = new QLabel("SQL 编辑器", sqlPage);
 
     m_sqlEditor = new QPlainTextEdit(sqlPage);
     m_sqlEditor->setPlaceholderText("请输入 SQL，例如：SELECT * FROM student;");
@@ -549,6 +556,25 @@ void MainWindow::fillSqlResultTable(const QString &tableName)
     m_sqlResultTable->horizontalHeader()->setStretchLastSection(true);
 }
 
+void MainWindow::fillSqlResultTable(const QStringList& headers, const QVector<QStringList>& rows)
+{
+    m_sqlResultTable->clear();
+    m_sqlResultTable->setColumnCount(headers.size());
+    m_sqlResultTable->setRowCount(rows.size());
+    m_sqlResultTable->setHorizontalHeaderLabels(headers);
+
+    for (int row = 0; row < rows.size(); ++row) {
+        const QStringList &rowData = rows[row];
+        for (int col = 0; col < headers.size(); ++col) {
+            const QString value = col < rowData.size() ? rowData[col] : "";
+            m_sqlResultTable->setItem(row, col, new QTableWidgetItem(value));
+        }
+    }
+
+    m_sqlResultTable->resizeColumnsToContents();
+    m_sqlResultTable->horizontalHeader()->setStretchLastSection(true);
+}
+
 void MainWindow::appendLog(const QString &message)
 {
     m_logTextEdit->append(message);
@@ -576,18 +602,21 @@ void MainWindow::onNewConnection()
             ? "本地连接"
             : dialog.connectionName();
 
-        loadExplorer();
         updateWindowCaption();
 
-        QString msg = QString("模拟连接成功：%1@%2:%3")
+        QString msg = QString("正在连接：%1@%2:%3")
                           .arg(dialog.username())
                           .arg(dialog.host())
                           .arg(dialog.port());
 
         m_statusLabel->setText(msg);
         appendLog(msg);
-
-        QMessageBox::information(this, "连接成功", msg + "\n\n当前版本未连接服务端，使用模拟数据。");
+        m_loginPending = true;
+        m_dbClient->connectToServer(
+            dialog.host(),
+            static_cast<quint16>(dialog.port()),
+            dialog.username(),
+            dialog.password());
     }
 }
 
@@ -637,37 +666,15 @@ void MainWindow::onExecuteSql()
         return;
     }
 
-    QString lowerSql = sql.toLower();
-
-    if (lowerSql.contains("student")) {
-        fillSqlResultTable("student");
-    } else if (lowerSql.contains("course")) {
-        if (m_mockDatabases.contains("student_db") && m_mockDatabases["student_db"].contains("course")) {
-            const MockTable table = m_mockDatabases["student_db"]["course"];
-            m_sqlResultTable->clear();
-            m_sqlResultTable->setColumnCount(table.headers.size());
-            m_sqlResultTable->setRowCount(table.rows.size());
-            m_sqlResultTable->setHorizontalHeaderLabels(table.headers);
-            for (int i = 0; i < table.rows.size(); ++i) {
-                for (int j = 0; j < table.rows[i].size(); ++j) {
-                    m_sqlResultTable->setItem(i, j, new QTableWidgetItem(table.rows[i][j]));
-                }
-            }
-        }
-    } else if (!m_currentDatabase.isEmpty() && !m_currentTable.isEmpty()) {
-        fillSqlResultTable(m_currentTable);
-    } else {
-        m_sqlResultTable->clear();
-        m_sqlResultTable->setRowCount(0);
-        m_sqlResultTable->setColumnCount(0);
+    if (!m_dbClient->isConnected()) {
+        QMessageBox::warning(this, "未连接", "请先通过“新建连接”连接服务端。");
+        return;
     }
 
-    m_sqlResultTable->resizeColumnsToContents();
-    m_sqlResultTable->horizontalHeader()->setStretchLastSection(true);
-
     m_tabWidget->setCurrentIndex(2);
-    m_statusLabel->setText("SQL 执行完成（模拟结果）。");
-    appendLog(QString("执行 SQL：%1").arg(sql));
+    m_statusLabel->setText("正在执行 SQL...");
+    appendLog(QString("发送 SQL：%1").arg(sql));
+    m_dbClient->executeSql(sql);
 }
 
 void MainWindow::onClearSql()
@@ -1117,4 +1124,56 @@ void MainWindow::onDeleteTable()
                                .arg(deletedDatabase, deletedTable));
 
     appendLog(QString("删除表：%1.%2").arg(deletedDatabase, deletedTable));
+}
+
+void MainWindow::onServerConnected()
+{
+    m_statusLabel->setText("已连接服务端，正在登录...");
+    appendLog("已建立网络连接。");
+}
+
+void MainWindow::onServerLoginSucceeded()
+{
+    m_loginPending = false;
+    const QString msg = QString("连接成功：%1").arg(m_connectionName);
+    m_statusLabel->setText(msg);
+    appendLog(QString("登录成功：%1").arg(m_dbClient->username()));
+    QMessageBox::information(this, "连接成功", "已连接到服务端。");
+}
+
+void MainWindow::onServerResponse(const DbClient::QueryResponse& response)
+{
+    if (!response.database.isEmpty()) {
+        m_currentDatabase = response.database;
+        updateWindowCaption();
+    }
+
+    if (!response.headers.isEmpty()) {
+        fillSqlResultTable(response.headers, response.rows);
+    } else {
+        m_sqlResultTable->clear();
+        m_sqlResultTable->setRowCount(0);
+        m_sqlResultTable->setColumnCount(0);
+    }
+
+    appendLog(response.message);
+    m_statusLabel->setText(response.success ? "SQL 执行完成。" : "SQL 执行失败。");
+}
+
+void MainWindow::onServerError(const QString& message)
+{
+    if (m_loginPending) {
+        m_loginPending = false;
+        QMessageBox::warning(this, "连接失败", message);
+    }
+    appendLog(QString("网络/服务端错误：%1").arg(message));
+    m_statusLabel->setText("网络/服务端错误。");
+}
+
+void MainWindow::onServerDisconnected()
+{
+    if (!m_loginPending) {
+        appendLog("服务端连接已断开。");
+        m_statusLabel->setText("连接已断开。");
+    }
 }
