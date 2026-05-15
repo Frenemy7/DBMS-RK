@@ -24,6 +24,7 @@
 #include <QWidget>
 #include <algorithm>
 #include <QInputDialog>
+#include <QRegularExpression>
 
 namespace
 {
@@ -37,7 +38,10 @@ MainWindow::MainWindow(QWidget *parent)
       m_isLoadingTable(false),
       m_hasUnsavedChanges(false),
       m_dbClient(new DbClient(this)),
-      m_loginPending(false)
+      m_saveTotalCount(0),
+      m_loginPending(false),
+      m_isSavingTableChanges(false),
+      m_isRefreshingAfterSave(false)
 {
     m_connectionName = "本地连接";
 
@@ -499,6 +503,11 @@ void MainWindow::fillDataTable(const MockTable &table)
     m_dataTable->horizontalHeader()->setStretchLastSection(true);
 
     m_isLoadingTable = false;
+    QVector<QStringList> rows;
+    for (const QStringList& row : table.rows) {
+        rows.append(row);
+    }
+    setOriginalDataSnapshot(table.headers, rows);
 }
 
 void MainWindow::fillStructureTable(const MockTable &table)
@@ -573,6 +582,128 @@ void MainWindow::fillSqlResultTable(const QStringList& headers, const QVector<QS
 
     m_sqlResultTable->resizeColumnsToContents();
     m_sqlResultTable->horizontalHeader()->setStretchLastSection(true);
+}
+
+QStringList MainWindow::currentDataHeaders() const
+{
+    QStringList headers;
+    for (int col = 0; col < m_dataTable->columnCount(); ++col) {
+        QTableWidgetItem *item = m_dataTable->horizontalHeaderItem(col);
+        headers << (item ? item->text() : QString("col%1").arg(col + 1));
+    }
+    return headers;
+}
+
+QStringList MainWindow::currentDataRow(int row) const
+{
+    QStringList rowData;
+    for (int col = 0; col < m_dataTable->columnCount(); ++col) {
+        QTableWidgetItem *item = m_dataTable->item(row, col);
+        rowData << (item ? item->text() : "");
+    }
+    return rowData;
+}
+
+QString MainWindow::sqlLiteral(const QString& value, bool* ok) const
+{
+    if (ok && !*ok) return QString();
+    if (value.compare("NULL", Qt::CaseInsensitive) == 0) {
+        return "NULL";
+    }
+
+    if (value.contains('\'')) {
+        if (ok) *ok = false;
+        return QString();
+    }
+
+    if (ok) *ok = true;
+    QString escaped = value;
+    return QString("'%1'").arg(escaped);
+}
+
+QString MainWindow::extractSimpleSelectTable(const QString& sql) const
+{
+    QRegularExpression re(
+        R"(^\s*select\s+\*\s+from\s+([A-Za-z_][A-Za-z0-9_]*)\s*;?\s*$)",
+        QRegularExpression::CaseInsensitiveOption);
+    const QRegularExpressionMatch match = re.match(sql);
+    return match.hasMatch() ? match.captured(1) : QString();
+}
+
+QString MainWindow::buildInsertSql(const QStringList& headers, const QStringList& row, bool* ok) const
+{
+    QStringList values;
+    for (int i = 0; i < headers.size(); ++i) {
+        values << sqlLiteral(i < row.size() ? row[i] : "", ok);
+    }
+    return QString("INSERT INTO %1 (%2) VALUES (%3);")
+        .arg(m_currentTable, headers.join(", "), values.join(", "));
+}
+
+QString MainWindow::buildDeleteSql(const QString& keyColumn, const QString& keyValue, bool* ok) const
+{
+    return QString("DELETE FROM %1 WHERE %2 = %3;")
+        .arg(m_currentTable, keyColumn, sqlLiteral(keyValue, ok));
+}
+
+QString MainWindow::buildUpdateSql(const QStringList& headers,
+                                   const QStringList& oldRow,
+                                   const QStringList& newRow,
+                                   bool* ok) const
+{
+    QStringList assignments;
+    for (int i = 1; i < headers.size(); ++i) {
+        const QString oldValue = i < oldRow.size() ? oldRow[i] : "";
+        const QString newValue = i < newRow.size() ? newRow[i] : "";
+        if (oldValue != newValue) {
+            assignments << QString("%1 = %2").arg(headers[i], sqlLiteral(newValue, ok));
+        }
+    }
+
+    if (assignments.isEmpty()) {
+        return QString();
+    }
+
+    return QString("UPDATE %1 SET %2 WHERE %3 = %4;")
+        .arg(m_currentTable,
+             assignments.join(", "),
+             headers[0],
+             sqlLiteral(oldRow.value(0), ok));
+}
+
+void MainWindow::setOriginalDataSnapshot(const QStringList& headers, const QVector<QStringList>& rows)
+{
+    m_originalDataHeaders = headers;
+    m_originalDataRows = rows;
+}
+
+void MainWindow::startNextSaveSql()
+{
+    if (m_pendingSaveSql.isEmpty()) {
+        finishTableSave();
+        return;
+    }
+
+    const QString sql = m_pendingSaveSql.takeFirst();
+    appendLog(QString("保存发出 SQL：%1").arg(sql));
+    m_lastSubmittedSql = sql;
+    m_dbClient->executeSql(sql);
+}
+
+void MainWindow::finishTableSave()
+{
+    m_isSavingTableChanges = false;
+    m_hasUnsavedChanges = false;
+    m_statusLabel->setText("表数据已保存，正在刷新...");
+
+    if (!m_pendingRefreshSql.isEmpty()) {
+        m_isRefreshingAfterSave = true;
+        m_lastSubmittedSql = m_pendingRefreshSql;
+        m_dbClient->executeSql(m_pendingRefreshSql);
+    } else {
+        m_isRefreshingAfterSave = false;
+        QMessageBox::information(this, "保存成功", "表数据已保存到服务端。");
+    }
 }
 
 void MainWindow::appendLog(const QString &message)
@@ -674,6 +805,7 @@ void MainWindow::onExecuteSql()
     m_tabWidget->setCurrentIndex(2);
     m_statusLabel->setText("正在执行 SQL...");
     appendLog(QString("发送 SQL：%1").arg(sql));
+    m_lastSubmittedSql = sql;
     m_dbClient->executeSql(sql);
 }
 
@@ -744,23 +876,83 @@ void MainWindow::onSaveChanges()
         return;
     }
 
-    MockTable &table = m_mockDatabases[m_currentDatabase][m_currentTable];
-    table.rows.clear();
-
-    for (int row = 0; row < m_dataTable->rowCount(); ++row) {
-        QStringList rowData;
-        for (int col = 0; col < m_dataTable->columnCount(); ++col) {
-            QTableWidgetItem *item = m_dataTable->item(row, col);
-            rowData << (item ? item->text() : "");
-        }
-        table.rows.append(rowData);
+    if (!m_dbClient->isConnected()) {
+        QMessageBox::warning(this, "未连接", "请先连接服务端。");
+        return;
     }
 
-    m_hasUnsavedChanges = false;
-    m_statusLabel->setText("表数据已保存（模拟保存）。");
-    appendLog(QString("保存修改：%1.%2").arg(m_currentDatabase, m_currentTable));
+    const QStringList headers = currentDataHeaders();
+    if (headers.isEmpty()) {
+        QMessageBox::information(this, "提示", "当前表没有可保存的列。");
+        return;
+    }
 
-    QMessageBox::information(this, "保存成功", "当前版本为模拟保存，后续可替换为发送到服务端。");
+    if (headers.size() != m_originalDataHeaders.size() || headers != m_originalDataHeaders) {
+        QMessageBox::warning(this, "保存失败", "表结构或列顺序已变化，请重新查询当前表后再保存。");
+        return;
+    }
+
+    QStringList sqlList;
+    const QString keyColumn = headers.first();
+
+    QMap<QString, QStringList> oldRowsByKey;
+    for (const QStringList& oldRow : m_originalDataRows) {
+        if (!oldRow.isEmpty()) {
+            oldRowsByKey.insert(oldRow.first(), oldRow);
+        }
+    }
+
+    QSet<QString> currentKeys;
+    bool ok = true;
+
+    for (int row = 0; row < m_dataTable->rowCount(); ++row) {
+        const QStringList rowData = currentDataRow(row);
+        if (rowData.isEmpty() || rowData.first().trimmed().isEmpty()) {
+            QMessageBox::warning(this, "保存失败", QString("第 %1 行的 %2 不能为空。").arg(row + 1).arg(keyColumn));
+            return;
+        }
+
+        const QString key = rowData.first();
+        if (currentKeys.contains(key)) {
+            QMessageBox::warning(this, "保存失败", QString("主键/首列值重复：%1").arg(key));
+            return;
+        }
+        currentKeys.insert(key);
+
+        if (!oldRowsByKey.contains(key)) {
+            sqlList << buildInsertSql(headers, rowData, &ok);
+        } else {
+            const QString updateSql = buildUpdateSql(headers, oldRowsByKey[key], rowData, &ok);
+            if (!updateSql.isEmpty()) {
+                sqlList << updateSql;
+            }
+        }
+    }
+
+    for (const QStringList& oldRow : m_originalDataRows) {
+        if (!oldRow.isEmpty() && !currentKeys.contains(oldRow.first())) {
+            sqlList << buildDeleteSql(keyColumn, oldRow.first(), &ok);
+        }
+    }
+
+    if (!ok) {
+        QMessageBox::warning(this, "保存失败", "当前保存逻辑暂不支持包含英文单引号的单元格值。");
+        return;
+    }
+
+    if (sqlList.isEmpty()) {
+        QMessageBox::information(this, "无需保存", "表数据没有变化。");
+        return;
+    }
+
+    m_pendingSaveSql = sqlList;
+    m_pendingRefreshSql = QString("SELECT * FROM %1;").arg(m_currentTable);
+    m_saveTotalCount = m_pendingSaveSql.size();
+    m_isSavingTableChanges = true;
+    m_isRefreshingAfterSave = false;
+
+    m_statusLabel->setText(QString("正在保存表数据：共 %1 条操作...").arg(m_saveTotalCount));
+    startNextSaveSql();
 }
 
 void MainWindow::onDataCellChanged(int row, int column)
@@ -1148,8 +1340,46 @@ void MainWindow::onServerResponse(const DbClient::QueryResponse& response)
         updateWindowCaption();
     }
 
+    if (m_isSavingTableChanges && !m_isRefreshingAfterSave) {
+        appendLog(response.message);
+        if (!response.success) {
+            m_isSavingTableChanges = false;
+            m_pendingSaveSql.clear();
+            m_statusLabel->setText("表数据保存失败。");
+            QMessageBox::warning(this, "保存失败", response.message);
+            return;
+        }
+
+        const int finished = m_saveTotalCount - m_pendingSaveSql.size();
+        m_statusLabel->setText(QString("正在保存表数据：%1/%2").arg(finished).arg(m_saveTotalCount));
+        startNextSaveSql();
+        return;
+    }
+
     if (!response.headers.isEmpty()) {
         fillSqlResultTable(response.headers, response.rows);
+        const QString selectedTable = extractSimpleSelectTable(m_lastSubmittedSql);
+        if (!selectedTable.isEmpty()) {
+            m_currentTable = selectedTable;
+            m_isLoadingTable = true;
+            m_dataTable->clear();
+            m_dataTable->setColumnCount(response.headers.size());
+            m_dataTable->setRowCount(response.rows.size());
+            m_dataTable->setHorizontalHeaderLabels(response.headers);
+            for (int row = 0; row < response.rows.size(); ++row) {
+                const QStringList& rowData = response.rows[row];
+                for (int col = 0; col < response.headers.size(); ++col) {
+                    const QString value = col < rowData.size() ? rowData[col] : "";
+                    m_dataTable->setItem(row, col, new QTableWidgetItem(value));
+                }
+            }
+            m_dataTable->resizeColumnsToContents();
+            m_dataTable->horizontalHeader()->setStretchLastSection(true);
+            m_isLoadingTable = false;
+            setOriginalDataSnapshot(response.headers, response.rows);
+            m_hasUnsavedChanges = false;
+            updateWindowCaption();
+        }
     } else {
         m_sqlResultTable->clear();
         m_sqlResultTable->setRowCount(0);
@@ -1157,6 +1387,14 @@ void MainWindow::onServerResponse(const DbClient::QueryResponse& response)
     }
 
     appendLog(response.message);
+    if (m_isRefreshingAfterSave) {
+        m_isRefreshingAfterSave = false;
+        m_pendingRefreshSql.clear();
+        m_statusLabel->setText("表数据已保存并刷新。");
+        QMessageBox::information(this, "保存成功", "表数据已保存到服务端。");
+        return;
+    }
+
     m_statusLabel->setText(response.success ? "SQL 执行完成。" : "SQL 执行失败。");
 }
 
