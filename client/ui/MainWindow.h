@@ -88,6 +88,16 @@ private:
     void fillSqlResultTable(const QStringList& headers, const QVector<QStringList>& rows);
     void appendLog(const QString &message);
     void updateWindowCaption();
+    QStringList currentDataHeaders() const;
+    QStringList currentDataRow(int row) const;
+    QString sqlLiteral(const QString& value, bool* ok) const;
+    QString extractSimpleSelectTable(const QString& sql) const;
+    QString buildInsertSql(const QStringList& headers, const QStringList& row, bool* ok) const;
+    QString buildDeleteSql(const QString& keyColumn, const QString& keyValue, bool* ok) const;
+    QString buildUpdateSql(const QStringList& headers, const QStringList& oldRow, const QStringList& newRow, bool* ok) const;
+    void setOriginalDataSnapshot(const QStringList& headers, const QVector<QStringList>& rows);
+    void startNextSaveSql();
+    void finishTableSave();
 
 private:
     QAction *m_newConnectionAction;
@@ -126,10 +136,18 @@ private:
 
     QMap<QString, QMap<QString, MockTable>> m_mockDatabases;
     DbClient *m_dbClient;
+    QStringList m_originalDataHeaders;
+    QVector<QStringList> m_originalDataRows;
+    QStringList m_pendingSaveSql;
+    QString m_pendingRefreshSql;
+    QString m_lastSubmittedSql;
+    int m_saveTotalCount;
 
     bool m_isLoadingTable;
     bool m_hasUnsavedChanges;
     bool m_loginPending;
+    bool m_isSavingTableChanges;
+    bool m_isRefreshingAfterSave;
 };
 
 #endif
