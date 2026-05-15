@@ -1,4 +1,5 @@
 #include "BackupRestoreExecutor.h"
+#include "../../include/maintenance/IDatabaseMaintenance.h"
 #include <iostream>
 
 namespace Execution {

@@ -2,3 +2,5 @@
 *
 # 但不要忽略 .gitignore 文件本身，这样文件夹结构就能保存在 GitHub 上
 !.gitignore
+!*.h
+!*.cpp

@@ -6,6 +6,7 @@
 #include <QMap>
 #include <QString>
 #include <QStringList>
+#include "../network/DbClient.h"
 
 class QAction;
 class QDockWidget;
@@ -64,6 +65,11 @@ private slots:
     void onDeleteDatabase();
     void onCreateTable();
     void onDeleteTable();
+    void onServerConnected();
+    void onServerLoginSucceeded();
+    void onServerResponse(const DbClient::QueryResponse& response);
+    void onServerError(const QString& message);
+    void onServerDisconnected();
 
 private:
     void createActions();
@@ -79,6 +85,7 @@ private:
     void fillDataTable(const MockTable &table);
     void fillStructureTable(const MockTable &table);
     void fillSqlResultTable(const QString &tableName);
+    void fillSqlResultTable(const QStringList& headers, const QVector<QStringList>& rows);
     void appendLog(const QString &message);
     void updateWindowCaption();
 
@@ -118,9 +125,11 @@ private:
     QString m_currentTable;
 
     QMap<QString, QMap<QString, MockTable>> m_mockDatabases;
+    DbClient *m_dbClient;
 
     bool m_isLoadingTable;
     bool m_hasUnsavedChanges;
+    bool m_loginPending;
 };
 
 #endif
