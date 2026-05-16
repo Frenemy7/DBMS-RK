@@ -4,8 +4,11 @@
 #include <QMainWindow>
 #include <QList>
 #include <QMap>
+#include <QQueue>
+#include <QVector>
 #include <QString>
 #include <QStringList>
+
 #include "../network/DbClient.h"
 
 class QAction;
@@ -46,6 +49,25 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
 
+private:
+enum class ClientRequestMode {
+    None,
+    LoadDatabases,
+    LoadTablesUseDatabase,
+    LoadTables,
+    OpenTableUseDatabase,
+    OpenTableSelect,
+    OpenTableDesc,
+    CreateDatabase,
+    DeleteDatabase,
+    DeleteTableUseDatabase,
+    DeleteTableDrop,
+    CreateTableUseDatabase,
+    CreateTableCreate
+};
+
+
+
 private slots:
     void onNewConnection();
     void onRefresh();
@@ -82,12 +104,32 @@ private:
     void initMockData();
     void loadExplorer();
     void openTable(const QString &databaseName, const QString &tableName);
+
     void fillDataTable(const MockTable &table);
+    void fillDataTable(const QStringList& headers, const QVector<QStringList>& rows);
     void fillStructureTable(const MockTable &table);
     void fillSqlResultTable(const QString &tableName);
     void fillSqlResultTable(const QStringList& headers, const QVector<QStringList>& rows);
+
     void appendLog(const QString &message);
     void updateWindowCaption();
+
+    void loadExplorerFromServer();
+    void requestTablesForDatabase(const QString& databaseName);
+    void openTableFromServer(const QString& databaseName, const QString& tableName);
+
+    void enqueueServerSql(const QStringList &statements);
+    void executeNextQueuedSql();
+
+    void fillStructureTableFromHeaders(const QStringList& headers);
+    void fillStructureTableFromDesc(const QVector<QStringList>& rows);
+    QList<ColumnMeta> currentStructureColumns() const;
+    QString buildColumnTypeSql(const ColumnMeta& column) const;
+    QStringList buildStructureAlterSql(const QList<ColumnMeta>& oldColumns,
+                                   const QList<ColumnMeta>& newColumns) const;
+    void startNextStructureSql();
+    void finishStructureSave();
+
     QStringList currentDataHeaders() const;
     QStringList currentDataRow(int row) const;
     QString sqlLiteral(const QString& value, bool* ok) const;
@@ -119,6 +161,7 @@ private:
     QPushButton *m_addColumnButton;
     QPushButton *m_deleteColumnButton;
     QPushButton *m_saveStructureButton;
+
     QPlainTextEdit *m_sqlEditor;
     QTableWidget *m_sqlResultTable;
 
@@ -134,8 +177,14 @@ private:
     QString m_currentDatabase;
     QString m_currentTable;
 
+    ClientRequestMode m_requestMode;
+    QString m_pendingDatabase;
+    QString m_pendingTable;
+    QMap<QString, QTreeWidgetItem*> m_databaseItems;
+
     QMap<QString, QMap<QString, MockTable>> m_mockDatabases;
     DbClient *m_dbClient;
+
     QStringList m_originalDataHeaders;
     QVector<QStringList> m_originalDataRows;
     QStringList m_pendingSaveSql;
@@ -146,8 +195,18 @@ private:
     bool m_isLoadingTable;
     bool m_hasUnsavedChanges;
     bool m_loginPending;
+
+    bool m_isSavingToServer;
+    QQueue<QString> m_pendingSqlQueue;
+    QVector<QStringList> m_originalRows;
+    QList<ColumnMeta> m_originalColumns;
+    QStringList m_pendingStructureSql;
+
     bool m_isSavingTableChanges;
     bool m_isRefreshingAfterSave;
+    bool m_isSavingStructure;
+
+
 };
 
 #endif

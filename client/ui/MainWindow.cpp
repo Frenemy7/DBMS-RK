@@ -31,18 +31,39 @@ namespace
     constexpr int RoleType = Qt::UserRole;
     constexpr int RoleDatabase = Qt::UserRole + 1;
     constexpr int RoleTable = Qt::UserRole + 2;
+
+    bool isSafeIdentifier(const QString &name)
+    {
+        static const QRegularExpression re("^[A-Za-z_][A-Za-z0-9_]*$");
+        return re.match(name).hasMatch();
+    }
+
+
+    QString tableCellText(QTableWidget *table, int row, int col)
+{
+    QTableWidgetItem *item = table->item(row, col);
+    return item ? item->text().trimmed() : "";
 }
+
+
+}
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
-      m_isLoadingTable(false),
-      m_hasUnsavedChanges(false),
+      m_requestMode(ClientRequestMode::None),
       m_dbClient(new DbClient(this)),
       m_saveTotalCount(0),
+      m_isLoadingTable(false),
+      m_hasUnsavedChanges(false),
       m_loginPending(false),
+      m_isSavingToServer(false),
       m_isSavingTableChanges(false),
-      m_isRefreshingAfterSave(false)
+      m_isRefreshingAfterSave(false),
+      m_isSavingStructure(false)
+
 {
+
     m_connectionName = "本地连接";
 
     resize(1280, 820);
@@ -54,9 +75,14 @@ MainWindow::MainWindow(QWidget *parent)
     createStatusBar();
     createLogDock();
 
-    initMockData();
-    loadExplorer();
+    m_databaseTree->clear();
+
+    auto *placeholderItem = new QTreeWidgetItem(m_databaseTree);
+    placeholderItem->setText(0, "未连接服务端");
+    placeholderItem->setData(0, RoleType, "placeholder");
+
     updateWindowCaption();
+
 
     connect(m_dbClient, &DbClient::connected, this, &MainWindow::onServerConnected);
     connect(m_dbClient, &DbClient::loginSucceeded, this, &MainWindow::onServerLoginSucceeded);
@@ -423,6 +449,93 @@ void MainWindow::initMockData()
     );
 }
 
+void MainWindow::loadExplorerFromServer()
+{
+    if (!m_dbClient->isConnected()) {
+        m_databaseTree->clear();
+
+        auto *placeholderItem = new QTreeWidgetItem(m_databaseTree);
+        placeholderItem->setText(0, "未连接服务端");
+        placeholderItem->setData(0, RoleType, "placeholder");
+
+        return;
+    }
+
+    m_databaseTree->clear();
+    m_databaseItems.clear();
+
+    m_requestMode = ClientRequestMode::LoadDatabases;
+
+    m_statusLabel->setText("正在从服务端加载数据库列表...");
+    appendLog("请求服务端数据库列表：SHOW DATABASES;");
+
+    m_dbClient->executeSql("SHOW DATABASES;");
+}
+
+void MainWindow::requestTablesForDatabase(const QString& databaseName)
+{
+    if (!m_dbClient->isConnected()) {
+        QMessageBox::warning(this, "未连接", "请先连接服务端。");
+        return;
+    }
+
+    m_pendingDatabase = databaseName;
+    m_pendingTable.clear();
+
+    m_requestMode = ClientRequestMode::LoadTablesUseDatabase;
+
+    m_statusLabel->setText(QString("正在选择数据库：%1").arg(databaseName));
+    appendLog(QString("发送 SQL：USE DATABASE %1;").arg(databaseName));
+
+    m_dbClient->executeSql(QString("USE DATABASE %1;").arg(databaseName));
+}
+
+void MainWindow::openTableFromServer(const QString& databaseName, const QString& tableName)
+{
+    if (!m_dbClient->isConnected()) {
+        QMessageBox::warning(this, "未连接", "请先连接服务端。");
+        return;
+    }
+
+    m_pendingDatabase = databaseName;
+    m_pendingTable = tableName;
+
+    m_requestMode = ClientRequestMode::OpenTableUseDatabase;
+
+    m_statusLabel->setText(QString("正在打开表：%1.%2").arg(databaseName, tableName));
+    appendLog(QString("发送 SQL：USE DATABASE %1;").arg(databaseName));
+
+    m_dbClient->executeSql(QString("USE DATABASE %1;").arg(databaseName));
+}
+
+void MainWindow::fillDataTable(const QStringList& headers, const QVector<QStringList>& rows)
+{
+    m_isLoadingTable = true;
+
+    m_originalRows.clear();
+
+    m_dataTable->clear();
+    m_dataTable->setColumnCount(headers.size());
+    m_dataTable->setRowCount(rows.size());
+    m_dataTable->setHorizontalHeaderLabels(headers);
+
+    for (int row = 0; row < rows.size(); ++row) {
+        const QStringList& rowData = rows[row];
+        m_originalRows.append(rowData);
+
+        for (int col = 0; col < headers.size(); ++col) {
+            const QString value = col < rowData.size() ? rowData[col] : "";
+            m_dataTable->setItem(row, col, new QTableWidgetItem(value));
+        }
+    }
+
+    m_dataTable->resizeColumnsToContents();
+    m_dataTable->horizontalHeader()->setStretchLastSection(true);
+
+    m_isLoadingTable = false;
+    m_hasUnsavedChanges = false;
+}
+
 void MainWindow::loadExplorer()
 {
     m_databaseTree->clear();
@@ -486,6 +599,10 @@ void MainWindow::fillDataTable(const MockTable &table)
 {
     m_isLoadingTable = true;
 
+    m_originalRows.clear();
+    for (const QStringList &rowData : table.rows) {
+        m_originalRows.append(rowData);
+    }
     m_dataTable->clear();
     m_dataTable->setColumnCount(table.headers.size());
     m_dataTable->setRowCount(table.rows.size());
@@ -753,16 +870,20 @@ void MainWindow::onNewConnection()
 
 void MainWindow::onRefresh()
 {
+    if (!m_dbClient->isConnected()) {
+        QMessageBox::information(this, "未连接", "请先连接服务端。");
+        return;
+    }
+
     if (!m_currentDatabase.isEmpty() && !m_currentTable.isEmpty()) {
-        openTable(m_currentDatabase, m_currentTable);
+        openTableFromServer(m_currentDatabase, m_currentTable);
         appendLog("刷新当前表。");
         return;
     }
 
-    loadExplorer();
-    m_statusLabel->setText("对象浏览器已刷新。");
-    appendLog("刷新对象浏览器。");
+    loadExplorerFromServer();
 }
+
 
 void MainWindow::onTreeItemClicked(QTreeWidgetItem *item, int column)
 {
@@ -777,6 +898,8 @@ void MainWindow::onTreeItemClicked(QTreeWidgetItem *item, int column)
         m_statusLabel->setText(QString("已选择数据库：%1").arg(m_currentDatabase));
         appendLog(QString("选择数据库：%1").arg(m_currentDatabase));
         updateWindowCaption();
+
+        requestTablesForDatabase(m_currentDatabase);
         return;
     }
 
@@ -784,9 +907,11 @@ void MainWindow::onTreeItemClicked(QTreeWidgetItem *item, int column)
         const QString databaseName = item->data(0, RoleDatabase).toString();
         const QString tableName = item->data(0, RoleTable).toString();
 
-        openTable(databaseName, tableName);
+        openTableFromServer(databaseName, tableName);
+        return;
     }
 }
+
 
 void MainWindow::onExecuteSql()
 {
@@ -877,83 +1002,154 @@ void MainWindow::onSaveChanges()
     }
 
     if (!m_dbClient->isConnected()) {
-        QMessageBox::warning(this, "未连接", "请先连接服务端。");
+        QMessageBox::warning(this, "未连接", "请先通过“新建连接”连接服务端。");
         return;
     }
 
-    const QStringList headers = currentDataHeaders();
-    if (headers.isEmpty()) {
-        QMessageBox::information(this, "提示", "当前表没有可保存的列。");
+    if (!isSafeIdentifier(m_currentDatabase) || !isSafeIdentifier(m_currentTable)) {
+        QMessageBox::warning(
+            this,
+            "保存失败",
+            "数据库名和表名必须以字母或下划线开头，只能包含字母、数字、下划线。\n"
+            "例如：library_db、book、student_db。"
+        );
         return;
     }
 
-    if (headers.size() != m_originalDataHeaders.size() || headers != m_originalDataHeaders) {
-        QMessageBox::warning(this, "保存失败", "表结构或列顺序已变化，请重新查询当前表后再保存。");
+    if (m_dataTable->columnCount() == 0) {
+        QMessageBox::warning(this, "保存失败", "当前表没有字段。");
         return;
     }
 
-    QStringList sqlList;
-    const QString keyColumn = headers.first();
+    QStringList columns;
 
-    QMap<QString, QStringList> oldRowsByKey;
-    for (const QStringList& oldRow : m_originalDataRows) {
-        if (!oldRow.isEmpty()) {
-            oldRowsByKey.insert(oldRow.first(), oldRow);
+    for (int col = 0; col < m_dataTable->columnCount(); ++col) {
+        QTableWidgetItem *headerItem = m_dataTable->horizontalHeaderItem(col);
+        const QString columnName = headerItem ? headerItem->text().trimmed() : "";
+
+        if (!isSafeIdentifier(columnName)) {
+            QMessageBox::warning(
+                this,
+                "保存失败",
+                QString("字段名不合法：%1").arg(columnName)
+            );
+            return;
         }
+
+        columns << columnName;
     }
 
-    QSet<QString> currentKeys;
+    const QString primaryKeyColumn = columns.first();
+
+    QStringList statements;
+
+    // 关键：先切换到左侧当前表所在数据库。
+    statements << QString("USE DATABASE %1").arg(m_currentDatabase);
+
+    // 简化版保存策略：
+    // 先删除打开表时已有的旧行，再插入当前界面里的所有行。
+    // 默认第一列是主键，例如 id。
+    for (const QStringList &oldRow : m_originalRows) {
+    if (oldRow.isEmpty()) {
+        continue;
+    }
+
     bool ok = true;
-
-    for (int row = 0; row < m_dataTable->rowCount(); ++row) {
-        const QStringList rowData = currentDataRow(row);
-        if (rowData.isEmpty() || rowData.first().trimmed().isEmpty()) {
-            QMessageBox::warning(this, "保存失败", QString("第 %1 行的 %2 不能为空。").arg(row + 1).arg(keyColumn));
-            return;
-        }
-
-        const QString key = rowData.first();
-        if (currentKeys.contains(key)) {
-            QMessageBox::warning(this, "保存失败", QString("主键/首列值重复：%1").arg(key));
-            return;
-        }
-        currentKeys.insert(key);
-
-        if (!oldRowsByKey.contains(key)) {
-            sqlList << buildInsertSql(headers, rowData, &ok);
-        } else {
-            const QString updateSql = buildUpdateSql(headers, oldRowsByKey[key], rowData, &ok);
-            if (!updateSql.isEmpty()) {
-                sqlList << updateSql;
-            }
-        }
-    }
-
-    for (const QStringList& oldRow : m_originalDataRows) {
-        if (!oldRow.isEmpty() && !currentKeys.contains(oldRow.first())) {
-            sqlList << buildDeleteSql(keyColumn, oldRow.first(), &ok);
-        }
-    }
+    const QString pkValue = sqlLiteral(oldRow.first(), &ok);
 
     if (!ok) {
-        QMessageBox::warning(this, "保存失败", "当前保存逻辑暂不支持包含英文单引号的单元格值。");
+        QMessageBox::warning(this, "保存失败", QString("主键值不合法：%1").arg(oldRow.first()));
         return;
     }
 
-    if (sqlList.isEmpty()) {
-        QMessageBox::information(this, "无需保存", "表数据没有变化。");
-        return;
-    }
-
-    m_pendingSaveSql = sqlList;
-    m_pendingRefreshSql = QString("SELECT * FROM %1;").arg(m_currentTable);
-    m_saveTotalCount = m_pendingSaveSql.size();
-    m_isSavingTableChanges = true;
-    m_isRefreshingAfterSave = false;
-
-    m_statusLabel->setText(QString("正在保存表数据：共 %1 条操作...").arg(m_saveTotalCount));
-    startNextSaveSql();
+    statements << QString("DELETE FROM %1 WHERE %2 = %3")
+                      .arg(m_currentTable)
+                      .arg(primaryKeyColumn)
+                      .arg(pkValue);
 }
+
+
+    for (int row = 0; row < m_dataTable->rowCount(); ++row) {
+    QStringList values;
+
+    for (int col = 0; col < m_dataTable->columnCount(); ++col) {
+        bool ok = true;
+        const QString cellValue = tableCellText(m_dataTable, row, col);
+        const QString literalValue = sqlLiteral(cellValue, &ok);
+
+        if (!ok) {
+            QMessageBox::warning(
+                this,
+                "保存失败",
+                QString("第 %1 行第 %2 列的值不合法：%3")
+                    .arg(row + 1)
+                    .arg(col + 1)
+                    .arg(cellValue)
+            );
+            return;
+        }
+
+        values << literalValue;
+    }
+
+    statements << QString("INSERT INTO %1 (%2) VALUES (%3)")
+                      .arg(m_currentTable)
+                      .arg(columns.join(", "))
+                      .arg(values.join(", "));
+}
+
+    enqueueServerSql(statements);
+}
+
+void MainWindow::enqueueServerSql(const QStringList &statements)
+{
+    m_pendingSqlQueue.clear();
+
+    for (const QString &statement : statements) {
+        const QString trimmed = statement.trimmed();
+        if (!trimmed.isEmpty()) {
+            m_pendingSqlQueue.enqueue(trimmed);
+        }
+    }
+
+    if (m_pendingSqlQueue.isEmpty()) {
+        return;
+    }
+
+    m_isSavingToServer = true;
+    m_statusLabel->setText("正在保存到服务端...");
+    executeNextQueuedSql();
+}
+
+void MainWindow::executeNextQueuedSql()
+{
+    if (m_pendingSqlQueue.isEmpty()) {
+        m_isSavingToServer = false;
+        m_hasUnsavedChanges = false;
+
+        m_originalRows.clear();
+
+        for (int row = 0; row < m_dataTable->rowCount(); ++row) {
+            QStringList rowData;
+
+            for (int col = 0; col < m_dataTable->columnCount(); ++col) {
+                rowData << tableCellText(m_dataTable, row, col);
+            }
+
+            m_originalRows.append(rowData);
+        }
+
+        m_statusLabel->setText("表数据已保存到服务端。");
+        QMessageBox::information(this, "保存成功", "表数据已写入服务端。");
+        return;
+    }
+
+    const QString sql = m_pendingSqlQueue.dequeue();
+
+    appendLog(QString("保存发出 SQL：%1;").arg(sql));
+    m_dbClient->executeSql(sql + ";");
+}
+
 
 void MainWindow::onDataCellChanged(int row, int column)
 {
@@ -985,6 +1181,12 @@ void MainWindow::onAddColumn()
     if (m_currentDatabase.isEmpty() || m_currentTable.isEmpty()) {
         QMessageBox::information(this, "提示", "请先从左侧选择一张表。");
         return;
+    }
+    if (m_structureTable->columnCount() == 0) {
+    m_structureTable->setColumnCount(6);
+    m_structureTable->setHorizontalHeaderLabels(
+        {"字段名", "类型", "是否为空", "主键", "默认值", "说明"}
+    );
     }
 
     int row = m_structureTable->rowCount();
@@ -1041,71 +1243,40 @@ void MainWindow::onSaveStructure()
         return;
     }
 
-    MockTable &table = m_mockDatabases[m_currentDatabase][m_currentTable];
-    table.columns.clear();
-
-    for (int row = 0; row < m_structureTable->rowCount(); ++row) {
-        ColumnMeta column;
-
-        QTableWidgetItem *nameItem = m_structureTable->item(row, 0);
-        QTableWidgetItem *typeItem = m_structureTable->item(row, 1);
-        QTableWidgetItem *nullableItem = m_structureTable->item(row, 2);
-        QTableWidgetItem *keyItem = m_structureTable->item(row, 3);
-        QTableWidgetItem *defaultItem = m_structureTable->item(row, 4);
-        QTableWidgetItem *commentItem = m_structureTable->item(row, 5);
-
-        column.name = nameItem ? nameItem->text().trimmed() : "";
-        column.type = typeItem ? typeItem->text().trimmed() : "";
-        column.nullable = nullableItem ? nullableItem->text().trimmed() : "";
-        column.key = keyItem ? keyItem->text().trimmed() : "";
-        column.defaultValue = defaultItem ? defaultItem->text().trimmed() : "";
-        column.comment = commentItem ? commentItem->text().trimmed() : "";
-
-        if (column.name.isEmpty()) {
-            QMessageBox::warning(this, "保存失败", "字段名不能为空。");
-            return;
-        }
-
-        if (column.type.isEmpty()) {
-            QMessageBox::warning(this, "保存失败", "字段类型不能为空。");
-            return;
-        }
-
-        table.columns.append(column);
+    if (!m_dbClient->isConnected()) {
+        QMessageBox::warning(this, "未连接", "请先通过“新建连接”连接服务端。");
+        return;
     }
 
-    // 同步表数据页的表头
-    table.headers.clear();
-
-    for (const ColumnMeta &column : table.columns) {
-        table.headers.append(column.name);
+    if (!isSafeIdentifier(m_currentDatabase) || !isSafeIdentifier(m_currentTable)) {
+        QMessageBox::warning(this, "保存失败", "数据库名或表名不合法。");
+        return;
     }
 
-    // 调整每一行数据的列数，使其和新表结构一致
-    for (QStringList &rowData : table.rows) {
-        while (rowData.size() < table.headers.size()) {
-            rowData.append("");
-        }
+    const QList<ColumnMeta> newColumns = currentStructureColumns();
 
-        while (rowData.size() > table.headers.size()) {
-            rowData.removeLast();
-        }
+    if (newColumns.isEmpty()) {
+        QMessageBox::warning(this, "保存失败", "表结构不能为空。");
+        return;
     }
 
-    m_hasUnsavedChanges = false;
+    QStringList alterSql = buildStructureAlterSql(m_originalColumns, newColumns);
 
-    fillDataTable(table);
-    fillStructureTable(table);
+    if (alterSql.isEmpty()) {
+        QMessageBox::information(this, "提示", "表结构没有需要保存的修改。");
+        return;
+    }
 
-    m_statusLabel->setText("表结构已保存（模拟保存）。");
-    appendLog(QString("保存表结构：%1.%2").arg(m_currentDatabase, m_currentTable));
+    m_pendingStructureSql.clear();
+    m_pendingStructureSql << QString("USE DATABASE %1;").arg(m_currentDatabase);
+    m_pendingStructureSql << alterSql;
 
-    QMessageBox::information(
-        this,
-        "保存成功",
-        "当前版本为模拟保存。\n后续接入服务端后，可将该操作转换为 ALTER TABLE 或发送给 server。"
-    );
+    m_isSavingStructure = true;
+    m_statusLabel->setText("正在保存表结构到服务端...");
+
+    startNextStructureSql();
 }
+
 
 void MainWindow::onStructureCellChanged(int row, int column)
 {
@@ -1122,6 +1293,11 @@ void MainWindow::onStructureCellChanged(int row, int column)
 
 void MainWindow::onCreateDatabase()
 {
+    if (!m_dbClient->isConnected()) {
+        QMessageBox::warning(this, "未连接", "请先通过“新建连接”连接服务端。");
+        return;
+    }
+
     bool ok = false;
 
     QString databaseName = QInputDialog::getText(
@@ -1144,40 +1320,55 @@ void MainWindow::onCreateDatabase()
         return;
     }
 
-    if (m_mockDatabases.contains(databaseName)) {
-        QMessageBox::warning(this, "创建失败", "数据库已存在。");
+    if (!isSafeIdentifier(databaseName)) {
+        QMessageBox::warning(
+            this,
+            "创建失败",
+            "数据库名必须以字母或下划线开头，只能包含字母、数字、下划线。\n"
+            "例如：testdb、library_db、student_db。"
+        );
         return;
     }
 
-    // 创建一个空数据库
-    m_mockDatabases[databaseName] = QMap<QString, MockTable>();
+    m_pendingDatabase = databaseName;
+    m_pendingTable.clear();
+    m_requestMode = ClientRequestMode::CreateDatabase;
 
-    loadExplorer();
+    const QString sql = QString("CREATE DATABASE %1;").arg(databaseName);
 
-    m_currentDatabase = databaseName;
-    m_currentTable.clear();
+    m_statusLabel->setText(QString("正在创建数据库：%1").arg(databaseName));
+    appendLog(QString("发送 SQL：%1").arg(sql));
 
-    m_statusLabel->setText(QString("数据库 %1 创建成功（模拟）。").arg(databaseName));
-    appendLog(QString("新建数据库：%1").arg(databaseName));
-
-    QMessageBox::information(
-        this,
-        "创建成功",
-        QString("数据库 %1 创建成功。\n当前版本为模拟创建，暂未写入服务端。").arg(databaseName)
-    );
+    m_dbClient->executeSql(sql);
 }
 
 void MainWindow::onDeleteDatabase()
 {
-    if (m_currentDatabase.isEmpty()) {
-        QMessageBox::information(this, "提示", "请先在左侧选择或打开一个数据库。");
+    if (!m_dbClient->isConnected()) {
+        QMessageBox::warning(this, "未连接", "请先通过“新建连接”连接服务端。");
+        return;
+    }
+
+    QString databaseName = m_currentDatabase.trimmed();
+
+    if (databaseName.isEmpty()) {
+        QMessageBox::information(this, "提示", "请先在左侧选择要删除的数据库。");
+        return;
+    }
+
+    if (!isSafeIdentifier(databaseName)) {
+        QMessageBox::warning(
+            this,
+            "删除失败",
+            "数据库名不合法，不能发送到服务端。"
+        );
         return;
     }
 
     int ret = QMessageBox::question(
         this,
         "确认删除",
-        QString("确定要删除数据库 %1 吗？\n该操作当前为模拟删除。").arg(m_currentDatabase),
+        QString("确定要删除数据库 %1 吗？\n该操作会发送到服务端，删除后不可恢复。").arg(databaseName),
         QMessageBox::Yes | QMessageBox::No
     );
 
@@ -1185,36 +1376,32 @@ void MainWindow::onDeleteDatabase()
         return;
     }
 
-    QString deletedDatabase = m_currentDatabase;
+    m_pendingDatabase = databaseName;
+    m_pendingTable.clear();
+    m_requestMode = ClientRequestMode::DeleteDatabase;
 
-    m_mockDatabases.remove(deletedDatabase);
+    const QString sql = QString("DROP DATABASE %1;").arg(databaseName);
 
-    m_currentDatabase.clear();
-    m_currentTable.clear();
+    m_statusLabel->setText(QString("正在删除数据库：%1").arg(databaseName));
+    appendLog(QString("发送 SQL：%1").arg(sql));
 
-    m_dataTable->clear();
-    m_dataTable->setRowCount(0);
-    m_dataTable->setColumnCount(0);
-
-    m_structureTable->clear();
-    m_structureTable->setRowCount(0);
-    m_structureTable->setColumnCount(0);
-
-    m_sqlResultTable->clear();
-    m_sqlResultTable->setRowCount(0);
-    m_sqlResultTable->setColumnCount(0);
-
-    loadExplorer();
-    updateWindowCaption();
-
-    m_statusLabel->setText(QString("数据库 %1 已删除（模拟）。").arg(deletedDatabase));
-    appendLog(QString("删除数据库：%1").arg(deletedDatabase));
+    m_dbClient->executeSql(sql);
 }
 
 void MainWindow::onCreateTable()
 {
+    if (!m_dbClient->isConnected()) {
+        QMessageBox::warning(this, "未连接", "请先通过“新建连接”连接服务端。");
+        return;
+    }
+
     if (m_currentDatabase.isEmpty()) {
         QMessageBox::information(this, "提示", "请先在左侧选择一个数据库。");
+        return;
+    }
+
+    if (!isSafeIdentifier(m_currentDatabase)) {
+        QMessageBox::warning(this, "创建失败", "当前数据库名不合法。");
         return;
     }
 
@@ -1240,48 +1427,49 @@ void MainWindow::onCreateTable()
         return;
     }
 
-    if (m_mockDatabases[m_currentDatabase].contains(tableName)) {
-        QMessageBox::warning(this, "创建失败", "当前数据库中已存在同名表。");
+    if (!isSafeIdentifier(tableName)) {
+        QMessageBox::warning(
+            this,
+            "创建失败",
+            "表名必须以字母或下划线开头，只能包含字母、数字、下划线。\n"
+            "例如：student、book、table45。"
+        );
         return;
     }
 
-    MockTable newTable;
+    m_pendingDatabase = m_currentDatabase;
+    m_pendingTable = tableName;
+    m_requestMode = ClientRequestMode::CreateTableUseDatabase;
 
-    newTable.headers = {"id", "name"};
+    const QString sql = QString("USE DATABASE %1;").arg(m_currentDatabase);
 
-    newTable.columns = {
-        {"id", "INT", "NO", "PRI", "NULL", "主键编号"},
-        {"name", "VARCHAR(50)", "YES", "", "NULL", "名称"}
-    };
+    m_statusLabel->setText(QString("正在选择数据库：%1").arg(m_currentDatabase));
+    appendLog(QString("发送 SQL：%1").arg(sql));
 
-    newTable.rows = {};
-
-    m_mockDatabases[m_currentDatabase][tableName] = newTable;
-
-    loadExplorer();
-    openTable(m_currentDatabase, tableName);
-
-    m_statusLabel->setText(QString("表 %1 创建成功（模拟）。").arg(tableName));
-    appendLog(QString("新建表：%1.%2").arg(m_currentDatabase, tableName));
-
-    QMessageBox::information(
-        this,
-        "创建成功",
-        QString("表 %1 创建成功。\n当前版本为模拟创建，暂未写入服务端。").arg(tableName)
-    );
+    m_dbClient->executeSql(sql);
 }
 
 void MainWindow::onDeleteTable()
 {
+    if (!m_dbClient->isConnected()) {
+        QMessageBox::warning(this, "未连接", "请先通过“新建连接”连接服务端。");
+        return;
+    }
+
     if (m_currentDatabase.isEmpty() || m_currentTable.isEmpty()) {
         QMessageBox::information(this, "提示", "请先在左侧选择一张表。");
+        return;
+    }
+
+    if (!isSafeIdentifier(m_currentDatabase) || !isSafeIdentifier(m_currentTable)) {
+        QMessageBox::warning(this, "删除失败", "数据库名或表名不合法。");
         return;
     }
 
     int ret = QMessageBox::question(
         this,
         "确认删除",
-        QString("确定要删除表 %1.%2 吗？\n该操作当前为模拟删除。")
+        QString("确定要删除表 %1.%2 吗？\n该操作会发送到服务端，删除后不可恢复。")
             .arg(m_currentDatabase, m_currentTable),
         QMessageBox::Yes | QMessageBox::No
     );
@@ -1290,33 +1478,18 @@ void MainWindow::onDeleteTable()
         return;
     }
 
-    QString deletedDatabase = m_currentDatabase;
-    QString deletedTable = m_currentTable;
+    m_pendingDatabase = m_currentDatabase;
+    m_pendingTable = m_currentTable;
+    m_requestMode = ClientRequestMode::DeleteTableUseDatabase;
 
-    m_mockDatabases[deletedDatabase].remove(deletedTable);
+    m_statusLabel->setText(QString("正在删除表：%1.%2")
+                               .arg(m_currentDatabase, m_currentTable));
 
-    m_currentTable.clear();
+    appendLog(QString("发送 SQL：USE DATABASE %1;").arg(m_currentDatabase));
 
-    m_dataTable->clear();
-    m_dataTable->setRowCount(0);
-    m_dataTable->setColumnCount(0);
-
-    m_structureTable->clear();
-    m_structureTable->setRowCount(0);
-    m_structureTable->setColumnCount(0);
-
-    m_sqlResultTable->clear();
-    m_sqlResultTable->setRowCount(0);
-    m_sqlResultTable->setColumnCount(0);
-
-    loadExplorer();
-    updateWindowCaption();
-
-    m_statusLabel->setText(QString("表 %1.%2 已删除（模拟）。")
-                               .arg(deletedDatabase, deletedTable));
-
-    appendLog(QString("删除表：%1.%2").arg(deletedDatabase, deletedTable));
+    m_dbClient->executeSql(QString("USE DATABASE %1;").arg(m_currentDatabase));
 }
+
 
 void MainWindow::onServerConnected()
 {
@@ -1331,14 +1504,353 @@ void MainWindow::onServerLoginSucceeded()
     m_statusLabel->setText(msg);
     appendLog(QString("登录成功：%1").arg(m_dbClient->username()));
     QMessageBox::information(this, "连接成功", "已连接到服务端。");
+    loadExplorerFromServer();
 }
 
 void MainWindow::onServerResponse(const DbClient::QueryResponse& response)
 {
-    if (!response.database.isEmpty()) {
+        if (m_requestMode != ClientRequestMode::None) {
+        if (!response.success) {
+            QMessageBox::warning(this, "服务端返回错误", response.message);
+            appendLog(response.message);
+            m_requestMode = ClientRequestMode::None;
+            return;
+        }
+
+        if (m_requestMode == ClientRequestMode::CreateDatabase) {
+            appendLog(response.message);
+
+            const QString createdDatabase = m_pendingDatabase;
+
+            m_requestMode = ClientRequestMode::None;
+            m_pendingDatabase.clear();
+            m_pendingTable.clear();
+
+            m_statusLabel->setText(QString("数据库 %1 创建成功。").arg(createdDatabase));
+
+            QMessageBox::information(
+                this,
+                "创建成功",
+                QString("数据库 %1 已创建到服务端。").arg(createdDatabase)
+            );
+
+            loadExplorerFromServer();
+            return;
+        }
+
+        if (m_requestMode == ClientRequestMode::DeleteDatabase) {
+            appendLog(response.message);
+
+            const QString deletedDatabase = m_pendingDatabase;
+
+            m_requestMode = ClientRequestMode::None;
+            m_pendingDatabase.clear();
+            m_pendingTable.clear();
+
+            if (m_currentDatabase == deletedDatabase) {
+                m_currentDatabase.clear();
+                m_currentTable.clear();
+
+                m_dataTable->clear();
+                m_dataTable->setRowCount(0);
+                m_dataTable->setColumnCount(0);
+
+                m_structureTable->clear();
+                m_structureTable->setRowCount(0);
+                m_structureTable->setColumnCount(0);
+
+                m_sqlResultTable->clear();
+                m_sqlResultTable->setRowCount(0);
+                m_sqlResultTable->setColumnCount(0);
+
+                updateWindowCaption();
+            }
+
+            m_statusLabel->setText(QString("数据库 %1 已从服务端删除。").arg(deletedDatabase));
+
+            QMessageBox::information(
+                this,
+                "删除成功",
+                QString("数据库 %1 已从服务端删除。").arg(deletedDatabase)
+            );
+
+            loadExplorerFromServer();
+            return;
+        }
+if (m_requestMode == ClientRequestMode::DeleteTableUseDatabase) {
+    m_requestMode = ClientRequestMode::DeleteTableDrop;
+
+    const QString sql = QString("DROP TABLE %1;").arg(m_pendingTable);
+
+    appendLog(QString("发送 SQL：%1").arg(sql));
+    m_dbClient->executeSql(sql);
+    return;
+}
+
+if (m_requestMode == ClientRequestMode::DeleteTableDrop) {
+    appendLog(response.message);
+
+    const QString deletedDatabase = m_pendingDatabase;
+    const QString deletedTable = m_pendingTable;
+
+    m_requestMode = ClientRequestMode::None;
+    m_pendingDatabase.clear();
+    m_pendingTable.clear();
+
+    if (m_currentDatabase == deletedDatabase && m_currentTable == deletedTable) {
+        m_currentTable.clear();
+
+        m_dataTable->clear();
+        m_dataTable->setRowCount(0);
+        m_dataTable->setColumnCount(0);
+
+        m_structureTable->clear();
+        m_structureTable->setRowCount(0);
+        m_structureTable->setColumnCount(0);
+
+        m_sqlResultTable->clear();
+        m_sqlResultTable->setRowCount(0);
+        m_sqlResultTable->setColumnCount(0);
+
+        updateWindowCaption();
+    }
+
+    m_statusLabel->setText(QString("表 %1.%2 已从服务端删除。")
+                               .arg(deletedDatabase, deletedTable));
+
+    QMessageBox::information(
+        this,
+        "删除成功",
+        QString("表 %1.%2 已从服务端删除。").arg(deletedDatabase, deletedTable)
+    );
+
+    m_currentDatabase = deletedDatabase;
+    m_currentTable.clear();
+
+    requestTablesForDatabase(deletedDatabase);
+    return;
+}
+        if (m_requestMode == ClientRequestMode::CreateTableUseDatabase) {
+    m_requestMode = ClientRequestMode::CreateTableCreate;
+
+    const QString sql = QString(
+        "CREATE TABLE %1 (id INT PRIMARY KEY, name VARCHAR(50));"
+    ).arg(m_pendingTable);
+
+    m_statusLabel->setText(QString("正在创建表：%1.%2")
+                               .arg(m_pendingDatabase, m_pendingTable));
+
+    appendLog(QString("发送 SQL：%1").arg(sql));
+
+    m_dbClient->executeSql(sql);
+    return;
+}
+
+if (m_requestMode == ClientRequestMode::CreateTableCreate) {
+    appendLog(response.message);
+
+    const QString createdDatabase = m_pendingDatabase;
+    const QString createdTable = m_pendingTable;
+
+    m_requestMode = ClientRequestMode::None;
+    m_pendingDatabase.clear();
+    m_pendingTable.clear();
+
+    m_currentDatabase = createdDatabase;
+    m_currentTable = createdTable;
+
+    m_statusLabel->setText(QString("表 %1.%2 已创建到服务端。")
+                               .arg(createdDatabase, createdTable));
+
+    QMessageBox::information(
+        this,
+        "创建成功",
+        QString("表 %1.%2 已创建到服务端。").arg(createdDatabase, createdTable)
+    );
+
+    requestTablesForDatabase(createdDatabase);
+    return;
+}
+
+
+        if (m_requestMode == ClientRequestMode::LoadDatabases) {
+            m_databaseTree->clear();
+            m_databaseItems.clear();
+
+            auto *connectionItem = new QTreeWidgetItem(m_databaseTree);
+            connectionItem->setText(0, m_connectionName.isEmpty() ? "服务端连接" : m_connectionName);
+            connectionItem->setData(0, RoleType, "connection");
+
+            for (const QStringList& row : response.rows) {
+                if (row.isEmpty()) {
+                    continue;
+                }
+
+                const QString databaseName = row[0].trimmed();
+
+                if (databaseName.isEmpty()) {
+                    continue;
+                }
+
+                auto *dbItem = new QTreeWidgetItem(connectionItem);
+                dbItem->setText(0, databaseName);
+                dbItem->setData(0, RoleType, "database");
+                dbItem->setData(0, RoleDatabase, databaseName);
+
+                auto *tablesFolder = new QTreeWidgetItem(dbItem);
+                tablesFolder->setText(0, "Tables");
+                tablesFolder->setData(0, RoleType, "folder");
+
+                auto *hintItem = new QTreeWidgetItem(tablesFolder);
+                hintItem->setText(0, "点击数据库加载表");
+                hintItem->setData(0, RoleType, "placeholder");
+
+                m_databaseItems[databaseName] = dbItem;
+            }
+
+            m_databaseTree->expandItem(connectionItem);
+
+            m_statusLabel->setText("数据库列表已从服务端加载。");
+            appendLog("数据库列表已从服务端加载。");
+
+            m_requestMode = ClientRequestMode::None;
+            return;
+        }
+
+        if (m_requestMode == ClientRequestMode::LoadTablesUseDatabase) {
+            m_requestMode = ClientRequestMode::LoadTables;
+
+            appendLog("发送 SQL：SHOW TABLES;");
+            m_dbClient->executeSql("SHOW TABLES;");
+            return;
+        }
+
+        if (m_requestMode == ClientRequestMode::LoadTables) {
+            QTreeWidgetItem *dbItem = m_databaseItems.value(m_pendingDatabase, nullptr);
+
+            if (!dbItem) {
+                m_requestMode = ClientRequestMode::None;
+                return;
+            }
+
+            qDeleteAll(dbItem->takeChildren());
+
+            auto *tablesFolder = new QTreeWidgetItem(dbItem);
+            tablesFolder->setText(0, "Tables");
+            tablesFolder->setData(0, RoleType, "folder");
+
+            for (const QStringList& row : response.rows) {
+                if (row.isEmpty()) {
+                    continue;
+                }
+
+                const QString tableName = row[0].trimmed();
+
+                if (tableName.isEmpty()) {
+                    continue;
+                }
+
+                auto *tableItem = new QTreeWidgetItem(tablesFolder);
+                tableItem->setText(0, tableName);
+                tableItem->setData(0, RoleType, "table");
+                tableItem->setData(0, RoleDatabase, m_pendingDatabase);
+                tableItem->setData(0, RoleTable, tableName);
+            }
+
+            dbItem->setExpanded(true);
+            tablesFolder->setExpanded(true);
+
+            m_statusLabel->setText(QString("已加载数据库 %1 的表列表。").arg(m_pendingDatabase));
+            appendLog(QString("已加载数据库 %1 的表列表。").arg(m_pendingDatabase));
+
+            m_requestMode = ClientRequestMode::None;
+            return;
+        }
+
+        if (m_requestMode == ClientRequestMode::OpenTableUseDatabase) {
+            m_requestMode = ClientRequestMode::OpenTableSelect;
+
+            appendLog(QString("发送 SQL：SELECT * FROM %1;").arg(m_pendingTable));
+            m_dbClient->executeSql(QString("SELECT * FROM %1;").arg(m_pendingTable));
+            return;
+        }
+
+        if (m_requestMode == ClientRequestMode::OpenTableSelect) {
+            m_currentDatabase = m_pendingDatabase;
+            m_currentTable = m_pendingTable;
+
+            fillDataTable(response.headers, response.rows);
+            fillSqlResultTable(response.headers, response.rows);
+
+            m_tabWidget->setCurrentIndex(0);
+            updateWindowCaption();
+
+            m_statusLabel->setText(QString("正在加载表结构：%1.%2")
+                               .arg(m_currentDatabase, m_currentTable));
+
+            appendLog(QString("发送 SQL：DESC %1;").arg(m_currentTable));
+
+            m_requestMode = ClientRequestMode::OpenTableDesc;
+            m_dbClient->executeSql(QString("DESC %1;").arg(m_currentTable));
+            return;
+            }
+
+    }
+    if (m_requestMode == ClientRequestMode::OpenTableDesc) {
+    fillStructureTableFromDesc(response.rows);
+    m_originalColumns = currentStructureColumns();
+
+    m_requestMode = ClientRequestMode::None;
+
+    m_statusLabel->setText(QString("已从服务端打开表：%1.%2")
+                               .arg(m_currentDatabase, m_currentTable));
+
+    appendLog(QString("已从服务端打开表：%1.%2")
+                  .arg(m_currentDatabase, m_currentTable));
+
+    return;
+}
+
+    
+
+        
+
+    if (m_isSavingStructure) {
+    appendLog(response.message);
+
+    if (!response.success) {
+        m_isSavingStructure = false;
+        m_pendingStructureSql.clear();
+
+        m_statusLabel->setText("表结构保存失败。");
+        QMessageBox::warning(this, "保存失败", response.message);
+        return;
+    }
+
+    startNextStructureSql();
+    return;
+}
+
+    if (m_isSavingToServer) {
+        appendLog(response.message);
+
+        if (!response.success) {
+            m_isSavingToServer = false;
+            m_pendingSqlQueue.clear();
+
+            m_statusLabel->setText("表数据保存失败。");
+            QMessageBox::warning(this, "保存失败", response.message);
+            return;
+        }
+
+        executeNextQueuedSql();
+        return;
+    }
+    if (!response.database.isEmpty() && m_currentTable.isEmpty()) {
         m_currentDatabase = response.database;
         updateWindowCaption();
     }
+
 
     if (m_isSavingTableChanges && !m_isRefreshingAfterSave) {
         appendLog(response.message);
@@ -1415,3 +1927,224 @@ void MainWindow::onServerDisconnected()
         m_statusLabel->setText("连接已断开。");
     }
 }
+
+void MainWindow::fillStructureTableFromHeaders(const QStringList& headers)
+{
+    m_isLoadingTable = true;
+
+    m_structureTable->clear();
+    m_structureTable->setColumnCount(6);
+    m_structureTable->setRowCount(headers.size());
+
+    m_structureTable->setHorizontalHeaderLabels(
+        {"字段名", "类型", "是否为空", "主键", "默认值", "说明"}
+    );
+
+    for (int row = 0; row < headers.size(); ++row) {
+        m_structureTable->setItem(row, 0, new QTableWidgetItem(headers[row]));
+        m_structureTable->setItem(row, 1, new QTableWidgetItem("VARCHAR(50)"));
+        m_structureTable->setItem(row, 2, new QTableWidgetItem("YES"));
+        m_structureTable->setItem(row, 3, new QTableWidgetItem(""));
+        m_structureTable->setItem(row, 4, new QTableWidgetItem("NULL"));
+        m_structureTable->setItem(row, 5, new QTableWidgetItem(""));
+    }
+
+    m_structureTable->resizeColumnsToContents();
+    m_structureTable->horizontalHeader()->setStretchLastSection(true);
+
+    m_isLoadingTable = false;
+}
+
+static QString decodeDescType(const QString& typeCode, const QString& param)
+{
+    const int type = typeCode.toInt();
+    const int size = param.toInt();
+
+    switch (type) {
+    case 1:
+        return "INT";
+    case 2:
+    return "BOOL";
+
+    case 3:
+        return "DOUBLE";
+    case 4:
+        return QString("VARCHAR(%1)").arg(size > 0 ? size : 50);
+    case 5:
+        return "DATETIME";
+    default:
+        return "VARCHAR(50)";
+    }
+}
+
+void MainWindow::fillStructureTableFromDesc(const QVector<QStringList>& rows)
+{
+    m_isLoadingTable = true;
+
+    m_structureTable->clear();
+    m_structureTable->setColumnCount(6);
+    m_structureTable->setRowCount(rows.size());
+    m_structureTable->setHorizontalHeaderLabels(
+        {"字段名", "类型", "是否为空", "主键", "默认值", "说明"}
+    );
+
+    for (int row = 0; row < rows.size(); ++row) {
+        const QStringList& descRow = rows[row];
+
+        const QString name = descRow.size() > 1 ? descRow[1].trimmed() : "";
+        const QString type = descRow.size() > 2
+            ? decodeDescType(descRow[2], descRow.size() > 3 ? descRow[3] : "")
+            : "VARCHAR(50)";
+
+        const QString integrities = descRow.size() > 4 ? descRow[4].trimmed() : "";
+
+        m_structureTable->setItem(row, 0, new QTableWidgetItem(name));
+        m_structureTable->setItem(row, 1, new QTableWidgetItem(type));
+        m_structureTable->setItem(row, 2, new QTableWidgetItem("YES"));
+        m_structureTable->setItem(row, 3, new QTableWidgetItem(integrities == "1" ? "PRI" : ""));
+        m_structureTable->setItem(row, 4, new QTableWidgetItem("NULL"));
+        m_structureTable->setItem(row, 5, new QTableWidgetItem(""));
+    }
+
+    m_structureTable->resizeColumnsToContents();
+    m_structureTable->horizontalHeader()->setStretchLastSection(true);
+
+    m_isLoadingTable = false;
+    m_hasUnsavedChanges = false;
+}
+
+QList<ColumnMeta> MainWindow::currentStructureColumns() const
+{
+    QList<ColumnMeta> columns;
+
+    for (int row = 0; row < m_structureTable->rowCount(); ++row) {
+        ColumnMeta column;
+
+        column.name = tableCellText(m_structureTable, row, 0);
+        column.type = tableCellText(m_structureTable, row, 1);
+        column.nullable = tableCellText(m_structureTable, row, 2);
+        column.key = tableCellText(m_structureTable, row, 3);
+        column.defaultValue = tableCellText(m_structureTable, row, 4);
+        column.comment = tableCellText(m_structureTable, row, 5);
+
+        columns.append(column);
+    }
+
+    return columns;
+}
+
+QString MainWindow::buildColumnTypeSql(const ColumnMeta& column) const
+{
+    QString type = column.type.trimmed().toUpper();
+
+    if (type == "INTEGER") {
+        type = "INT";
+    }
+
+    if (type == "INT" ||
+    type == "BOOL" ||
+    type == "DOUBLE" ||
+    type == "DATETIME" ||
+    type.startsWith("VARCHAR(")) {
+    return type;
+}
+
+
+    return QString();
+}
+
+QStringList MainWindow::buildStructureAlterSql(const QList<ColumnMeta>& oldColumns,
+                                               const QList<ColumnMeta>& newColumns) const
+{
+    QStringList statements;
+
+    QMap<QString, ColumnMeta> oldMap;
+    QMap<QString, ColumnMeta> newMap;
+
+    for (const ColumnMeta& column : oldColumns) {
+        oldMap[column.name] = column;
+    }
+
+    for (const ColumnMeta& column : newColumns) {
+    if (column.name.trimmed().isEmpty()) {
+        QMessageBox::warning(nullptr, "保存失败", "字段名不能为空。");
+        return {};
+    }
+
+    if (newMap.contains(column.name)) {
+        QMessageBox::warning(nullptr, "保存失败",
+                             QString("字段名重复：%1").arg(column.name));
+        return {};
+    }
+
+    newMap[column.name] = column;
+}
+
+
+    for (const ColumnMeta& oldColumn : oldColumns) {
+        if (!newMap.contains(oldColumn.name)) {
+            statements << QString("ALTER TABLE %1 DROP COLUMN %2;")
+                              .arg(m_currentTable, oldColumn.name);
+        }
+    }
+
+    for (const ColumnMeta& newColumn : newColumns) {
+        if (!isSafeIdentifier(newColumn.name)) {
+            QMessageBox::warning(nullptr, "保存失败",
+                                 QString("字段名不合法：%1").arg(newColumn.name));
+            return {};
+        }
+
+        const QString typeSql = buildColumnTypeSql(newColumn);
+
+        if (typeSql.isEmpty()) {
+            QMessageBox::warning(nullptr, "保存失败",
+                                 QString("字段类型不支持：%1").arg(newColumn.type));
+            return {};
+        }
+
+        if (!oldMap.contains(newColumn.name)) {
+            statements << QString("ALTER TABLE %1 ADD COLUMN %2 %3;")
+                              .arg(m_currentTable, newColumn.name, typeSql);
+            continue;
+        }
+
+        const ColumnMeta oldColumn = oldMap.value(newColumn.name);
+        const QString oldTypeSql = buildColumnTypeSql(oldColumn);
+
+        if (oldTypeSql.compare(typeSql, Qt::CaseInsensitive) != 0) {
+            statements << QString("ALTER TABLE %1 MODIFY COLUMN %2 %3;")
+                              .arg(m_currentTable, newColumn.name, typeSql);
+        }
+    }
+
+    return statements;
+}
+
+void MainWindow::startNextStructureSql()
+{
+    if (m_pendingStructureSql.isEmpty()) {
+        finishStructureSave();
+        return;
+    }
+
+    const QString sql = m_pendingStructureSql.takeFirst();
+
+    appendLog(QString("保存表结构发出 SQL：%1").arg(sql));
+    m_lastSubmittedSql = sql;
+
+    m_dbClient->executeSql(sql);
+}
+
+void MainWindow::finishStructureSave()
+{
+    m_isSavingStructure = false;
+    m_hasUnsavedChanges = false;
+
+    m_statusLabel->setText("表结构已保存，正在刷新当前表...");
+
+    QMessageBox::information(this, "保存成功", "表结构已保存到服务端。");
+
+    openTableFromServer(m_currentDatabase, m_currentTable);
+}
+

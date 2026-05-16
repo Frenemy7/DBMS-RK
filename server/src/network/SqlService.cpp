@@ -1,3 +1,7 @@
+#include <algorithm>
+#include <cctype>
+#include <filesystem>
+
 #include "../../include/network/SqlService.h"
 
 #include "../execution/ExecutorFactory.h"
@@ -18,6 +22,64 @@
 namespace Network {
 
     namespace {
+        std::string trimSql(std::string s)
+{
+    while (!s.empty() && std::isspace(static_cast<unsigned char>(s.front()))) {
+        s.erase(s.begin());
+    }
+
+    while (!s.empty() && std::isspace(static_cast<unsigned char>(s.back()))) {
+        s.pop_back();
+    }
+
+    if (!s.empty() && s.back() == ';') {
+        s.pop_back();
+    }
+
+    while (!s.empty() && std::isspace(static_cast<unsigned char>(s.back()))) {
+        s.pop_back();
+    }
+
+    return s;
+}
+
+std::string toUpperSql(std::string s)
+{
+    std::transform(
+        s.begin(),
+        s.end(),
+        s.begin(),
+        [](unsigned char c) {
+            return static_cast<char>(std::toupper(c));
+        }
+    );
+
+    return s;
+}
+
+bool startsWith(const std::string& text, const std::string& prefix)
+{
+    return text.rfind(prefix, 0) == 0;
+}
+
+std::string trimIdentifier(std::string s)
+{
+    s = trimSql(s);
+
+    if (s.size() >= 2) {
+        const char first = s.front();
+        const char last = s.back();
+
+        if ((first == '`' && last == '`') ||
+            (first == '"' && last == '"') ||
+            (first == '\'' && last == '\'')) {
+            s = s.substr(1, s.size() - 2);
+        }
+    }
+
+    return s;
+}
+
         class StreamCapture {
         public:
             StreamCapture()
@@ -80,6 +142,109 @@ namespace Network {
         std::lock_guard<std::mutex> lock(executionMutex_);
 
         SqlResult result;
+            const std::string cleanSql = trimSql(sql);
+    const std::string upperSql = toUpperSql(cleanSql);
+
+    // SHOW DATABASES;
+    if (upperSql == "SHOW DATABASES") {
+        result.success = true;
+        result.currentDatabase = catalog_ ? catalog_->getCurrentDatabase() : "";
+        result.text = "Query OK.";
+
+        result.table.headers = {"database_name"};
+
+        if (catalog_) {
+            const auto databases = catalog_->getAllDatabases();
+
+            for (const auto& db : databases) {
+                result.table.rows.push_back({std::string(db.name)});
+            }
+        }
+
+        result.text = encodeResponse(result);
+        return result;
+    }
+
+    // SHOW TABLES;
+    if (upperSql == "SHOW TABLES") {
+        result.currentDatabase = catalog_ ? catalog_->getCurrentDatabase() : "";
+
+        if (!catalog_ || result.currentDatabase.empty()) {
+            result.success = false;
+            result.text = "Error: no database selected.";
+            result.text = encodeResponse(result);
+            return result;
+        }
+
+        result.success = true;
+        result.text = "Query OK.";
+        result.table.headers = {"table_name"};
+
+        const std::filesystem::path dbDir =
+            std::filesystem::path("data") / result.currentDatabase;
+
+        if (std::filesystem::exists(dbDir) && std::filesystem::is_directory(dbDir)) {
+            for (const auto& entry : std::filesystem::directory_iterator(dbDir)) {
+                if (!entry.is_regular_file()) {
+                    continue;
+                }
+
+                if (entry.path().extension() == ".tb") {
+                    result.table.rows.push_back({entry.path().stem().string()});
+                }
+            }
+        }
+
+        result.text = encodeResponse(result);
+        return result;
+    }
+
+    // DESC table_name; 或 DESCRIBE table_name;
+    if (startsWith(upperSql, "DESC ") || startsWith(upperSql, "DESCRIBE ")) {
+        std::string tableName;
+
+        if (startsWith(upperSql, "DESC ")) {
+            tableName = trimIdentifier(cleanSql.substr(5));
+        } else {
+            tableName = trimIdentifier(cleanSql.substr(9));
+        }
+
+        result.currentDatabase = catalog_ ? catalog_->getCurrentDatabase() : "";
+
+        if (!catalog_ || result.currentDatabase.empty()) {
+            result.success = false;
+            result.text = "Error: no database selected.";
+            result.text = encodeResponse(result);
+            return result;
+        }
+
+        if (!catalog_->hasTable(tableName)) {
+            result.success = false;
+            result.text = "Error: table '" + tableName + "' not found.";
+            result.text = encodeResponse(result);
+            return result;
+        }
+
+        result.success = true;
+        result.text = "Query OK.";
+        result.table.headers = {"order", "name", "type", "param", "integrities"};
+
+        const auto fields = catalog_->getFields(tableName);
+
+        for (const auto& field : fields) {
+            result.table.rows.push_back({
+                std::to_string(field.order),
+                std::string(field.name),
+                std::to_string(field.type),
+                std::to_string(field.param),
+                std::to_string(field.integrities)
+            });
+        }
+
+        result.text = encodeResponse(result);
+        return result;
+    }
+
         Parser::SQLParserImpl parser;
 
         try {

@@ -13,7 +13,7 @@ namespace Network {
     };
 
     constexpr std::uint32_t kMaxPacketSize = 16 * 1024 * 1024;
-    constexpr std::uint16_t kDefaultPort = 3306;
+    constexpr std::uint16_t kDefaultPort = 3307;
 
 }
 
